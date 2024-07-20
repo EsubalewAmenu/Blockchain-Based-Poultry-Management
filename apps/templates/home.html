@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load staticfiles %}
+{% load static %}
 {% load humanize %}
 
 {% block extracss %}
@@ -28,7 +28,7 @@
                     <br><br>
                     <b>{{ glucose_count|intcomma }}</b> Glucose Readings Logged
                     <br><br>
-                    <a class="btn btn-lg btn-success" href="{% url 'signup' %}" role="button">
+                    <a class="btn btn-lg btn-success" href="{ url 'signup' %}" role="button">
                         Sign Up Today
                     </a>
                 </p>

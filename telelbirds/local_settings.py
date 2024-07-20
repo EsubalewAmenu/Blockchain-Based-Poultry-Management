@@ -34,9 +34,9 @@ SEND_SUBSCRIBERS_EMAIL_CONFIRMATION = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'telel_birds',
-        'USER': 'telel',
-        'PASSWORD': 'pw4telel',
+        'NAME': 'poultry_management',
+        'USER': 'root',
+        'PASSWORD': 'rootroot',
         'HOST': os.getenv('POSTGRESQL_HOST', 'localhost'),
         'PORT': '',
     }

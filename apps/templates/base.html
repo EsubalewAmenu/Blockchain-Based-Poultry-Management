@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
     
 {% load compress %}
 
@@ -34,7 +34,7 @@
         {% endblock %}
 
         <!-- RSS Feed -->
-        <link rel="alternate" type="application/rss+xml" title="RSS Feed for {{ site_name }}" href="{% url 'rss_feed' %}" />
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed for {{ site_name }}" href="{ url 'rss_feed' %}" />
 
         <!-- Enables 'Add to Homescreen' for Android -->
         <meta name="viewport" content="width=device-width">
@@ -56,7 +56,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 {% if user.is_authenticated %}
-                <a class="navbar-brand" href="{% url 'dashboard' %}">
+                <a class="navbar-brand" href="{ url 'dashboard' %}">
                   <span class="fa fa-tint"></span> GlucoseTracker</a>
                 {% else %}
                 <a class="navbar-brand" href="/">
@@ -68,11 +68,11 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
               <ul class="nav navbar-nav navbar-right">
                   {% if user.is_authenticated %}
-                    <li><a href="{% url 'glucose_create' %}">
+                    <li><a href="{ url 'glucose_create' %}">
                         <span class="fa fa-plus"></span>&nbsp;New Glucose</a>
                     </li>
 
-                    <li><a href="{% url 'dashboard' %}">
+                    <li><a href="{ url 'dashboard' %}">
                         <span class="fa fa-th"></span>&nbsp;Dashboard</a>
                     </li>
 
@@ -80,10 +80,10 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                          <span class="fa fa-bar-chart"></span>&nbsp;Reports <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                      <li><a href="{% url 'glucose_filter' %}">Filter Data</a></li>
-                      <li><a href="{% url 'glucose_charts' %}">Charts & Graphs</a></li>
+                      <li><a href="{ url 'glucose_filter' %}">Filter Data</a></li>
+                      <li><a href="{ url 'glucose_charts' %}">Charts & Graphs</a></li>
                       <li class="divider"></li>
-                      <li><a href="{% url 'glucose_email_report' %}">Email Report</a></li>
+                      <li><a href="{ url 'glucose_email_report' %}">Email Report</a></li>
                     </ul>
                     </li>
 
@@ -92,23 +92,23 @@
                         <span class="fa fa-user"></span>&nbsp;
                         {{ user }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                      <li><a href="{% url 'usersettings' %}">Account Settings</a></li>
-                      <li><a href="{% url 'password_change' %}">Change Password</a></li>
+                      <li><a href="{ url 'usersettings' %}">Account Settings</a></li>
+                      <li><a href="{ url 'password_change' %}">Change Password</a></li>
                       <li class="divider"></li>
-                      <li><a href="{% url 'glucose_import' %}">Import Data from CSV</a></li>
+                      <li><a href="{ url 'glucose_import' %}">Import Data from CSV</a></li>
                       <li class="divider"></li>
-                      <li><a href="{% url 'help' %}">Help</a></li>
+                      <li><a href="{ url 'help' %}">Help</a></li>
                       <li class="divider"></li>
-                      <li><a href="{% url 'logout' %}">Log Out</a></li>
+                      <li><a href="{ url 'logout' %}">Log Out</a></li>
                     </ul>
                     </li>
                   {% else %}
                     <form class="navbar-form navbar-right">
                     <button type="button" class="btn btn-primary"
-                        onclick="location.href=&quot;{% url 'login' %}&quot;;">
+                        onclick="location.href=&quot;{ url 'login' %}&quot;;">
                         Log In</button>
                     <button type="button" class="btn btn-success"
-                        onclick="location.href=&quot;{% url 'signup' %}&quot;;">
+                        onclick="location.href=&quot;{ url 'signup' %}&quot;;">
                         Sign Up (Free!)</button>
                     </form>
                   {% endif %}
@@ -138,7 +138,7 @@
                   <p class="pull-right"><a href="#">Back to top</a></p>
                   <p class="text-muted">
                       &copy; 2014-{% now 'Y' %} GlucoseTracker.net by <a href="http://www.calazan.com">Jonathan Calazan</a>
-                      | <a href="{% url 'blog_list_view' %}">Blog</a>
+                      | <a href="{ url 'blog_list_view' %}">Blog</a>
                       | <a href="https://www.facebook.com/glucose.tracker/info">About</a>
                       | <a href="mailto:info@glucosetracker.net">Contact Us</a>
                   </p>
