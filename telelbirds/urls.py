@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from django.views.generic import TemplateView
 
@@ -24,5 +24,25 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    # path('dashboard/', include('apps.dashboard.urls')),
+    # path('', TemplateView.as_view(template_name='core/dashboard.html'), name='dashboard'),
+    path('dashboard/', TemplateView.as_view(template_name='home.html'), name='dashboard'),
+    path('glucose_create', TemplateView.as_view(template_name='glucoses/glucose_create.html'), name='glucose_create'),
+    path('glucose_filter', TemplateView.as_view(template_name='base.html'), name='glucose_filter'),
+    path('glucose_charts', TemplateView.as_view(template_name='base.html'), name='glucose_charts'),
+    path('glucose_email_report', TemplateView.as_view(template_name='base.html'), name='glucose_email_report'),
+    path('usersettings', TemplateView.as_view(template_name='base.html'), name='usersettings'),
+    path('password_change', TemplateView.as_view(template_name='base.html'), name='password_change'),
+    path('glucose_import', TemplateView.as_view(template_name='base.html'), name='glucose_import'),
+    path('help', TemplateView.as_view(template_name='base.html'), name='help'),
+    path('logout', TemplateView.as_view(template_name='base.html'), name='logout'),
+    # path('blog_list_view', TemplateView.as_view(template_name='base.html'), name='blog_list_view'),
+    path('core/', include('apps.core.urls')),
+    path('blogs/', include('apps.blogs.urls')),
+    path('accounts/', include('apps.accounts.urls')),
+    # path('login', TemplateView.as_view(template_name='accounts/login.html'), name='login'),
+    path('signup', TemplateView.as_view(template_name='base.html'), name='signup'),
+    path('password_reset', TemplateView.as_view(template_name='base.html'), name='password_reset'),
+
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

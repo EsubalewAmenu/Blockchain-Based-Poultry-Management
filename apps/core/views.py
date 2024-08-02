@@ -5,14 +5,14 @@ from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.conf import settings
 
-import mailchimp
+from mailchimp3 import MailChimp
 from braces.views import (
     AjaxResponseMixin,
     JSONResponseMixin,
     LoginRequiredMixin,
 )
 
-from glucoses.models import Glucose
+# from glucoses.models import Glucose
 
 from .forms import ContactForm
 
@@ -25,7 +25,7 @@ class HomePageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
-        context['glucose_count'] = Glucose.objects.count()
+        # context['glucose_count'] = Glucose.objects.count()
 
         return context
 
@@ -99,11 +99,11 @@ class MailingListSignupAjaxView(JSONResponseMixin, AjaxResponseMixin, View):
                 id=mailchimp_list_id,
                 email={'email': email},
                 update_existing=True,
-                double_optin=True,
+                double_optin=True, 
             )
             logger.info('%s successfully subscribed to %s', email,
                         mailchimp_list_id)
-        except mailchimp.Error, e:
+        except mailchimp.Error as e:
             logger.error('A MailChimp error occurred: %s', e)
 
             response_dict['message'] = 'Sorry, an error occurred.'

@@ -1,5 +1,5 @@
 from django import forms
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 from crispy_forms.helper import FormHelper, Layout
@@ -7,7 +7,7 @@ from crispy_forms.layout import Button, Submit, Fieldset, HTML, Field
 from crispy_forms.bootstrap import FormActions
 from timezone_field import TimeZoneFormField
 
-from glucoses.models import Category, Unit
+# from apps.glucoses.models import Category, Unit
 
 from .validators import validate_email_unique, validate_username_unique
 
@@ -17,8 +17,8 @@ class SignUpForm(forms.Form):
                                validators=[validate_username_unique])
     password = forms.CharField(max_length=128, widget=forms.PasswordInput())
     email = forms.EmailField(max_length=75, validators=[validate_email_unique])
-    glucose_unit = forms.ModelChoiceField(Unit.objects.all(), empty_label=None,
-                                          label='Glucose Unit')
+    # glucose_unit = forms.ModelChoiceField(Unit.objects.all(), empty_label=None,
+                                        #   label='Glucose Unit')
     time_zone = TimeZoneFormField(label='Time Zone')
 
     def __init__(self, *args, **kwargs):
@@ -56,11 +56,11 @@ class UserSettingsForm(forms.Form):
     email = forms.EmailField(label='Email')
     time_zone = TimeZoneFormField(label='Time Zone')
 
-    glucose_unit = forms.ModelChoiceField(
-        Unit.objects.all(), label='Glucose Unit', empty_label=None)
-    default_category = forms.ModelChoiceField(
-        Category.objects.all(), label='Default Category',
-        empty_label='Auto', required=False)
+    # glucose_unit = forms.ModelChoiceField(
+        # Unit.objects.all(), label='Glucose Unit', empty_label=None)
+    # default_category = forms.ModelChoiceField(
+        # Category.objects.all(), label='Default Category',
+        # empty_label='Auto', required=False)
 
     glucose_low = forms.DecimalField(
         label='Low', max_digits=6, max_value=3000, min_value=0,

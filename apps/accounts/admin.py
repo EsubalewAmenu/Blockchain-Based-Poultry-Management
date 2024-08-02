@@ -1,14 +1,14 @@
 from django.contrib import admin
 
-from accounts.models import UserSettings
+from .models import UserSettings
 
 
 class UserSettingsAdmin(admin.ModelAdmin):
     list_display = [
         'username',
-        'glucose_unit',
-        'default_category',
-        'time_zone',
+        # 'glucose_unit',
+        # 'default_category',
+        # 'time_zone',
         'modified',
         'created',
     ]

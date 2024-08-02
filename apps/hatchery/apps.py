@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class HatcheryConfig(AppConfig):
-    name = 'hatchery'
+    name = 'apps.hatchery'

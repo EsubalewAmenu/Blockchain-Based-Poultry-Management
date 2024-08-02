@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
 
 from django_extensions.db.fields import AutoSlugField
 from taggit.managers import TaggableManager
 
-from core.models import TimeStampedModel
+from apps.core.models import TimeStampedModel
 
 
 STATUS_CHOICES = (
@@ -36,7 +36,7 @@ class BlogManager(models.Manager):
 
 
 class Blog(TimeStampedModel):
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,

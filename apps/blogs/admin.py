@@ -3,16 +3,16 @@ from datetime import datetime
 from django import forms
 from django.contrib import admin
 
-from redactor.widgets import RedactorEditor
+from ckeditor.widgets import CKEditorWidget
 
-from blogs.models import Blog, BlogAd
+from apps.blogs.models import Blog, BlogAd
 
 
 class BlogAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(BlogAdminForm, self).__init__(*args, **kwargs)
 
-        self.fields['content'].widget = RedactorEditor()
+        self.fields['content'].widget = CKEditorWidget()
 
 
 class BlogAdmin(admin.ModelAdmin):

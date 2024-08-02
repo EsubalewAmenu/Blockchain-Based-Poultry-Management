@@ -1,22 +1,8 @@
-from django.conf.urls import patterns, url
-
+from django.urls import path, re_path
 from .views import BlogDetailView, BlogListView, BlogTagListView
 
-
-urlpatterns = patterns('',
-    url(
-        regex=r'^$',
-        view=BlogListView.as_view(),
-        name='blog_list_view',
-    ),
-    url(
-        regex=r'^tag/(?P<tag>[\w ]+)/$',
-        view=BlogTagListView.as_view(),
-        name='blog_tag_list_view',
-    ),
-    url(
-        regex=r'^(?P<slug>[\w-]+)/$',
-        view=BlogDetailView.as_view(),
-        name='blog_detail_view',
-    ),
-)
+urlpatterns = [
+    path('', BlogListView.as_view(), name='blog_list_view'),
+    re_path(r'^tag/(?P<tag>[\w ]+)/$', BlogTagListView.as_view(), name='blog_tag_list_view'),
+    re_path(r'^(?P<slug>[\w-]+)/$', BlogDetailView.as_view(), name='blog_detail_view'),
+]
