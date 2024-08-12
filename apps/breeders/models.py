@@ -34,9 +34,9 @@ class Breed(models.Model):
     eggs_year=models.IntegerField(null=True,blank=True,max_length=50)
     adult_weight=models.FloatField(null=True,blank=True,max_length=50)
     description=models.TextField(null=True,blank=True,max_length=250)
-    front_photo = ProcessedImageField(upload_to='breed_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
-    side_photo = ProcessedImageField(upload_to='breed_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
-    back_photo = ProcessedImageField(upload_to='breed_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
+    front_photo = ProcessedImageField(upload_to='media/breed_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
+    side_photo = ProcessedImageField(upload_to='media/breed_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
+    back_photo = ProcessedImageField(upload_to='media/breed_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

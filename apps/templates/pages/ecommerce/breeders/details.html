@@ -1,0 +1,63 @@
+{% extends 'dashboard.html' %}
+
+{% load static %}
+{% block main %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-4">Breeder Details</h5>
+                    <div class="row">
+                        <div class="col-xl-5 col-lg-6 text-center">
+                            {% if breeder.hens_photo %}
+                            <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{{ breeder.hens_photo.url }}" alt="{{ breeder.batch }} Hens Photo">
+                            {% else %}
+                            <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                            {% endif %}
+                            <div class="my-gallery d-flex mt-4 pt-2" itemscope itemtype="http://schema.org/ImageGallery">
+                                {% if breeder.cocks_photo %}
+                                <figure class="ms-2 me-3" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+                                    <a href="{{ breeder.cocks_photo.url }}" itemprop="contentUrl" data-size="500x600">
+                                        <img class="w-100 min-height-100 max-height-100 border-radius-lg shadow" src="{{ breeder.cocks_photo.url }}" alt="{{ breeder.batch }} Cocks Photo" />
+                                    </a>
+                                </figure>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-5 mx-auto">
+                            <h3 class="mt-lg-0 mt-4">{{ breeder.batch }}</h3>
+                            <h6 class="mb-0 mt-3">Breed</h6>
+                            <h5>{{ breeder.breed.breed|default:"N/A" }}</h5>
+                            <br>
+                            <h6 class="mb-0 mt-3">Hens</h6>
+                            <h5>{{ breeder.hens|default:"N/A" }}</h5>
+                            <br>
+                            <h6 class="mb-0 mt-3">Cocks</h6>
+                            <h5>{{ breeder.cocks|default:"N/A" }}</h5>
+                            <br>
+                            <h6 class="mb-0 mt-3">Mortality Rate</h6>
+                            <h5>{{ breeder.mortality|default:"N/A" }}%</h5>
+                            <br>
+                            <h6 class="mb-0 mt-3">Butchered</h6>
+                            <h5>{{ breeder.butchered|default:"N/A" }}</h5>
+                            <br>
+                            <h6 class="mb-0 mt-3">Sold</h6>
+                            <h5>{{ breeder.sold|default:"N/A" }}</h5>
+                            <br>
+                            <h6 class="mb-0 mt-3">Current Number</h6>
+                            <h5>{{ breeder.current_number|default:"N/A" }}</h5>
+                            <br>
+                            <div class="row mt-4">
+                                <div class="col-lg-5">
+                                    <button class="btn btn-primary mb-0 mt-lg-auto w-100" type="button" name="button">Add to Favorites</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

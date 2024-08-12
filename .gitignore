@@ -6,4 +6,8 @@
 ansible/*.retry
 .env
 documentation.*
+cardanoenv/
+static/
+staticfiles/
+media/
 

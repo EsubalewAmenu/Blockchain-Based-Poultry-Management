@@ -1,90 +1,126 @@
 import logging
-
-from django.shortcuts import render, HttpResponseRedirect
+from django.urls import reverse
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, force_str, force_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.views.generic import FormView
 from django.template import RequestContext
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from axes.decorators import axes_dispatch
 from braces.views import LoginRequiredMixin
-
+from django.core.mail import send_mail
+from django.conf import settings
 from apps.core.utils import glucose_by_unit_setting, to_mg
-
+from django.urls import reverse_lazy
 from .forms import UserSettingsForm, SignUpForm
+from .models import UserSettings
+import random
+import string
 
 
 logger = logging.getLogger(__name__)
 
 
+
+
+def logout_view(request):
+    logout(request)
+    response = redirect(reverse_lazy('login'))
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
+
+@csrf_exempt
 @axes_dispatch
 def login_view(request):
     # Force logout.
     logout(request)
-    username = password = ''
-
-    # Flag to keep track whether the login was invalid.
-    login_failed = False
-
-    if request.POST:
-        username = request.POST['username'].replace(' ', '').lower()
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        print(email)
+        password = request.POST.get('password')
+        print(password)
+        user = authenticate(request, email=email, password=password)
+        print(user)
         if user is not None:
             if user.is_active:
                 login(request, user)
                 return HttpResponseRedirect('/dashboard/')
+    return render(request, 'pages/authentication/signin/illustration.html')
+
+@csrf_exempt
+@login_required
+def create_user(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        primary_phone = request.POST.get('primary_phone')
+        secondary_phone = request.POST.get('secondary_phone', None)
+        date_of_birth = request.POST.get('date_of_birth', None)
+        address = request.POST.get('address', None)
+
+        # Basic validation
+        if not email or not first_name or not last_name:
+            messages.error(request, 'All fields are required.')
+        elif User.objects.filter(email=email).exists():
+            messages.error(request, 'Email is already registered.')
         else:
-            login_failed = True
-    return render(request, 'accounts/login.html', {'login_failed': login_failed})
-
-class SignUpView(FormView):
-    success_url = '/dashboard/'
-    form_class = SignUpForm
-    template_name = 'accounts/signup.html'
-
-    def get_initial(self):
-        # Force logout.
-        logout(self.request)
-
-        return {'time_zone': settings.TIME_ZONE}
-
-    def post(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        form.full_clean()
-
-        if form.is_valid():
-            username = form.cleaned_data['username'].replace(' ', '').lower()
-            password = form.cleaned_data['password']
-
-            user = User.objects.create(username=username)
-            user.email = form.cleaned_data['email']
+            username = email.split('@')[0]
+            characters = string.ascii_letters + string.digits + string.punctuation
+            password = ''.join(random.choice(characters) for _ in range(8))
+            # Create the user
+            user = User.objects.create(
+                email=email,
+                username=username,
+                first_name=first_name,
+                last_name=last_name
+            )
+            
             user.set_password(password)
             user.save()
-
-            # Update the user's settings.
-            user.settings.glucose_unit = form.cleaned_data['glucose_unit']
-            user.settings.time_zone = form.cleaned_data['time_zone']
-            user.settings.save()
-
-            logger.info('New user signed up: %s (%s)', user, user.email)
-
-            # Automatically authenticate the user after user creation.
-            user_auth = authenticate(username=username, password=password)
-            login(request, user_auth)
-
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
+            user_settings = UserSettings(user=user)
+            user_settings.primary_phone = primary_phone
+            user_settings.secondary_phone = secondary_phone
+            user_settings.date_of_birth = date_of_birth
+            user_settings.address = address
+            user_settings.save()
+            
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            token=PasswordResetTokenGenerator().make_token(user)
+            # Redirect to password reset confirm view
+            reset_link = request.build_absolute_uri(
+                                        reverse('set_password') + f'?uidb64={uidb64}&token={token}'
+                                    )
+            
+            try:
+                send_mail(
+                    'Your Temporary Password',
+                    f'Hello {first_name},\n\nYour account has been created successfully. Here is your temporary password: {password}\n\nPlease change your password using the link below to reset your password:\n{reset_link}.\n\nBest regards,\nYour Company',
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                    fail_silently=False,
+                )
+                messages.success(request, 'User Created Successfully! A temporary password has been sent to the user\'s email.')
+                return redirect('users_list')
+            except Exception as e:
+                logger.error(f"Failed to send email: {e}")
+                messages.error(request, 'User created but failed to send email. Please contact support.')
+    return render(request, 'pages/pages/users/new-user.html')
 
 class UserSettingsView(LoginRequiredMixin, FormView):
     success_url = '.'
     form_class = UserSettingsForm
-    template_name = 'accounts/usersettings.html'
+    template_name = 'pages/pages/account/settings.html'
+    login_url = '/accounts/login/'
 
     def get_initial(self):
         user = self.request.user
@@ -94,16 +130,7 @@ class UserSettingsView(LoginRequiredMixin, FormView):
             'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'email': user.email,
-            'time_zone': settings.time_zone,
-            'glucose_unit': settings.glucose_unit,
-            'default_category': settings.default_category,
-            'glucose_low': glucose_by_unit_setting(user, settings.glucose_low),
-            'glucose_high': glucose_by_unit_setting(user, settings.glucose_high),
-            'glucose_target_min': glucose_by_unit_setting(
-                user, settings.glucose_target_min),
-            'glucose_target_max': glucose_by_unit_setting(
-                user, settings.glucose_target_max),
+            'email': user.email
         }
 
     def form_valid(self, form):
@@ -154,3 +181,50 @@ class UserSettingsView(LoginRequiredMixin, FormView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+        
+@login_required
+def users_list(request):
+    users = User.objects.all()
+    return render(request, 'pages/pages/users/list.html', {'users': users})
+
+def set_password(request):
+    uidb64 = request.GET.get('uidb64')
+    token = request.GET.get('token')
+
+    if request.method != 'POST':
+        if uidb64 and token:
+            return render(request, 'pages/authentication/set/set_password.html')  # Render set_password template
+        return redirect('login')  # Render login template if no uidb64 and token
+
+    new_password = request.POST.get('new_password')
+    confirm_password = request.POST.get('confirm_password')
+
+    if not uidb64 or not token:
+        messages.error(request, 'Invalid request.')
+        return redirect('login')
+
+    token_generator = PasswordResetTokenGenerator()
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode('utf-8')
+        user = User.objects.get(pk=uid)
+    except (ValueError, OverflowError, User.DoesNotExist):
+        messages.error(request, 'Invalid user.')
+        return redirect('login')
+
+    if user and token_generator.check_token(user, token):
+        if not new_password or not confirm_password:
+            messages.error(request, 'Both password fields are required.')
+            return redirect('login')
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return redirect('login')
+
+        user.set_password(new_password)
+        user.save()
+        messages.success(request, 'Password changed successfully. You can now log in.')
+        logout(request)
+        return redirect('login')
+
+    messages.error(request, 'Invalid token.')
+    return redirect('login')
+    

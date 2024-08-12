@@ -1,0 +1,102 @@
+{% extends 'dashboard.html' %}
+{% block main %}
+<div class="row mb-5">
+  <div class="col-12">
+    <div class="multisteps-form mb-5">
+      <!--progress bar-->
+      <div class="row">
+        <div class="col-12 col-lg-8 mx-auto my-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="multisteps-form__progress">
+                <button class="multisteps-form__progress-btn js-active" type="button" title="User Info">
+                  <span>User Info</span>
+                </button>
+                <button class="multisteps-form__progress-btn" type="button" title="Contact Info">Contact Info</button>
+                <button class="multisteps-form__progress-btn" type="button" title="Address">Address</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--form panels-->
+      <div class="row">
+        <div class="col-12 col-lg-8 m-auto">
+          <form class="multisteps-form__form mb-8" method="post">
+            {% csrf_token %}
+            <!--User Info Panel-->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+              <h5 class="font-weight-bolder mb-0">User Info</h5>
+              <p class="mb-0 text-sm">Mandatory information</p>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12 mt-3 mt-sm-0">
+                    <label>Email Address</label>
+                    <input class="multisteps-form__input form-control" type="email" name="email" placeholder="eg. johndoe@example.com" />
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12 col-sm-6">
+                    <label>First Name</label>
+                    <input class="multisteps-form__input form-control" type="text" name="first_name" placeholder="eg. John" />
+                  </div>
+                  <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                    <label>Last Name</label>
+                    <input class="multisteps-form__input form-control" type="text" name="last_name" placeholder="eg. Doe" />
+                  </div>
+                </div>
+                
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                </div>
+              </div>
+            </div>
+            <!--Contact Info Panel-->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+              <h5 class="font-weight-bolder">Contact Info</h5>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12 col-sm-6">
+                    <label>Primary Phone</label>
+                    <input class="multisteps-form__input form-control" type="text" name="primary_phone" placeholder="eg. +123456789" />
+                  </div>
+                  <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                    <label>Secondary Phone</label>
+                    <input class="multisteps-form__input form-control" type="text" name="secondary_phone" placeholder="eg. +987654321" />
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <label>Date of Birth</label>
+                    <input class="multisteps-form__input form-control" type="date" name="date_of_birth" />
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-light mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                  <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                </div>
+              </div>
+            </div>
+            <!--Address Panel-->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+              <h5 class="font-weight-bolder">Address</h5>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col">
+                    <label>Address</label>
+                    <input class="multisteps-form__input form-control" type="text" name="address" placeholder="eg. 123 Main St" />
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-light mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                  <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

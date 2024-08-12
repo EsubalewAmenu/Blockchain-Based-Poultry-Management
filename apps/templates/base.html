@@ -14,7 +14,6 @@
         <title>{% block title %}Simple Glucose Management App | {{ site_name }}{% endblock %}</title>
         <meta name="description" content="GlucoseTracker is a simple and easy to use web application for keeping track of
         your blood glucose levels. It's completely free with no ads. Modern look and mobile friendly!">
-
         <!-- CSS -->
         {% compress css %}
         <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
@@ -73,14 +72,14 @@
                     </li>
 
                     <li><a href="{% url 'dashboard' %}">
-                        <span class="fa fa-th"></span>&nbsp;Dashboard</a>
+                      <li><a href="{% url 'breed_list' %}">Breeds</a></li>
                     </li>
 
                     <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                          <span class="fa fa-bar-chart"></span>&nbsp;Reports <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                      <li><a href="{% url 'glucose_filter' %}">Filter Data</a></li>
+                      <li><a href="{% url 'breed_list' %}">Breeds</a></li>
                       <li><a href="{% url 'glucose_charts' %}">Charts & Graphs</a></li>
                       <li class="divider"></li>
                       <li><a href="{% url 'glucose_email_report' %}">Email Report</a></li>

@@ -20,13 +20,16 @@ from django.views.generic import TemplateView
 
 from django.conf.urls.static import static
 from django.conf import settings
+from apps.breeders import urls as BreederUrls
+from apps.dashboard import urls as DashboardUrls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
-    # path('dashboard/', include('apps.dashboard.urls')),
+    path('', include(BreederUrls)),
+    path('', TemplateView.as_view(template_name='pages/ecommerce/overview.html'), name='home'),
+    path('dashboard/', include('apps.dashboard.urls')),
     # path('', TemplateView.as_view(template_name='core/dashboard.html'), name='dashboard'),
-    path('dashboard/', TemplateView.as_view(template_name='home.html'), name='dashboard'),
+    path('dashboard/', include(DashboardUrls)),
     path('glucose_create', TemplateView.as_view(template_name='glucoses/glucose_create.html'), name='glucose_create'),
     path('glucose_filter', TemplateView.as_view(template_name='base.html'), name='glucose_filter'),
     path('glucose_charts', TemplateView.as_view(template_name='base.html'), name='glucose_charts'),
@@ -41,8 +44,9 @@ urlpatterns = [
     path('blogs/', include('apps.blogs.urls')),
     path('accounts/', include('apps.accounts.urls')),
     # path('login', TemplateView.as_view(template_name='accounts/login.html'), name='login'),
-    path('signup', TemplateView.as_view(template_name='base.html'), name='signup'),
+    # path('signup', TemplateView.as_view(template_name='base.html'), name='signup'),
     path('password_reset', TemplateView.as_view(template_name='base.html'), name='password_reset'),
 
 
-]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

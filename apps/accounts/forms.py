@@ -62,22 +62,22 @@ class UserSettingsForm(forms.Form):
         # Category.objects.all(), label='Default Category',
         # empty_label='Auto', required=False)
 
-    glucose_low = forms.DecimalField(
-        label='Low', max_digits=6, max_value=3000, min_value=0,
-        help_text="Below this value is a low blood glucose."
-    )
-    glucose_high = forms.DecimalField(
-        label='High', max_digits=6, max_value=3000, min_value=0,
-        help_text="Above this value is a high blood glucose."
-    )
-    glucose_target_min = forms.DecimalField(
-        label='Target Min', max_digits=6, max_value=3000, min_value=0,
-        help_text="Your target range's minimum value."
-    )
-    glucose_target_max = forms.DecimalField(
-        label='Target Max', max_digits=6, max_value=3000, min_value=0,
-        help_text="Your target range's maximum value."
-    )
+    # glucose_low = forms.DecimalField(
+    #     label='Low', max_digits=6, max_value=3000, min_value=0,
+    #     help_text="Below this value is a low blood glucose."
+    # )
+    # glucose_high = forms.DecimalField(
+    #     label='High', max_digits=6, max_value=3000, min_value=0,
+    #     help_text="Above this value is a high blood glucose."
+    # )
+    # glucose_target_min = forms.DecimalField(
+    #     label='Target Min', max_digits=6, max_value=3000, min_value=0,
+    #     help_text="Your target range's minimum value."
+    # )
+    # glucose_target_max = forms.DecimalField(
+    #     label='Target Max', max_digits=6, max_value=3000, min_value=0,
+    #     help_text="Your target range's maximum value."
+    # )
 
     def __init__(self, *args, **kwargs):
         super(UserSettingsForm, self).__init__(*args, **kwargs)

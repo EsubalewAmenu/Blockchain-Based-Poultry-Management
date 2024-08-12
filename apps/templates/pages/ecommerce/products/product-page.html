@@ -1,0 +1,73 @@
+{% extends 'dashboard.html' %}
+
+    {% load static %}
+    {% block main %}
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="mb-4">Breed Details</h5>
+              <div class="row">
+                <div class="col-xl-5 col-lg-6 text-center">
+                  {% if breed.front_photo %}
+                    <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{{ breed.front_photo.url }}" alt="{{ breed.breed }} Front Photo">
+                  {% else %}
+                    <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                  {% endif %}
+                  <div class="my-gallery d-flex mt-4 pt-2" itemscope itemtype="http://schema.org/ImageGallery">
+                    {% if breed.side_photo %}
+                    <figure class="ms-2 me-3" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+                      <a href="{{ breed.side_photo.url }}" itemprop="contentUrl" data-size="500x600">
+                        <img class="w-100 min-height-100 max-height-100 border-radius-lg shadow" src="{{ breed.side_photo.url }}" alt="{{ breed.breed }} Side Photo" />
+                      </a>
+                    </figure>
+                    {% endif %}
+                    {% if breed.back_photo %}
+                    <figure class="me-3" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+                      <a href="{{ breed.back_photo.url }}" itemprop="contentUrl" data-size="500x600">
+                        <img class="w-100 min-height-100 max-height-100 border-radius-lg shadow" src="{{ breed.back_photo.url }}" alt="{{ breed.breed }} Back Photo" />
+                      </a>
+                    </figure>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-lg-5 mx-auto">
+                  <h3 class="mt-lg-0 mt-4">{{ breed.breed }}</h3>
+                  <div class="rating">
+                    <i class="fas fa-star" aria-hidden="true"></i>
+                    <i class="fas fa-star" aria-hidden="true"></i>
+                    <i class="fas fa-star" aria-hidden="true"></i>
+                    <i class="fas fa-star" aria-hidden="true"></i>
+                    <i class="fas fa-star-half-alt" aria-hidden="true"></i>
+                  </div>
+                  <br>
+                  <h6 class="mb-0 mt-3">Poultry Type</h6>
+                  <h5>{{ breed.poultry_type }}</h5>
+                  <br>
+                  <h6 class="mb-0 mt-3">Purpose</h6>
+                  <h5>{{ breed.purpose }}</h5>
+                  <br>
+                  <h6 class="mb-0 mt-3">Eggs per Year</h6>
+                  <h5>{{ breed.eggs_year }}</h5>
+                  <br>
+                  <h6 class="mb-0 mt-3">Adult Weight</h6>
+                  <h5>{{ breed.adult_weight }} kg</h5>
+                  <br>
+                  <label class="mt-4">Description</label>
+                  <p>{{ breed.description }}</p>
+                  <div class="row mt-4">
+                    <div class="col-lg-5">
+                      <button class="btn btn-primary mb-0 mt-lg-auto w-100" type="button" name="button">Add to Favorites</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+{% endblock %} 
+       

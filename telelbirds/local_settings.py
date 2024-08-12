@@ -35,9 +35,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'poultry_management',
-        'USER': 'root',
-        'PASSWORD': 'rootroot',
+        'USER': 'postgres',
+        'PASSWORD': '#123456',
         'HOST': os.getenv('POSTGRESQL_HOST', 'localhost'),
-        'PORT': '',
+        'PORT': '5432',
     }
 }
