@@ -1,0 +1,60 @@
+{% extends 'dashboard.html' %}
+
+{% load static %}
+{% block main %}
+<div class="container-fluid py-4">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-lg-6">
+          <h4 class="text-white">Create Incubator Capacity</h4>
+          <p class="text-white opacity-8">Fill in the details below to create a new incubator capacity entry.</p>
+        </div>
+      </div>
+  
+      <div class="row mt-4">
+        <div class="col-lg-8 mt-lg-0 mt-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="font-weight-bolder">Incubator Capacity Information</h5>
+              <div class="row">
+                <div class="col-12 col-sm-6">
+                  <label>Incubator</label>
+                  <select class="form-control" name="incubator" required>
+                    <option value="">Select Incubator</option>
+                    {% for incubator in incubators %}
+                      <option value="{{ incubator.id }}">{{ incubator.incubatortype }} - {{ incubator.manufacturer }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                  <label>Breed</label>
+                  <input class="form-control" type="text" name="breed" placeholder="e.g., Broiler" required>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12 col-sm-6">
+                  <label>Capacity</label>
+                  <input class="form-control" type="number" name="capacity" placeholder="Total capacity" required>
+                </div>
+                <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                  <label>Occupied</label>
+                  <input class="form-control" type="number" name="occupied" placeholder="Number of occupied slots" required>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12 col-sm-6">
+                  <label>Available</label>
+                  <input class="form-control" type="number" name="available" placeholder="Available slots" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer text-right">
+              <button type="submit" class="btn btn-success">Create Capacity</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+</div>
+{% endblock %}

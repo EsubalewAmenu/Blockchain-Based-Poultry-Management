@@ -19,12 +19,13 @@
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
   <link href="{% static 'assets/css/nucleo-svg.css' %}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{% static 'assets/css/argon-dashboard.css' %}" rel="stylesheet" />
 </head>
-<body class="g-sidenav-show   bg-gray-100">
-    <div class="min-height-300 bg-primary position-absolute w-100"></div>
+<body class="g-sidenav-show bg-gray-100">
+    <div class="min-height-300 bg-success position-absolute w-100"></div>
     <!-- Side Navigation Here-->
     {% include 'sidenav.html' %}
      <main class="main-content position-relative border-radius-lg ">
@@ -62,6 +63,143 @@
 <script src="{% static 'assets/js/plugins/multistep-form.js'%}"></script>
 
 <script src="{% static 'assets/js/plugins/datatables.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script>
+  var swiper = new Swiper(".mySwiper", {
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+  });
+</script>
+<script>
+  if (document.getElementById('choices-gender')) {
+    var gender = document.getElementById('choices-gender');
+    const example = new Choices(gender);
+  }
+
+  if (document.getElementById('choices-language')) {
+    var language = document.getElementById('choices-language');
+    const example = new Choices(language);
+  }
+
+  if (document.getElementById('choices-skills')) {
+    var skills = document.getElementById('choices-skills');
+    const example = new Choices(skills, {
+      delimiter: ',',
+      editItems: true,
+      maxItemCount: 5,
+      removeItemButton: true,
+      addItems: true
+    });
+  }
+
+  if (document.getElementById('choices-year')) {
+    var year = document.getElementById('choices-year');
+    setTimeout(function() {
+      const example = new Choices(year);
+    }, 1);
+
+    for (y = 1900; y <= 2020; y++) {
+      var optn = document.createElement("OPTION");
+      optn.text = y;
+      optn.value = y;
+
+      if (y == 2020) {
+        optn.selected = true;
+      }
+
+      year.options.add(optn);
+    }
+  }
+
+  if (document.getElementById('choices-day')) {
+    var day = document.getElementById('choices-day');
+    setTimeout(function() {
+      const example = new Choices(day);
+    }, 1);
+
+
+    for (y = 1; y <= 31; y++) {
+      var optn = document.createElement("OPTION");
+      optn.text = y;
+      optn.value = y;
+
+      if (y == 1) {
+        optn.selected = true;
+      }
+
+      day.options.add(optn);
+    }
+
+  }
+
+  if (document.getElementById('choices-month')) {
+    var month = document.getElementById('choices-month');
+    setTimeout(function() {
+      const example = new Choices(month);
+    }, 1);
+
+    var d = new Date();
+    var monthArray = new Array();
+    monthArray[0] = "January";
+    monthArray[1] = "February";
+    monthArray[2] = "March";
+    monthArray[3] = "April";
+    monthArray[4] = "May";
+    monthArray[5] = "June";
+    monthArray[6] = "July";
+    monthArray[7] = "August";
+    monthArray[8] = "September";
+    monthArray[9] = "October";
+    monthArray[10] = "November";
+    monthArray[11] = "December";
+    for (m = 0; m <= 11; m++) {
+      var optn = document.createElement("OPTION");
+      optn.text = monthArray[m];
+      // server side month start from one
+      optn.value = (m + 1);
+      // if june selected
+      if (m == 1) {
+        optn.selected = true;
+      }
+      month.options.add(optn);
+    }
+  }
+
+  function visible() {
+    var elem = document.getElementById('profileVisibility');
+    if (elem) {
+      if (elem.innerHTML == "Switch to visible") {
+        elem.innerHTML = "Switch to invisible"
+      } else {
+        elem.innerHTML = "Switch to visible"
+      }
+    }
+  }
+
+  var openFile = function(event) {
+    var input = event.target;
+
+    // Instantiate FileReader
+    var reader = new FileReader();
+    reader.onload = function() {
+      imageFile = reader.result;
+
+      document.getElementById("imageChange").innerHTML = '<img width="200" src="' + imageFile + '" class="rounded-circle w-100 shadow" />';
+    };
+    reader.readAsDataURL(input.files[0]);
+  };
+</script>
+<script>
+  var win = navigator.platform.indexOf('Win') > -1;
+  if (win && document.querySelector('#sidenav-scrollbar')) {
+    var options = {
+      damping: '0.5'
+    }
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+  }
+</script>
   <script>
     const dataTableSearch = new simpleDatatables.DataTable("#datatable-search", {
       searchable: true,
@@ -188,7 +326,58 @@
      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
    }
  </script>
+ <script>
+  if (document.getElementById('edit-deschiption-edit')) {
+    var quill = new Quill('#edit-deschiption-edit', {
+      theme: 'snow' // Specify theme in configuration
+    });
+  };
 
+  if (document.getElementById('choices-category-edit')) {
+    var element = document.getElementById('choices-category-edit');
+    const example = new Choices(element, {
+      searchEnabled: false
+    });
+  };
+
+  if (document.getElementById('choices-color-edit')) {
+    var element = document.getElementById('choices-color-edit');
+    const example = new Choices(element, {
+      searchEnabled: false
+    });
+  };
+
+  if (document.getElementById('choices-currency-edit')) {
+    var element = document.getElementById('choices-currency-edit');
+    const example = new Choices(element, {
+      searchEnabled: false
+    });
+  };
+
+  if (document.getElementById('choices-tags-edit')) {
+    var tags = document.getElementById('choices-tags-edit');
+    const examples = new Choices(tags, {
+      removeItemButton: true
+    });
+
+    examples.setChoices(
+      [{
+          value: 'One',
+          label: 'Expired',
+          disabled: true
+        },
+        {
+          value: 'Two',
+          label: 'Out of Stock',
+          selected: true
+        }
+      ],
+      'value',
+      'label',
+      false,
+    );
+  }
+</script>
   <script>
     if (document.getElementById('choices-quantity')) {
       var element = document.getElementById('choices-quantity');

@@ -1,27 +1,51 @@
-postgresql:
-  image: jcalazan/postgresql
-  environment:
-    - POSTGRESQL_DB=glucosetracker
-    - POSTGRESQL_USER=glucosetracker
-    - POSTGRESQL_PASSWORD=password
-  volumes:
-    - ~/dockerfiles/glucose-tracker/postgresql:/var/lib/postgresql
-  ports:
-    - "5432:5432"
+version: '3.8'
 
-django:
-  image: jcalazan/django
-  environment:
-    - DJANGO_SETTINGS_MODULE=settings.local
-    - POSTGRESQL_HOST=postgresql
-  working_dir: /glucose-tracker
-  command: >
-    bash -c "sleep 2 && cd glucosetracker && python manage.py runserver 0.0.0.0:80"
-  volumes:
-    - .:/glucose-tracker
-    - ~/dockerfiles/glucose-tracker/python:/usr/local/lib/python2.7
-    - ~/dockerfiles/glucose-tracker/bin:/usr/local/bin
-  ports:
-    - "80:80"
-  links:
-    - postgresql
+services:
+  db:
+    image: postgis/postgis
+    env_file:
+      - .env
+    volumes:
+      - poultry_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+    networks:
+      - cardano-network
+
+  app:
+    build: .
+    env_file:
+      - .env
+    environment:
+      - DB_ENGINE=${DB_ENGINE}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+
+    command: >
+     bash -c "python manage.py collectstatic --noinput &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:11000"
+    ports:
+      - 11000:11000
+    volumes:
+      - .:/app
+    networks:
+      - cardano-network
+
+networks:
+  cardano-network:
+     driver: bridge
+
+volumes:
+  poultry_db_data:

@@ -93,7 +93,7 @@ class IncubatorCapacity(models.Model):
     """
     id = models.AutoField(primary_key=True)
     incubator=models.ForeignKey(Incubators,
-        related_name="ncubatorcapacity_incubator", blank=True, null=True,
+        related_name="incubatorcapacity_incubator", blank=True, null=True,
         on_delete=models.SET_NULL)
     breed=models.CharField(null=True,blank=True,max_length=50)
     capacity=models.IntegerField(null=True,blank=True,max_length=50)
@@ -109,7 +109,7 @@ class IncubatorCapacity(models.Model):
         managed = True  
 
     def save(self, *args, **kwargs):
-        self.available = self.capacity - self.occupied
+        self.available = int(self.capacity) - int(self.occupied)
         super(IncubatorCapacity, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

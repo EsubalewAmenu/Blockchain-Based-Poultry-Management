@@ -29,11 +29,11 @@
                             <!--form panels-->
                             <div class="row">
                                 <div class="col-12 col-lg-8 m-auto">
-                                    <form class="multisteps-form__form mb-8" method="POST" enctype="multipart/form-data">
+                                    <form class="multisteps-form__form mb-8" method="POST">
                                       {% csrf_token %}
                                         <!--single form panel-->
                                         <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
-                                            <h5 class="font-weight-bolder">Breed Information</h5>
+                                            <h5 class="font-weight-bolder">Breeder Information</h5>
                                             <div class="multisteps-form__content">
                                                 <div class="row mt-3">
                                                     <div class="col-12 col-sm-6">
@@ -73,10 +73,6 @@
                                                     <div class="col-12 col-sm-6">
                                                         <label>Sold</label>
                                                         <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 30" name='sold'/>
-                                                    </div>
-                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
-                                                        <label>Current Number</label>
-                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 40" name='current_number'/>
                                                     </div>
                                                 </div>
                                                 <div class="button-row d-flex mt-4">

@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block main%}
- {% include 'pages/ecommerce/products/create_breed_card.html' %}
 <div class="row">
   <div class="col-12">
     <div class="multisteps-form">
@@ -10,16 +9,20 @@
         <div class="col-12">
             <div class="multisteps-form">
                 <div class="row">
-                    <div class="col-12 col-lg-8 mx-auto mt-4 mb-sm-5 mb-3">
-                        <div class="multisteps-form__progress">
-                            <button class="multisteps-form__progress-btn js-active" type="button" title="Breed Info">
-                                <span>1. Breed Info</span>
+                    <div class="col-12 col-lg-8 mx-auto my-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="multisteps-form__progress">
+                            <button class="multisteps-form__progress-btn js-active" type="button" title="User Info">
+                              <span>1. Breed Info</span>
                             </button>
-                            <button class="multisteps-form__progress-btn" type="button" title="Photos">2. Photos</button>
-                            <button class="multisteps-form__progress-btn" type="button" title="Finish">3. Finish</button>
+                            <button class="multisteps-form__progress-btn" type="button" title="Contact Info">2. Photos</button>
+                            <button class="multisteps-form__progress-btn" type="button" title="Address">3. Finish</button>
+                          </div>
                         </div>
+                      </div>
                     </div>
-                </div>
+                  </div>
                 <!--form panels-->
                 <div class="row">
                     <div class="col-12 col-lg-8 m-auto">

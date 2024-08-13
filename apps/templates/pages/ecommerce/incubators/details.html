@@ -1,0 +1,114 @@
+{% extends 'dashboard.html' %}
+
+{% load static %}
+{% block main %}
+<div class="container-fluid py-4">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-lg-6">
+          <h4 class="text-white">Update Incubator Information</h4>
+          <p class="text-white opacity-8">Make changes to the incubator details below.</p>
+        </div>
+        <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
+          <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
+        </div>
+      </div>
+  
+      <div class="row mt-4">
+        <div class="col-lg-8 mt-lg-0 mt-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="font-weight-bolder">Incubator Information</h5>
+              <div class="row">
+                <div class="col-12 col-sm-6">
+                  <label>Hatchery</label>
+                  <select class="form-control" name="hatchery">
+                    <option value="{{ incubator.hatchery.id }}">{{ incubator.hatchery.name }}</option>
+                    {% for hatchery in hatcheries %}
+                      {% if hatchery.id != incubator.hatchery.id %}
+                        <option value="{{ hatchery.id }}">{{ hatchery.name }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                  <label>Incubator Type</label>
+                  <input class="form-control" type="text" name="incubatortype" value="{{ incubator.incubatortype }}">
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12 col-sm-6">
+                  <label>Manufacturer</label>
+                  <input class="form-control" type="text" name="manufacturer" value="{{ incubator.manufacturer }}">
+                </div>
+                <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                  <label>Model</label>
+                  <input class="form-control" type="text" name="model" value="{{ incubator.model }}">
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12 col-sm-6">
+                  <label>Year</label>
+                  <input class="form-control" type="text" name="year" value="{{ incubator.year }}">
+                </div>
+                <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                  <label>Code</label>
+                  <input class="form-control" type="text" name="code" value="{{ incubator.code }}">
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <label>Manufacturer Details</label>
+                  <textarea class="form-control" name="manufacturer_details" rows="3">{{ incubator.manufacturer_details }}</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer with Delete Option -->
+      <div class="row mt-4">
+        <div class="col-lg-12 text-right">
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'incubator_delete' incubator.code %}">
+            Delete this Incubator
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Incubator</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this incubator?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="" method="POST" id="deleteForm" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget; // Button that triggered the modal
+      var url = button.getAttribute('data-url'); // Extract info from data-* attributes
+      var form = deleteModal.querySelector('#deleteForm');
+      form.action = url; // Update the form action to the delete URL
+    });
+  </script>
+</div>
+{% endblock %}

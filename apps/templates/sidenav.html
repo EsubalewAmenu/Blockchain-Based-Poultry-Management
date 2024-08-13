@@ -42,32 +42,42 @@
         </div>
       </li>
       <li class="nav-item">
-        <a data-bs-toggle="collapse" href="#pagesExamples" class="nav-link " aria-controls="pagesExamples" role="button" aria-expanded="false">
+        <a data-bs-toggle="collapse" href="#hatcheryPages" class="nav-link " aria-controls="hatcheryPages" role="button" aria-expanded="false">
           <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
             <i class="ni ni-ungroup text-warning text-sm opacity-10"></i>
           </div>
-          <span class="nav-link-text ms-1">Accounts</span>
+          <span class="nav-link-text ms-1">Hatchery</span>
         </a>
-        <div class="collapse " id="pagesExamples">
+        <div class="collapse " id="hatcheryPages">
           <ul class="nav ms-4">
             <li class="nav-item ">
-              <a class="nav-link " data-bs-toggle="collapse" aria-expanded="false" href="#usersExample">
-                <span class="sidenav-mini-icon"> U </span>
-                <span class="sidenav-normal"> Users <b class="caret"></b></span>
+              <a class="nav-link " href="{% url 'hatchery_list' %}">
+                <span class="sidenav-mini-icon"> B </span>
+                <span class="sidenav-normal"> Hatchery <b class="caret"></b></span>
               </a>
-              <div class="collapse " id="usersExample">
-                <ul class="nav nav-sm flex-column">
-                  <li class="nav-item">
-                    <a class="nav-link " href="{% url 'create_user' %}">
-                      <span class="sidenav-mini-icon text-xs"> N </span>
-                      <span class="sidenav-normal"> New User </span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>        
+            </li> 
+            <li class="nav-item ">
+              <a class="nav-link " href="{% url 'incubator_list' %}">
+                <span class="sidenav-mini-icon"> B </span>
+                <span class="sidenav-normal"> Incubator <b class="caret"></b></span>
+              </a>
+            </li> 
+            <li class="nav-item ">
+              <a class="nav-link " href="{% url 'incubator_capacity_list' %}">
+                <span class="sidenav-mini-icon"> B </span>
+                <span class="sidenav-normal"> Incubator Capcity <b class="caret"></b></span>
+              </a>
+            </li> 
           </ul>
         </div>
+      </li>
+      
+      <li class="nav-item">
+        <a href="{% url 'users_list' %}" class="nav-link " role="button">
+          <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+          </div>
+          <span class="nav-link-text ms-1">Users</span>
+        </a>
       </li>
       
     </ul>

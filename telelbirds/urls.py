@@ -22,10 +22,12 @@ from django.conf.urls.static import static
 from django.conf import settings
 from apps.breeders import urls as BreederUrls
 from apps.dashboard import urls as DashboardUrls
+from apps.hatchery import urls as HatcheryUrls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(BreederUrls)),
+    path('', include(HatcheryUrls)),
     path('', TemplateView.as_view(template_name='pages/ecommerce/overview.html'), name='home'),
     path('dashboard/', include('apps.dashboard.urls')),
     # path('', TemplateView.as_view(template_name='core/dashboard.html'), name='dashboard'),
