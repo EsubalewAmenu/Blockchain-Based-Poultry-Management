@@ -15,7 +15,7 @@
           </div>
           <div class="ms-auto my-auto mt-lg-0 mt-4">
             <div class="ms-auto my-auto">
-              <a href="{%url 'breed_create'%}" class="btn bg-gradient-primary btn-sm mb-0" target="_blank">+&nbsp; New Breed</a>
+              <a href="{%url 'breed_create'%}" class="btn bg-gradient-success btn-sm mb-0" target="_blank">+&nbsp; New Breed</a>
               {% comment %} <button type="button" class="btn btn-outline-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#import">
                 Import
               </button> {% endcomment %}
@@ -68,7 +68,7 @@
   <td class="text-sm text-center">{{ breed.code }}</td>
   <td class="text-sm text-center">
     <a href="{% url 'breed_detail' breed.code %}" class="text-decoration-none">
-      <h6 class="ms-3 my-auto">{{ breed.breed }}</h6>
+      <p class="ms-3 my-auto">{{ breed.breed }}</p>
     </a>
   </td>
   <td class="text-sm text-center">{{ breed.poultry_type }}</td>

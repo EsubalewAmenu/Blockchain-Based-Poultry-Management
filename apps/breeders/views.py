@@ -51,6 +51,7 @@ def breed_create(request):
             side_photo=side_photo,
             back_photo=back_photo
         )
+        breed.save()
         return redirect('breed_list')
     
     return render(request, 'pages/ecommerce/products/new-product.html')
@@ -159,14 +160,19 @@ def breeders_update(request, batch):
     if request.method == 'POST':
         # Update breeder instance with the new data from the request
         breeder.batch = request.POST.get('batch', breeder.batch)
-        breeder.breed = request.POST.get('breed', breeder.breed)
+        breed_name = request.POST.get('breed')
+        if breed_name:
+            try:
+                breed = Breed.objects.get(breed=breed_name)
+                breeder.breed = breed
+            except Breed.DoesNotExist:
+                breeder.breed = None
         breeder.hens = request.POST.get('hens', breeder.hens)
         breeder.cocks = request.POST.get('cocks', breeder.cocks)
         breeder.mortality = request.POST.get('mortality', breeder.mortality)
         breeder.butchered = request.POST.get('butchered', breeder.butchered)
         breeder.sold = request.POST.get('sold', breeder.sold)
         breeder.current_number = request.POST.get('current_number', breeder.current_number)
-        breeder.description = request.POST.get('description', breeder.description)
 
         # Handle file uploads
         if request.FILES.get('hens_photo'):

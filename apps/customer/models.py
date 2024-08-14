@@ -21,6 +21,7 @@ from imagekit.processors import ResizeToFit
 
 from telelbirds import settings
 from apps.breeders.models import Breeders, Breed
+import uuid
 
 
 class Customer(models.Model):
@@ -95,7 +96,7 @@ class Eggs(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
-        self.received = self.brought - self.returned
+        self.received = int(self.brought) - int(self.returned)
         super(Eggs, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -123,5 +124,11 @@ class CustomerRequest(models.Model):
         verbose_name_plural = "CustomerRequests"
         managed = True
     
+    def save(self, *args, **kwargs):
+        prefix = "REQ-"
+        unique_id = str(uuid.uuid4().hex[:8])
+        self.requestcode = f"{prefix}{unique_id}"
+        super(CustomerRequest, self).save(*args, **kwargs)
+        
     def get_absolute_url(self):
         return '/customer_request/{}'.format(self.requestcode)

@@ -1,24 +1,26 @@
 import logging
 from django.urls import reverse
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import smart_str, force_str, force_bytes, DjangoUnicodeDecodeError
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.shortcuts import render, HttpResponseRedirect, redirect
+from django.shortcuts import render, HttpResponseRedirect, redirect, get_object_or_404
+from django.contrib.auth import update_session_auth_hash
 from django.views.generic import FormView
-from django.template import RequestContext
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from axes.decorators import axes_dispatch
 from braces.views import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.conf import settings
-from apps.core.utils import glucose_by_unit_setting, to_mg
+from apps.core.utils import to_mg
 from django.urls import reverse_lazy
-from .forms import UserSettingsForm, SignUpForm
+from .forms import UserSettingsForm
 from .models import UserSettings
 import random
 import string
@@ -93,7 +95,6 @@ def create_user(request):
         user.set_password(password)
         user.save()
         
-        # Create user settings
         user_settings = UserSettings(user=user)
         user_settings.primary_phone = primary_phone
         user_settings.secondary_phone = secondary_phone
@@ -101,7 +102,6 @@ def create_user(request):
         user_settings.address = address
         user_settings.save()
         
-        # Generate password reset link
         uidb64 = urlsafe_base64_encode(force_bytes(user.id))
         token = PasswordResetTokenGenerator().make_token(user)
         reset_link = request.build_absolute_uri(reverse('set_password') + f'?uidb64={uidb64}&token={token}')
@@ -122,6 +122,53 @@ def create_user(request):
             return render(request, 'pages/pages/users/new-user.html')  # Return to the same form with error message
 
     return render(request, 'pages/pages/users/new-user.html')
+
+def update_user(request):
+    user = get_object_or_404(User, pk=request.user.pk)
+    if request.method == 'POST':
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.email = request.POST.get('email')
+        user.settings.primary_phone = request.POST.get('primary_phone')
+        user.settings.secondary_phone = request.POST.get('secondary_phone')
+        user.settings.date_of_birth = request.POST.get('date_of_birth')
+        user.settings.address = request.POST.get('address')
+        user.save()
+        user.settings.save()
+        messages.success(request, 'User profile updated successfully.')
+        return redirect('usersettings')
+    return render(request, 'pages/pages/account/settings.html', {'user': user})
+
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if not request.user.check_password(current_password):
+            messages.error(request, 'Current password is incorrect.')
+            return render(request, 'pages/pages/account/settings.html')
+
+        if new_password != confirm_password:
+            messages.error(request, 'New passwords do not match.')
+            return render(request, 'pages/pages/account/settings.html')
+
+        user = request.user
+        user.set_password(new_password)
+        user.save()
+        update_session_auth_hash(request, user)
+        messages.success(request, 'Your password has been updated successfully.')
+        return redirect('profile')
+
+    return render(request, 'pages/pages/account/settings.html')
+
+def delete_user(request):
+    user = get_object_or_404(User, pk=request.user.pk)
+    if request.method == 'POST':
+        user.delete()
+        messages.success(request, 'Your account has been deleted successfully.')
+        return redirect('login')
+    return render(request, 'pages/pages/account/settings.html', {'user': user})
 
 class UserSettingsView(LoginRequiredMixin, FormView):
     success_url = '.'
@@ -244,3 +291,27 @@ def set_password(request):
 
     messages.error(request, 'Invalid token.')
     return redirect('login')
+
+@csrf_exempt
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            subject = 'Password Reset Request'
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            token = PasswordResetTokenGenerator().make_token(user)
+            reset_link = request.build_absolute_uri(reverse('set_password') + f'?uidb64={uidb64}&token={token}')
+            
+            message = f'Hello {user.first_name} {user.last_name},\n\nPlease change your password using the link below:\n{reset_link}.\n\nBest regards,\nYour Company'
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+            return redirect('check_email')
+        except User.DoesNotExist:
+           messages.error(request, 'No user found with this email address.') 
+    return render(request, 'pages/authentication/reset/illustration.html')

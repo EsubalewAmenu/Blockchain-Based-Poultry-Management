@@ -1,0 +1,145 @@
+{% extends 'dashboard.html' %}
+
+{% block main %}
+<div class="d-sm-flex justify-content-between">
+  <div>
+    <a href="{% url 'customer_request_create' %}" class="btn btn-icon btn-outline-white">
+      New Customer Request
+    </a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-flush" id="datatable-search">
+          <thead class="thead-light">
+              <tr>
+                  <th scope="col">Request Code</th>
+                  <th scope="col">Egg Batch Number</th>
+                  <th scope="col">Created</th>
+                  <th scope="col">Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for customer_request in customer_requests %}
+              <tr>
+                  <td>
+                      <div class="d-flex align-items-center">
+                          <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="customCheck{{ customer_request.id }}">
+                          </div>
+                          <a href="{% url 'customer_request_detail' customer_request.requestcode %}" class="text-decoration-none">
+                          <p class="text-xs font-weight-bold ms-2 mb-0">{{ customer_request.requestcode }}</p>
+                          </a>
+                      </div>
+                  </td>
+                  <td class="font-weight-bold">
+                      <span class="my-2 text-xs">{{ customer_request.eggs.batchnumber }}</span>
+                  </td>
+                  <td class="font-weight-bold">
+                      <span class="my-2 text-xs">{{ customer_request.created|date:"d M, Y" }}</span>
+                  </td>
+                  <td class="text-sm">
+                    <div class="d-flex justify-content-left align-items-left">
+                      <a href="{% url 'customer_request_detail' customer_request.requestcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
+                        <i class="fas fa-eye"></i>
+                      </a>
+                      <a href="{% url 'customer_request_update' customer_request.requestcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Customer Request">
+                        <i class="fas fa-user-edit"></i>
+                      </a>
+                      <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'customer_request_delete' customer_request.requestcode %}">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+
+          <!-- Delete Confirmation Modal -->
+          <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete this customer request?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="" method="POST" id="deleteForm" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </table>
+      
+      <!-- Pagination Section -->
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            {% if customer_requests.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ customer_requests.previous_page_number }}" tabindex="-1">
+                    <i class="fa fa-angle-left"></i>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="javascript:;" tabindex="-1">
+                    <i class="fa fa-angle-left"></i>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in customer_requests.paginator.page_range %}
+            {% if customer_requests.number == num %}
+            <li class="page-item active">
+                <a class="page-link text-light" href="javascript:;">{{ num }}</a>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if customer_requests.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ customer_requests.next_page_number }}">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="javascript:;">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+      </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var url = button.getAttribute('data-url');
+      var form = deleteModal.querySelector('#deleteForm');
+      form.action = url;
+    });
+</script>
+{% endblock %}
