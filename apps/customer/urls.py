@@ -8,6 +8,7 @@ urlpatterns = [
     path('customer/<str:full_name>/', customer_detail, name='customer_detail'),
     path('customer/<str:full_name>/update/', customer_update, name='customer_update'),
     path('customer/<str:full_name>/delete/', customer_delete, name='customer_delete'),
+    path('customer/<str:full_name>/update_notifications/', customer_update_notifications, name='customer_update_notifications'),
     
     #Eggs
     path('eggs/', eggs_list, name='eggs_list'),

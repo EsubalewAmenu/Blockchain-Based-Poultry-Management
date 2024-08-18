@@ -92,6 +92,13 @@
         <h5>Change Password</h5>
       </div>
       <div class="card-body pt-0">
+        {% if messages %}
+                      <ul>
+                          {% for message in messages %}
+                              <li>{{ message }}</li>
+                          {% endfor %}
+                      </ul>
+                  {% endif %}
         <form method="post" action="{% url 'change_password' %}">
           {% csrf_token %}
           <label class="form-label">Current password</label>

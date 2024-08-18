@@ -88,7 +88,7 @@
         <p class="text-sm">Choose how you receive notifications. These notification settings apply to your account.</p>
       </div>
       <div class="card-body pt-0">
-        <form method="post" action="{% url 'customer_update' customer.full_name %}">
+        <form method="post" action="{% url 'customer_update_notifications' customer.full_name %}">
           {% csrf_token %}
           <div class="table-responsive">
             <table class="table mb-0">
@@ -117,7 +117,7 @@
                     <td class="ps-1" colspan="4">
                       <div class="my-auto">
                         <span class="text-dark d-block text-sm">Follow Up</span>
-                        <span class="text-xs font-weight-normal">Notify when another user mentions you in a comment</span>
+                        <span class="text-xs font-weight-normal">Notify when Followup Occurs</span>
                       </div>
                     </td>
                     <td>

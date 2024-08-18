@@ -158,7 +158,7 @@ def change_password(request):
         user.save()
         update_session_auth_hash(request, user)
         messages.success(request, 'Your password has been updated successfully.')
-        return redirect('profile')
+        return redirect('usersettings')
 
     return render(request, 'pages/pages/account/settings.html')
 

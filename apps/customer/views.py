@@ -105,6 +105,23 @@ def customer_update(request, full_name):
         return redirect('customer_list')
     else:
         return render(request, 'pages/pages/customer/details.html', {'customer': customer})
+    
+def customer_update_notifications(request, full_name):
+    customer = get_object_or_404(Customer, full_name=full_name)
+
+    if request.method == 'POST':
+        notification_sms = request.POST.get('notification_sms') == 'on'
+        delivery = request.POST.get('delivery') == 'on'
+        followup = request.POST.get('followup') == 'on'
+
+        customer.notification_sms = notification_sms
+        customer.delivery = delivery
+        customer.followup = followup
+        customer.save() 
+
+        return redirect('customer_detail', customer_full_name=customer.full_name)
+
+    return render(request, 'customer_detail.html', {'customer': customer})
 
 def customer_delete(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)

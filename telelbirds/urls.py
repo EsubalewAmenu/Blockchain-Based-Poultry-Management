@@ -30,6 +30,7 @@ urlpatterns = [
     path('', include(BreederUrls)),
     path('', include(HatcheryUrls)),
     path('', include(CustomerUrls)),
+    path('', TemplateView.as_view(template_name='home.html'), name='check_email'),
     path('dashboard/', include('apps.dashboard.urls')),
     path('check-email/', TemplateView.as_view(template_name='pages/authentication/reset/check_email.html'), name='check_email'),
     path('dashboard/', include(DashboardUrls)),
