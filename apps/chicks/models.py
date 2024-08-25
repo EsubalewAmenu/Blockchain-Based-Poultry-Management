@@ -11,7 +11,7 @@ from django.contrib.gis.db import models as gismodels
 
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
-
+from apps.customer.models import Eggs
 from telelbirds import settings
 from apps.breeders.models import Breeders, Breed
 from apps.hatchery.models import Hatchery
@@ -29,8 +29,10 @@ class Chicks(models.Model):
         related_name="breed_chicks", blank=True, null=True,
         on_delete=models.SET_NULL)
     age=models.DateField(null=True,blank=True,max_length=50)
-    number=models.IntegerField(null=True,blank=True,max_length=50)
     description=models.TextField(null=True,blank=True) 
+    chick_photo = ProcessedImageField(upload_to='chicks_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
+    egg = models.ForeignKey(Eggs, blank=True, null=True, on_delete=models.SET_NULL, related_name="eggs_chicks")
+    
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

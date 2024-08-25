@@ -1,0 +1,113 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block main%}
+<div class="row">
+  <div class="col-12">
+    <div class="multisteps-form">
+      <div class="row">
+        <div class="col-12">
+            <div class="multisteps-form">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="multisteps-form">
+                            <div class="row">
+                                <div class="col-12 col-lg-8 mx-auto my-4">
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <div class="multisteps-form__progress">
+                                        <button class="multisteps-form__progress-btn js-active" type="button" title="User Info">
+                                          <span>1. Chick Info</span>
+                                        </button>
+                                        <button class="multisteps-form__progress-btn" type="button" title="Address">2. Finish</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            <!--form panels-->
+                            <div class="row">
+                                <div class="col-12 col-lg-8 m-auto">
+                                    <form class="multisteps-form__form mb-8" method="POST">
+                                      {% csrf_token %}
+                                        <!--single form panel-->
+                                        <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+                                            <h5 class="font-weight-bolder">Chick Information</h5>
+                                            <div class="multisteps-form__content">
+                                                <div class="row mt-3">
+                                                    <div class="col-12 col-sm-6">
+                                                        <label>Batch</label>
+                                                        <input class="multisteps-form__input form-control" type="text" placeholder="e.g., BRDR001" name='batchnumber' />
+                                                    </div>
+                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                                        <label>Breed</label>
+                                                        <select class="multisteps-form__input form-control" name="breed">
+                                                            {% for breed in breeds %}
+                                                                <option value="{{ breed.pk }}">{{ breed.breed }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-12 col-sm-6">
+                                                        <label>Source</label>
+                                                        <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Egg" name='source'/>
+                                                    </div>
+                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                                        <label>Age</label>
+                                                        <input class="multisteps-form__input form-control" type="date" placeholder="e.g., 10" name='age'/>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                                        <label>Egg</label>
+                                                        <select class="multisteps-form__input form-control" name="egg">
+                                                            {% for egg in eggs %}
+                                                                <option value="{{ egg.pk }}">{{ egg.batchnumber }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-sm-6">
+                                                        <label>Chick Photo</label>
+                                                        <input type="file" class="form-control" name='chick_photo'/>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-12 col-sm-12 mt-3 mt-sm-0">
+                                                        <label>Description</label>
+                                                        <textarea class="multisteps-form__input form-control" rows="5" name="description" placeholder="Any additional details about the manufacturer..."></textarea>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="button-row d-flex mt-4">
+                                                    <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                                                </div>
+                                            </div>
+                                        </div>
+    
+                                        <!--single form panel-->
+                                        <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+                                            <h5 class="font-weight-bolder">Finish</h5>
+                                            <div class="multisteps-form__content mt-3">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p class="font-weight-bold">Review your information and click "Submit" to create the new breeder.</p>
+                                                    </div>
+                                    </div>
+                                    <div class="button-row d-flex mt-4">
+                                        <button class="btn bg-gradient-secondary mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                                        <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    </div>
+  </div>
+</div>
+{%endblock%}

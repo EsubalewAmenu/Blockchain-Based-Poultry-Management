@@ -24,6 +24,24 @@
   <!-- CSS Files -->
   <link id="pagestyle" href="{% static 'assets/css/argon-dashboard.css' %}" rel="stylesheet" />
 </head>
+<style>
+  .alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+</style>
 <body class="g-sidenav-show bg-gray-100">
     <div class="min-height-300 bg-success position-absolute w-100"></div>
     <!-- Side Navigation Here-->
@@ -31,10 +49,17 @@
      <main class="main-content position-relative border-radius-lg ">
       {% include 'navbar.html' %}
       <div class="container-fluid py-4">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
         {% block main %}
 
         {% endblock%}
-        {% include 'footer.html'%}
       </div>
      </main>
 
@@ -64,6 +89,16 @@
 
 <script src="{% static 'assets/js/plugins/datatables.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+      setTimeout(function() {
+        alert.classList.add('d-none');
+      }, 5000); // 5000 milliseconds = 5 seconds
+    });
+  });
+</script>
 <script>
   var swiper = new Swiper(".mySwiper", {
     pagination: {

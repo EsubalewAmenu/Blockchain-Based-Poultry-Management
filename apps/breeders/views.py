@@ -36,9 +36,7 @@ def breed_create(request):
         front_photo = request.FILES.get('front_photo')
         side_photo = request.FILES.get('side_photo')
         back_photo = request.FILES.get('back_photo')
-        
-        print(front_photo)
-        print(side_photo)
+
         breed = Breed.objects.create(
             code=code,
             poultry_type=poultry_type,
@@ -52,6 +50,7 @@ def breed_create(request):
             back_photo=back_photo
         )
         breed.save()
+        messages.success(request, "Breed has been created successfully")
         return redirect('breed_list')
     
     return render(request, 'pages/ecommerce/products/new-product.html')

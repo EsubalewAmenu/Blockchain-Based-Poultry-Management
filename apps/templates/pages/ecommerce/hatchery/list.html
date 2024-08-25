@@ -26,7 +26,7 @@
           </thead>
           <tbody>
               {% for hatchery in hatcheries %}
-              <tr>
+              <tr data-url="{% url 'hatchery_detail' hatchery.name %}" class="clickable-row">
                   <td>
                       <div class="d-flex align-items-center">
                           <div class="form-check">
@@ -138,4 +138,13 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // Add click event listener to each row
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            window.location = this.dataset.url;
+        });
+    });
+</script>
 {%endblock%}

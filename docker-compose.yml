@@ -38,6 +38,7 @@ services:
              python manage.py runserver 0.0.0.0:11000"
     ports:
       - 11000:11000
+    restart: always
     volumes:
       - .:/app
     networks:
