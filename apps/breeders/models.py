@@ -27,7 +27,7 @@ class Breed(models.Model):
     Breed Model
     """
     id = models.AutoField(primary_key=True)
-    code=models.CharField(null=True,blank=True,max_length=50)
+    code=models.CharField(null=True,blank=True,max_length=50, unique=True)
     poultry_type=models.CharField(null=True,blank=True,max_length=50)
     breed=models.CharField(null=True,blank=True,max_length=50)
     purpose=models.CharField(null=True,blank=True,max_length=50)
@@ -55,7 +55,7 @@ class Breeders(models.Model):
     Breeders Model
     """
     id = models.AutoField(primary_key=True)
-    batch=models.CharField(null=True,blank=True,max_length=50)
+    batch=models.CharField(null=True,blank=True,max_length=50, unique=True)
     breed=models.ForeignKey(Breed,
         related_name="breeders_breed", blank=True, null=True,
         on_delete=models.SET_NULL)

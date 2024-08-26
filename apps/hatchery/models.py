@@ -18,7 +18,8 @@ from django.contrib.gis.db import models as gismodels
 
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
-
+import random
+import string
 from telelbirds import settings
 from apps.breeders.models import Breeders
 from apps.customer.models import Customer
@@ -30,7 +31,7 @@ class Hatchery(models.Model):
     id = models.AutoField(primary_key=True)
     name=models.CharField(null=True,blank=True,max_length=50)
     photo = ProcessedImageField(upload_to='hatchery_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
-    email=models.EmailField(null=True,blank=True,max_length=50)
+    email=models.EmailField(null=True,blank=True,max_length=50, unique=True)
     phone=models.CharField(null=True,blank=True,max_length=15)
     address=models.CharField(null=True,blank=True,max_length=50)
     location=gismodels.PointField(
@@ -74,7 +75,7 @@ class Incubators(models.Model):
     manufacturer=models.CharField(null=True,blank=True,max_length=50)
     model=models.CharField(null=True,blank=True,max_length=15)
     year=models.CharField(null=True,blank=True,max_length=50)
-    code=models.CharField(null=True,blank=True,max_length=50)    
+    code=models.CharField(null=True,blank=True,max_length=50, unique=True)    
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -121,7 +122,7 @@ class EggSetting(models.Model):
     EggSetting Model
     """
     id = models.AutoField(primary_key=True)
-    settingcode=models.CharField(null=True,blank=True,max_length=50)
+    settingcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
     incubator=models.ForeignKey(Incubators,
         related_name="eggsetting_incubator", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -150,7 +151,7 @@ class Incubation(models.Model):
     Incubation Model
     """
     id = models.AutoField(primary_key=True)
-    incubationcode=models.CharField(null=True,blank=True,max_length=50)
+    incubationcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
     eggsetting=models.ForeignKey(EggSetting,
         related_name="incubation_eggsetting", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -172,6 +173,18 @@ class Incubation(models.Model):
 
     def get_absolute_url(self):
         return '/incubation/{}'.format(self.incubationcode)
+    
+    def save(self, *args, **kwargs):
+        if not self.incubationcode:
+            self.incubationcode = self.generate_unique_incubation_code()
+        super().save(*args, **kwargs)
+
+    def generate_unique_incubation_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'INC-CODE-{random_suffix}'
+            if not Incubation.objects.filter(incubationcode=unique_code).exists():
+                return unique_code
 
 
 class Candling(models.Model):
@@ -179,7 +192,7 @@ class Candling(models.Model):
     Candling Model
     """
     id = models.AutoField(primary_key=True)
-    candlingcode=models.CharField(null=True,blank=True,max_length=50)
+    candlingcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
     incubation=models.ForeignKey(Incubation,
         related_name="candling_incubation", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -204,8 +217,20 @@ class Candling(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
+        if not self.candlingcode:
+            self.candlingcode = self.generate_unique_candling_code()
         self.fertile_eggs = self.eggs - self.spoilt_eggs
         super(Candling, self).save(*args, **kwargs)
+
+    def generate_unique_candling_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'CANDLE-{random_suffix}'
+            if not Candling.objects.filter(candlingcode=unique_code).exists():
+                return unique_code
+
+    def get_absolute_url(self):
+        return '/candling/{}'.format(self.candlingcode)
 
     def get_absolute_url(self):
         return '/candling/{}'.format(self.candlingcode)
@@ -216,7 +241,7 @@ class Hatching(models.Model):
     Hatching Model
     """
     id = models.AutoField(primary_key=True)
-    hatchingcode=models.CharField(null=True,blank=True,max_length=50)
+    hatchingcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
     candling=models.ForeignKey(Candling,
         related_name="hatching_candling", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -241,8 +266,24 @@ class Hatching(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
+        # Automatically calculate chicks hatched
         self.chicks_hatched = self.hatched - self.deformed
-        super(Hatching, self).save(*args, **kwargs)
+        
+        # Generate a unique hatching code if it is not already set
+        if not self.hatchingcode:
+            self.hatchingcode = self.generate_unique_hatching_code()
+        
+        super(Hatching, self).save(*args, **kwargs)  # Ensure the correct class is used
+
+    def generate_unique_hatching_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'HTC-{random_suffix}'
+            if not Hatching.objects.filter(hatchingcode=unique_code).exists():
+                return unique_code
+
+    def get_absolute_url(self):
+        return '/hatching/{}'.format(self.hatchingcode)
 
     def get_absolute_url(self):
         return '/Hatching/{}'.format(self.hatchingcode)

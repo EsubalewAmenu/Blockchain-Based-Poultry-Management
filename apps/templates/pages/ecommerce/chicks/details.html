@@ -66,10 +66,10 @@
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Breed</label>
                   <select class="form-control" name="breed">
-                    <option value="{{chick.breed.id}}">{{chick.breed.breed}}</option>
+                    <option value="{{chick.breed.pk}}">{{chick.breed.breed}}</option>
                     {% for breed in breeds %}
-                      {% if breed.id != chick.breed.id %}
-                        <option value="{{ breed.id }}">{{ breed.breed }}</option>
+                      {% if breed.pk != chick.breed.pk %}
+                        <option value="{{ breed.pk }}">{{ breed.breed }}</option>
                       {% endif %}
                     {% endfor %}
                   </select>

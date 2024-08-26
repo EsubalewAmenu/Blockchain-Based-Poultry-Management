@@ -33,7 +33,7 @@ class Customer(models.Model):
     last_name=models.CharField(null=True,blank=True,max_length=50)
     full_name=models.CharField(null=True,blank=True,max_length=50)
     photo = ProcessedImageField(upload_to='customer_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
-    email=models.EmailField(null=True,blank=True,max_length=50)
+    email=models.EmailField(null=True,blank=True,max_length=50, unique=True)
     phone=models.CharField(null=True,blank=True,max_length=15)
     address=models.CharField(null=True,blank=True,max_length=50)
     location=gismodels.PointField(
@@ -74,7 +74,7 @@ class Eggs(models.Model):
     Eggs Model
     """
     id = models.AutoField(primary_key=True)
-    batchnumber = models.CharField(null=True,blank=True,max_length=50)    
+    batchnumber = models.CharField(null=True,blank=True,max_length=50, unique=True)    
     customer=models.ForeignKey(Customer,
         related_name="eggs_customer", blank=True, null=True,
         on_delete=models.SET_NULL)

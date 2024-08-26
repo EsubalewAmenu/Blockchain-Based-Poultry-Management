@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 
-
+@login_required
 def logout_view(request):
     logout(request)
     response = redirect(reverse_lazy('login'))
@@ -123,6 +123,7 @@ def create_user(request):
 
     return render(request, 'pages/pages/users/new-user.html')
 
+@login_required
 def update_user(request):
     user = get_object_or_404(User, pk=request.user.pk)
     if request.method == 'POST':
@@ -139,6 +140,7 @@ def update_user(request):
         return redirect('usersettings')
     return render(request, 'pages/pages/account/settings.html', {'user': user})
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
         current_password = request.POST.get('current_password')

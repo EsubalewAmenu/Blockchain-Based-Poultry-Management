@@ -5,7 +5,7 @@
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
     <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/argon-dashboard-pro/pages/dashboards/default.html " target="_blank">
       <img src="{% static 'assets/img/logo-ct-dark.png' %}" class="navbar-brand-img h-100" alt="main_logo">
-      <span class="ms-1 font-weight-bold">Cardano Poultry</span>
+      <span class="ms-1 font-weight-bold">Hatchtrack</span>
     </a>
   </div>
   <hr class="horizontal dark mt-0">
@@ -54,7 +54,7 @@
       <li class="nav-item">
         <a data-bs-toggle="collapse" href="#hatcheryPages" class="nav-link " aria-controls="hatcheryPages" role="button" aria-expanded="false">
           <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-            <i class="ni ni-ungroup text-success text-sm opacity-10"></i>
+            <i class="fa-solid fa-warehouse text-success text-sm opacity-10"></i>
           </div>
           <span class="nav-link-text ms-1">Hatchery</span>
         </a>
@@ -78,6 +78,30 @@
                 <span class="sidenav-normal"> Incubator Capcity <b class="caret"></b></span>
               </a>
             </li> 
+            <li class="nav-item ">
+              <a class="nav-link " href="{% url 'egg_setting_list' %}">
+                <span class="sidenav-mini-icon"> ES </span>
+                <span class="sidenav-normal"> Egg Setting <b class="caret"></b></span>
+              </a>
+            </li> 
+            <li class="nav-item ">
+              <a class="nav-link " href="{% url 'incubation_list' %}">
+                <span class="sidenav-mini-icon"> IB </span>
+                <span class="sidenav-normal"> Incubation <b class="caret"></b></span>
+              </a>
+            </li> 
+            <li class="nav-item ">
+              <a class="nav-link " href="{% url 'candling_list' %}">
+                <span class="sidenav-mini-icon"> CA </span>
+                <span class="sidenav-normal"> Candlings <b class="caret"></b></span>
+              </a>
+            </li> 
+            <li class="nav-item ">
+              <a class="nav-link " href="{% url 'hatching_list' %}">
+                <span class="sidenav-mini-icon"> HT </span>
+                <span class="sidenav-normal"> Hatchings <b class="caret"></b></span>
+              </a>
+            </li> 
           </ul>
         </div>
       </li>
@@ -87,7 +111,7 @@
       <li class="nav-item">
         <a data-bs-toggle="collapse" href="#customerPages" class="nav-link " aria-controls="customerPages" role="button" aria-expanded="false">
           <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-            <i class="ni ni-ungroup text-success text-sm opacity-10"></i>
+            <i class="fa-solid fa-handshake text-success text-sm opacity-10"></i>
           </div>
           <span class="nav-link-text ms-1">Customer</span>
         </a>
@@ -118,7 +142,7 @@
       <li class="nav-item">
         <a data-bs-toggle="collapse" href="#chickPages" class="nav-link " aria-controls="chickPages" role="button" aria-expanded="false">
           <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-            <i class="ni ni-ungroup text-success text-sm opacity-10"></i>
+            <i class="fa-solid fa-egg text-success text-sm opacity-10"></i>
           </div>
           <span class="nav-link-text ms-1">Chicks</span>
         </a>
