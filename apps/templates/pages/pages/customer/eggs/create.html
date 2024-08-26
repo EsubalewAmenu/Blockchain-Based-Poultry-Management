@@ -1,0 +1,107 @@
+{% extends 'dashboard.html' %}
+{% block main %}
+<div class="row mb-5">
+  <div class="col-12">
+    <div class="multisteps-form mb-5">
+      <!-- Progress bar -->
+      <div class="row">
+        <div class="col-12 col-lg-8 mx-auto my-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="multisteps-form__progress">
+                <button class="multisteps-form__progress-btn js-active" type="button" title="Egg Info">
+                  <span>Egg Info</span>
+                </button>
+                <button class="multisteps-form__progress-btn" type="button" title="Customer Info">Customer Info</button>
+                <button class="multisteps-form__progress-btn" type="button" title="Breed Info">Breed Info</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Form panels -->
+      <div class="row">
+        <div class="col-12 col-lg-8 m-auto">
+          <form class="multisteps-form__form mb-8" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Egg Info Panel -->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+              <h5 class="font-weight-bolder mb-0">Egg Info</h5>
+              <p class="mb-0 text-sm">Mandatory information</p>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12 mt-3 mt-sm-0">
+                    <label>Batch Number</label>
+                    <input class="multisteps-form__input form-control" type="text" name="batchnumber" placeholder="eg. ABC123" required />
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <label>Photo</label>
+                    <input class="multisteps-form__input form-control" type="file" name="photo" accept="image/*" />
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12 col-sm-6">
+                    <label>Brought</label>
+                    <input class="multisteps-form__input form-control" type="number" name="brought" placeholder="eg. 100" required />
+                  </div>
+                  <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                    <label>Returned</label>
+                    <input class="multisteps-form__input form-control" type="number" name="returned" placeholder="eg. 10" required />
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                </div>
+              </div>
+            </div>
+            <!-- Customer Info Panel -->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+              <h5 class="font-weight-bolder">Customer Info</h5>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <label>Customer</label>
+                    <select class="multisteps-form__input form-control" name="customer" required>
+                      <option value="">Select a Customer</option>
+                      {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.first_name }} {{ customer.last_name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-light mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                  <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                </div>
+              </div>
+            </div>
+            <!-- Breed Info Panel -->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+              <h5 class="font-weight-bolder">Breed Info</h5>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <label>Breed</label>
+                    <select class="multisteps-form__input form-control" name="breed" required>
+                      <option value="">Select a Breed</option>
+                      {% for breed in breeds %}
+                        <option value="{{ breed.id }}">{{ breed.breed }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-light mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                  <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

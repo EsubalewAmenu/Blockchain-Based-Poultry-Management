@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-#########################################################################
-#
-# Copyright (C) 2020:  TelelBirds
-#
-#
-#########################################################################
 from __future__ import unicode_literals
 import os
 import datetime
+import random
+import string
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django.db import models
@@ -18,11 +13,12 @@ from django.contrib.gis.db import models as gismodels
 
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
-
+from apps.customer.models import Eggs
 from telelbirds import settings
 from apps.breeders.models import Breeders, Breed
 from apps.hatchery.models import Hatchery
 from apps.customer.models import Customer, Eggs
+from apps.hatchery.models import Hatching
 
 
 class Chicks(models.Model):
@@ -30,14 +26,16 @@ class Chicks(models.Model):
     Chicks Model
     """
     id = models.AutoField(primary_key=True)
-    batchnumber=models.CharField(null=True,blank=True,max_length=50)
+    batchnumber=models.CharField(null=True, blank=True,max_length=50, unique=True)
     source=models.CharField(null=True,blank=True,max_length=50)
     breed=models.ForeignKey(Breed,
         related_name="breed_chicks", blank=True, null=True,
         on_delete=models.SET_NULL)
     age=models.DateField(null=True,blank=True,max_length=50)
-    number=models.IntegerField(null=True,blank=True,max_length=50)
     description=models.TextField(null=True,blank=True) 
+    chick_photo = ProcessedImageField(upload_to='chicks_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
+    hatching = models.ForeignKey(Hatching, blank=True, null=True, on_delete=models.SET_NULL, related_name="hatching_chicks")
+    number = models.IntegerField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -49,6 +47,18 @@ class Chicks(models.Model):
     
     def get_absolute_url(self):
         return '/chicks/{}'.format(self.batchnumber)
+    
+    def save(self, *args, **kwargs):
+        if not self.batchnumber:
+            self.batchnumber = self.generate_unique_batchnumber()
+        super(Chicks, self).save(*args, **kwargs)
+        
+    def generate_unique_batchnumber(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'CHK-{random_suffix}'
+            if not Chicks.objects.filter(batchnumber=unique_code).exists():
+                return unique_code
 
 
 class Mortality(models.Model):
@@ -106,6 +116,8 @@ class ChicksSold(models.Model):
     def save(self, *args, **kwargs):
         self.sales = self.price - self.number
         super(ChicksSold, self).save(*args, **kwargs)
+        
+        
 
     def get_absolute_url(self):
         return '/chicks_sold/{}'.format(self.salesnumber)

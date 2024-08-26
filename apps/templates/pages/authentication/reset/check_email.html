@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="{% static 'assets/img/apple-icon.png'%}">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png'%}">
+  <title>
+    Cardano
+  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="{% static 'assets/css/nucleo-icons.css'%}" rel="stylesheet" />
+  <link href="{% static 'assets/css/nucleo-svg.css'%}" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <link href="{% static 'assets/css/nucleo-svg.css'%}" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link id="pagestyle" href="{% static 'assets/css/argon-dashboard.css'%}" rel="stylesheet" />
+</head>
+
+<body class="error-page">
+  <div class="container position-sticky z-index-sticky top-0">
+    <div class="row">
+      <div class="col-12">
+      </div>
+    </div>
+  </div>
+  <main class="main-content  mt-0">
+    <div class="page-header min-vh-100" style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/error-500.jpg');">
+      <span class="mask bg-gradient-warning opacity-4"></span>
+      <div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-7 mx-auto text-center">
+      <h1 class="display-1 text-bolder text-white fadeIn1 fadeInBottom mt-5">Password Reset Email Sent Successfully</h1>
+      <h2 class="fadeIn3 fadeInBottom mt-3 text-white">Please Check Your Email</h2>
+      <p class="lead fadeIn2 fadeInBottom text-white">We have sent a code to your email address. Please check your inbox to proceed.</p>
+      <button type="button" class="btn bg-gradient-warning mt-4 fadeIn2 fadeInBottom" onclick="window.location.href='{% url 'login' %}';">Go to Homepage</button>
+    </div>
+  </div>
+</div>
+    </div>
+  </main>
+  
+<!--   Core JS Files   -->
+<script src="{% static 'assets/js/core/popper.min.js'%}"></script>
+<script src="{% static 'assets/js/core/bootstrap.min.js'%}"></script>
+<script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js'%}"></script>
+<script src="{% static 'assets/js/plugins/smooth-scrollbar.min.js'%}"></script>
+<!-- Kanban scripts -->
+<script src="{% static 'assets/js/plugins/dragula/dragula.min.js'%}"></script>
+<script src="{% static 'assets/js/plugins/jkanban/jkanban.js'%}"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="{% static 'assets/js/argon-dashboard.min.js'%}"></script>
+</body>
+
+</html>

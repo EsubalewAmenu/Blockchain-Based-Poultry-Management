@@ -15,9 +15,15 @@ urlpatterns = [
     path('create_user/', create_user, name='create_user'),
     path('password/set/', set_password, name='set_password'),
     path('user/list/', users_list, name='users_list'),
+    path('user/update/', update_user, name='update_user'),
+    path('user/delete/', delete_user, name='delete_user'),
+    path('password/change/', change_password, name='change_password'),
     path('settings/', UserSettingsView.as_view(), name='usersettings'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
+    path('reset-password/', reset_password, name='reset_password'),
+    
+
     
     # path('password/change/', password_change, name='password_change'),
     # path('password/change/done/', password_change_done, name='password_change_done'),

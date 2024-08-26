@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="{%static 'assets/img/apple-icon.png' %}">
   <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
   <title>
-    Cardano Poultry
+    Hatchtrack
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -19,21 +19,47 @@
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
   <link href="{% static 'assets/css/nucleo-svg.css' %}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{% static 'assets/css/argon-dashboard.css' %}" rel="stylesheet" />
 </head>
-<body class="g-sidenav-show   bg-gray-100">
-    <div class="min-height-300 bg-primary position-absolute w-100"></div>
+<style>
+  .alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+</style>
+<body class="g-sidenav-show bg-gray-100">
+    <div class="min-height-300 bg-success position-absolute w-100"></div>
     <!-- Side Navigation Here-->
     {% include 'sidenav.html' %}
      <main class="main-content position-relative border-radius-lg ">
       {% include 'navbar.html' %}
       <div class="container-fluid py-4">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
         {% block main %}
 
         {% endblock%}
-        {% include 'footer.html'%}
       </div>
      </main>
 
@@ -62,6 +88,153 @@
 <script src="{% static 'assets/js/plugins/multistep-form.js'%}"></script>
 
 <script src="{% static 'assets/js/plugins/datatables.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+      setTimeout(function() {
+        alert.classList.add('d-none');
+      }, 5000); // 5000 milliseconds = 5 seconds
+    });
+  });
+</script>
+<script>
+  var swiper = new Swiper(".mySwiper", {
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+  });
+</script>
+<script>
+  if (document.getElementById('choices-gender')) {
+    var gender = document.getElementById('choices-gender');
+    const example = new Choices(gender);
+  }
+
+  if (document.getElementById('choices-language')) {
+    var language = document.getElementById('choices-language');
+    const example = new Choices(language);
+  }
+
+  if (document.getElementById('choices-skills')) {
+    var skills = document.getElementById('choices-skills');
+    const example = new Choices(skills, {
+      delimiter: ',',
+      editItems: true,
+      maxItemCount: 5,
+      removeItemButton: true,
+      addItems: true
+    });
+  }
+
+  if (document.getElementById('choices-year')) {
+    var year = document.getElementById('choices-year');
+    setTimeout(function() {
+      const example = new Choices(year);
+    }, 1);
+
+    for (y = 1900; y <= 2020; y++) {
+      var optn = document.createElement("OPTION");
+      optn.text = y;
+      optn.value = y;
+
+      if (y == 2020) {
+        optn.selected = true;
+      }
+
+      year.options.add(optn);
+    }
+  }
+
+  if (document.getElementById('choices-day')) {
+    var day = document.getElementById('choices-day');
+    setTimeout(function() {
+      const example = new Choices(day);
+    }, 1);
+
+
+    for (y = 1; y <= 31; y++) {
+      var optn = document.createElement("OPTION");
+      optn.text = y;
+      optn.value = y;
+
+      if (y == 1) {
+        optn.selected = true;
+      }
+
+      day.options.add(optn);
+    }
+
+  }
+
+  if (document.getElementById('choices-month')) {
+    var month = document.getElementById('choices-month');
+    setTimeout(function() {
+      const example = new Choices(month);
+    }, 1);
+
+    var d = new Date();
+    var monthArray = new Array();
+    monthArray[0] = "January";
+    monthArray[1] = "February";
+    monthArray[2] = "March";
+    monthArray[3] = "April";
+    monthArray[4] = "May";
+    monthArray[5] = "June";
+    monthArray[6] = "July";
+    monthArray[7] = "August";
+    monthArray[8] = "September";
+    monthArray[9] = "October";
+    monthArray[10] = "November";
+    monthArray[11] = "December";
+    for (m = 0; m <= 11; m++) {
+      var optn = document.createElement("OPTION");
+      optn.text = monthArray[m];
+      // server side month start from one
+      optn.value = (m + 1);
+      // if june selected
+      if (m == 1) {
+        optn.selected = true;
+      }
+      month.options.add(optn);
+    }
+  }
+
+  function visible() {
+    var elem = document.getElementById('profileVisibility');
+    if (elem) {
+      if (elem.innerHTML == "Switch to visible") {
+        elem.innerHTML = "Switch to invisible"
+      } else {
+        elem.innerHTML = "Switch to visible"
+      }
+    }
+  }
+
+  var openFile = function(event) {
+    var input = event.target;
+
+    // Instantiate FileReader
+    var reader = new FileReader();
+    reader.onload = function() {
+      imageFile = reader.result;
+
+      document.getElementById("imageChange").innerHTML = '<img width="200" src="' + imageFile + '" class="rounded-circle w-100 shadow" />';
+    };
+    reader.readAsDataURL(input.files[0]);
+  };
+</script>
+<script>
+  var win = navigator.platform.indexOf('Win') > -1;
+  if (win && document.querySelector('#sidenav-scrollbar')) {
+    var options = {
+      damping: '0.5'
+    }
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+  }
+</script>
   <script>
     const dataTableSearch = new simpleDatatables.DataTable("#datatable-search", {
       searchable: true,
@@ -188,7 +361,58 @@
      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
    }
  </script>
+ <script>
+  if (document.getElementById('edit-deschiption-edit')) {
+    var quill = new Quill('#edit-deschiption-edit', {
+      theme: 'snow' // Specify theme in configuration
+    });
+  };
 
+  if (document.getElementById('choices-category-edit')) {
+    var element = document.getElementById('choices-category-edit');
+    const example = new Choices(element, {
+      searchEnabled: false
+    });
+  };
+
+  if (document.getElementById('choices-color-edit')) {
+    var element = document.getElementById('choices-color-edit');
+    const example = new Choices(element, {
+      searchEnabled: false
+    });
+  };
+
+  if (document.getElementById('choices-currency-edit')) {
+    var element = document.getElementById('choices-currency-edit');
+    const example = new Choices(element, {
+      searchEnabled: false
+    });
+  };
+
+  if (document.getElementById('choices-tags-edit')) {
+    var tags = document.getElementById('choices-tags-edit');
+    const examples = new Choices(tags, {
+      removeItemButton: true
+    });
+
+    examples.setChoices(
+      [{
+          value: 'One',
+          label: 'Expired',
+          disabled: true
+        },
+        {
+          value: 'Two',
+          label: 'Out of Stock',
+          selected: true
+        }
+      ],
+      'value',
+      'label',
+      false,
+    );
+  }
+</script>
   <script>
     if (document.getElementById('choices-quantity')) {
       var element = document.getElementById('choices-quantity');
@@ -503,214 +727,7 @@
     Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
   }
 </script>
-  <script>
-    var ctx1 = document.getElementById("chart-line").getContext("2d");
-    var ctx2 = document.getElementById("chart-pie").getContext("2d");
-    var ctx3 = document.getElementById("chart-bar").getContext("2d");
-
-    var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
-
-    gradientStroke1.addColorStop(1, 'rgba(94, 114, 228,0.2)');
-    gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228,0.0)');
-    gradientStroke1.addColorStop(0, 'rgba(94, 114, 228,0)'); //purple colors
-
-    var gradientStroke2 = ctx1.createLinearGradient(0, 230, 0, 50);
-
-    gradientStroke2.addColorStop(1, 'rgba(20,23,39,0.2)');
-    gradientStroke2.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-    gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
-
-    // Line chart
-    new Chart(ctx1, {
-      type: "line",
-      data: {
-        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        datasets: [{
-            label: "Facebook Ads",
-            tension: 0.4,
-            borderWidth: 0,
-            pointRadius: 2,
-            pointBackgroundColor: "#5e72e4",
-            borderColor: "#5e72e4",
-            borderWidth: 3,
-            backgroundColor: gradientStroke1,
-            fill: true,
-            data: [50, 100, 200, 190, 400, 350, 500, 450, 700],
-            maxBarThickness: 6
-          },
-          {
-            label: "Google Ads",
-            tension: 0.4,
-            borderWidth: 0,
-            pointRadius: 2,
-            pointBackgroundColor: "#3A416F",
-            borderColor: "#3A416F",
-            borderWidth: 3,
-            backgroundColor: gradientStroke2,
-            fill: true,
-            data: [10, 30, 40, 120, 150, 220, 280, 250, 280],
-            maxBarThickness: 6
-          }
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              padding: 10,
-              color: '#9ca2b7'
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: true,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              color: '#9ca2b7',
-              padding: 10
-            }
-          },
-        },
-      },
-    });
-
-
-    // Pie chart
-    new Chart(ctx2, {
-      type: "pie",
-      data: {
-        labels: ['Facebook', 'Direct', 'Organic', 'Referral'],
-        datasets: [{
-          label: "Projects",
-          weight: 9,
-          cutout: 0,
-          tension: 0.9,
-          pointRadius: 2,
-          borderWidth: 2,
-          backgroundColor: ['#17c1e8', '#5e72e4', '#3A416F', '#a8b8d8'],
-          data: [15, 20, 12, 60],
-          fill: false
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-            },
-            ticks: {
-              display: false
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-            },
-            ticks: {
-              display: false,
-            }
-          },
-        },
-      },
-    });
-
-    // Bar chart
-    new Chart(ctx3, {
-      type: "bar",
-      data: {
-        labels: ['16-20', '21-25', '26-30', '31-36', '36-42', '42+'],
-        datasets: [{
-          label: "Sales by age",
-          weight: 5,
-          borderWidth: 0,
-          borderRadius: 4,
-          backgroundColor: '#3A416F',
-          data: [15, 20, 12, 60, 20, 15],
-          fill: false
-        }],
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              padding: 10,
-              color: '#9ca2b7'
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: true,
-              drawTicks: true,
-            },
-            ticks: {
-              display: true,
-              color: '#9ca2b7',
-              padding: 10
-            }
-          },
-        },
-      },
-    });
-  </script>
+  
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {
