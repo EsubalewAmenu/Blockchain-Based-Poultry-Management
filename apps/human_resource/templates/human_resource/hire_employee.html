@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Hire Employee: {{ employee.get_full_name }}</h2>
+<p>Are you sure you want to hire {{ employee.get_full_name }} for the role of {{ employee.role }} in the {{ employee.department }} department?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Hire</button>
+    <a href="{% url 'employee_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

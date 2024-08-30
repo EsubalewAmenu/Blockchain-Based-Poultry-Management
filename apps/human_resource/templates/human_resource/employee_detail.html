@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Employee Detail{% endblock %}
+{% block content %}
+<h2>{{ employee.get_full_name }}</h2>
+<p><strong>Username:</strong> {{ employee.user.username }}</p>
+<p><strong>Email:</strong> {{ employee.user.email }}</p>
+<p><strong>Department:</strong> {{ employee.department.name }}</p>
+<p><strong>Role:</strong> {{ employee.role.name }}</p>
+<p><strong>Status:</strong> {{ employee.status }}</p>
+<p><strong>Start Date:</strong> {{ employee.start_date }}</p>
+<p><strong>End Date:</strong> {{ employee.end_date }}</p>
+<p><strong>Supervisor:</strong> {% if employee.supervisor %}{{ employee.supervisor.get_full_name }}{% else %}None{% endif %}</p>
+
+<div>
+    {% if employee.status == 'Inactive' %}
+        <a href="{% url 'reactivate_employee' employee.id %}" class="btn btn-primary">Reactivate</a>
+    {% elif employee.status == 'Active' %}
+        <a href="{% url 'deactivate_employee' employee.id %}" class="btn btn-warning">Deactivate</a>
+        <a href="{% url 'fire_employee' employee.id %}" class="btn btn-danger">Fire</a>
+    {% endif %}
+</div>
+{% endblock %}
