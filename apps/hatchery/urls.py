@@ -41,5 +41,8 @@ urlpatterns = [
     path('hatching/<str:hatchingcode>/', hatching_detail, name='hatching_detail'),
     path('hatching/<str:hatchingcode>/update/', hatching_detail, name='hatching_update'),
     path('hatching/<str:hatchingcode>/delete/', hatching_delete, name='hatching_delete'),
+    path('tracker/list/', egg_tracker_list, name='egg_tracker_list'),
+    path('tracker/egg/<str:batchnumber>/', egg_tracker_view, name='egg_tracker'),
 ]
+
 

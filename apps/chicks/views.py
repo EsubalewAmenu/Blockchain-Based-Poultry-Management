@@ -5,6 +5,7 @@ from apps.breeders.models import Breed
 from apps.customer.models import Eggs
 from django.http import HttpResponse
 from .models import Chicks
+from apps.inventory.models import Item
 
 @login_required
 def chicks_list(request):
@@ -15,11 +16,12 @@ def chicks_list(request):
     
     page_number = request.GET.get('page')
     chicks = paginator.get_page(page_number)
-    return render(request, 'pages/ecommerce/chicks/list.html', {'chicks': chicks, 'breeds': breeds, 'eggs': eggs})
+    return render(request, 'pages/poultry/chicks/list.html', {'chicks': chicks, 'breeds': breeds, 'eggs': eggs})
 
 @login_required
 def chicks_detail(request, batchnumber):
     breeds =  Breed.objects.all()
+    items = Item.objects.all()
     chick = get_object_or_404(Chicks, batchnumber=batchnumber)
     
     if request.method == 'POST':
@@ -33,42 +35,46 @@ def chicks_detail(request, batchnumber):
 
         if 'chick_photo' in request.FILES:
             chick.chick_photo = request.FILES['chick_photo']
-
         chick.save()
         return redirect('chicks_detail', batchnumber=chick.batchnumber)
     
-    return render(request, 'pages/ecommerce/chicks/details.html', {'chick': chick, 'breeds':breeds})
+    return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds':breeds})
 
 @login_required
 def chicks_create(request):
     breeds = Breed.objects.all()
     eggs = Eggs.objects.all()
+    items = Item.objects.all()
     if request.method == 'POST':
-        batchnumber = request.POST.get('batchnumber')
+        item_id = request.POST.get('item')
         source = request.POST.get('source')
         breed_id = request.POST.get('breed')
         age = request.POST.get('age')
         description = request.POST.get('description')
-        egg_id = request.POST.get('egg')
-        if egg_id:
-            egg = Eggs.objects.get(pk=egg_id)
-        else:
-            egg = None
+        number = int(request.POST.get('number'))
+        
+        item = Item.objects.filter(pk=item_id).first()
+        item.quantity=int(number)
+        item.save()
+        
+        print(["Item: ", item])    
         chick_photo = request.FILES.get('chick_photo')
 
         chick = Chicks(
-            batchnumber=batchnumber,
+            item=item,
             source=source,
             breed_id=breed_id,
             age=age,
             description=description,
-            egg=egg,
-            chick_photo=chick_photo
+            chick_photo=chick_photo,
+            number=number
         )
         chick.save()
+        
+        
         return redirect('chicks_list') 
 
-    return render(request, 'pages/ecommerce/chicks/create.html', context={'breeds': breeds, 'eggs': eggs})
+    return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items})
 
 @login_required
 def chicks_update(request, batchnumber):
@@ -78,24 +84,35 @@ def chicks_update(request, batchnumber):
     if request.method == 'POST':
         chick.batchnumber = request.POST.get('batchnumber', chick.batchnumber)
         chick.source = request.POST.get('source', chick.source)
-        breed_id = request.POST.get('breed', chick.breed.pk)
+        
+        breed_id = request.POST.get('breed')
         if breed_id:
             chick.breed = Breed.objects.get(pk=breed_id)
+        elif chick.breed:
+            pass  # Keep the existing breed if no new breed is selected
+        else:
+            chick.breed = None  # Set breed to None if no value is provided and no existing breed is present
+        
         chick.age = request.POST.get('age', chick.age)
         chick.description = request.POST.get('description', chick.description)
 
         if 'chick_photo' in request.FILES:
             chick.chick_photo = request.FILES['chick_photo']
+        elif chick.chick_photo:
+            pass  # Keep the existing photo if no new photo is uploaded
+        else:
+            chick.chick_photo = None  # Set photo to None if no value is provided and no existing photo is present
 
         chick.save()
         return redirect('chicks_detail', batchnumber=chick.batchnumber)
 
-    return render(request, 'pages/ecommerce/chicks/details.html', {'chick': chick, 'breeds': breeds})
+    return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds': breeds})
 
 @login_required
 def chicks_delete(request, batchnumber):
     chick = get_object_or_404(Chicks, batchnumber=batchnumber)
     if request.method == 'POST':
         chick.delete()
+        chick.item.delete()
         return redirect('chicks_list')
     return redirect('chicks_list')

@@ -9,6 +9,10 @@ def create_user_settings(sender, instance, created, **kwargs):
     if created:
         incubation = Incubation.objects.create(eggsetting=instance, breeders=instance.breeders, customer=instance.customer, eggs=instance.eggs)
         incubation.save()
+        instance.egg.received -= int(instance.eggs)
+        instance.egg.save()
+        instance.egg.item.quantity -= int(instance.eggs)
+        instance.egg.item.save()
         
 @receiver(post_save, sender=Hatching)
 def create_chicks(sender, instance, created, **kwargs):

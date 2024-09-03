@@ -14,13 +14,32 @@ def breed_list(request):
     
     page_number = request.GET.get('page')
     breeds = paginator.get_page(page_number)
-    return render(request, 'pages/ecommerce/products/products-list.html', {'breeds': breeds})
+    
+    messages.success(request, 'Breed list loaded successfully.')
+    return render(request, 'pages/poultry/breeds/list.html', {'breeds': breeds})
 
 
 @login_required
 def breed_detail(request, code):
     breed = get_object_or_404(Breed, code=code)
-    return render(request, 'pages/ecommerce/products/edit-product.html', {'breed': breed})
+    if request.method == 'POST':
+        breed.code = request.POST.get('code', breed.code)
+        breed.poultry_type = request.POST.get('poultry_type', breed.poultry_type)
+        breed.breed = request.POST.get('breed', breed.breed)
+        breed.purpose = request.POST.get('purpose', breed.purpose)
+        breed.eggs_year = request.POST.get('eggs_year', breed.eggs_year)
+        breed.adult_weight = request.POST.get('adult_weight', breed.adult_weight)
+        breed.description = request.POST.get('description', breed.description)
+        if request.FILES.get('front_photo'):
+            breed.front_photo = request.FILES.get('front_photo')
+        if request.FILES.get('side_photo'):
+            breed.side_photo = request.FILES.get('side_photo')
+        if request.FILES.get('back_photo'):
+            breed.back_photo = request.FILES.get('back_photo')
+        breed.save()
+        messages.success(request, 'Breed updated successfully.')
+        return redirect('breed_update')
+    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
 
 @login_required
 @csrf_exempt
@@ -53,7 +72,7 @@ def breed_create(request):
         messages.success(request, "Breed has been created successfully")
         return redirect('breed_list')
     
-    return render(request, 'pages/ecommerce/products/new-product.html')
+    return render(request, 'pages/poultry/breeds/create.html')
 
 @login_required
 def breed_update(request, code):
@@ -73,9 +92,10 @@ def breed_update(request, code):
         if request.FILES.get('back_photo'):
             breed.back_photo = request.FILES.get('back_photo')
         breed.save()
+        messages.success(request, 'Breed updated successfully.')
         return redirect('breed_list')
     
-    return render(request, 'pages/ecommerce/products/edit-product.html', {'breed': breed})
+    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
 
 @login_required
 def breed_delete(request, code):
@@ -88,13 +108,6 @@ def breed_delete(request, code):
     
     return redirect('breed_list')
 
-@login_required
-def breeders_list(request):
-    breeders = Breeders.objects.all()
-    return render(request, 'your_template.html', {'breeders': breeders})
-
-
-
 
 # List View
 @login_required
@@ -105,7 +118,7 @@ def breeders_list(request):
     page_number = request.GET.get('page')
     breeders = paginator.get_page(page_number)
     
-    return render(request, 'pages/ecommerce/breeders/list.html', {'breeders': breeders})
+    return render(request, 'pages/poultry/breeders/list.html', {'breeders': breeders})
 
 # Detail View
 @login_required
@@ -136,7 +149,7 @@ def breeders_detail(request, batch):
         breeder.save()
         return redirect('breeders_list')
 
-    return render(request, 'pages/ecommerce/breeders/details.html', {'breeder': breeder})
+    return render(request, 'pages/poultry/breeders/details.html', {'breeder': breeder})
 
 # Create View
 @login_required
@@ -149,7 +162,7 @@ def breeders_create(request):
             return redirect('breeders_list')
     else:
         form = BreedersForm()
-    return render(request, 'pages/ecommerce/breeders/create.html', {'form': form, 'breeds':breeds})
+    return render(request, 'pages/poultry/breeders/create.html', {'form': form, 'breeds':breeds})
 
 # Update View
 @login_required
@@ -184,7 +197,7 @@ def breeders_update(request, batch):
         return redirect('breeders_list')  # Redirect to the breeder detail page after saving
 
     # Render the template with the breeder instance
-    return render(request, 'pages/ecommerce/breeders/details.html', {
+    return render(request, 'pages/poultry/breeders/details.html', {
         'breeder': breeder  # Pass the breeder instance for additional context
     })
 

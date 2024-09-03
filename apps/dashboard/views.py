@@ -6,7 +6,6 @@ from apps.chicks.models import Chicks
 import random
 
 def generate_random_color():
-    """Generate a random hex color."""
     return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
 def dashboard(request):
@@ -36,7 +35,7 @@ def dashboard(request):
         breeders = Breeders.objects.filter(breed=breed)
         breeders_by_breed[breed.breed] = breeders
 
-    return render(request, 'pages/ecommerce/overview.html', {
+    return render(request, 'pages/poultry/overview.html', {
         'chart_data': chart_data,
         'breeders_by_breed': breeders_by_breed,
         'breeds_count': breeds.count(),

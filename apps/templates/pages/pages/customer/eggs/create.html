@@ -12,7 +12,6 @@
                 <button class="multisteps-form__progress-btn js-active" type="button" title="Egg Info">
                   <span>Egg Info</span>
                 </button>
-                <button class="multisteps-form__progress-btn" type="button" title="Customer Info">Customer Info</button>
                 <button class="multisteps-form__progress-btn" type="button" title="Breed Info">Breed Info</button>
               </div>
             </div>
@@ -30,9 +29,14 @@
               <p class="mb-0 text-sm">Mandatory information</p>
               <div class="multisteps-form__content">
                 <div class="row mt-3">
-                  <div class="col-12 mt-3 mt-sm-0">
-                    <label>Batch Number</label>
-                    <input class="multisteps-form__input form-control" type="text" name="batchnumber" placeholder="eg. ABC123" required />
+                  <div class="col-12">
+                    <label>Item</label>
+                    <select class="multisteps-form__input form-control" name="item" required>
+                      <option value="">Select an Item</option>
+                      {% for item in items %}
+                        <option value="{{ item.pk }}">{{ item.code }}-{{ item.item_type.type_name }}</option>
+                      {% endfor %}
+                    </select>
                   </div>
                 </div>
                 <div class="row mt-3">
@@ -56,27 +60,6 @@
                 </div>
               </div>
             </div>
-            <!-- Customer Info Panel -->
-            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
-              <h5 class="font-weight-bolder">Customer Info</h5>
-              <div class="multisteps-form__content">
-                <div class="row mt-3">
-                  <div class="col-12">
-                    <label>Customer</label>
-                    <select class="multisteps-form__input form-control" name="customer" required>
-                      <option value="">Select a Customer</option>
-                      {% for customer in customers %}
-                        <option value="{{ customer.id }}">{{ customer.first_name }} {{ customer.last_name }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-                <div class="button-row d-flex mt-4">
-                  <button class="btn bg-gradient-light mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
-                  <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
-                </div>
-              </div>
-            </div>
             <!-- Breed Info Panel -->
             <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
               <h5 class="font-weight-bolder">Breed Info</h5>
@@ -84,7 +67,7 @@
                 <div class="row mt-3">
                   <div class="col-12">
                     <label>Breed</label>
-                    <select class="multisteps-form__input form-control" name="breed" required>
+                    <select class="multisteps-form__input form-control" name="breed">
                       <option value="">Select a Breed</option>
                       {% for breed in breeds %}
                         <option value="{{ breed.id }}">{{ breed.breed }}</option>

@@ -4,6 +4,7 @@ from django.contrib.gis.geos import Point
 from django.core.paginator import Paginator
 from .models import *
 from .forms import EggsForm
+from apps.chicks.models import Chicks
 
 def customer_list(request):
     customers = Customer.objects.all()
@@ -110,16 +111,13 @@ def customer_update_notifications(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
 
     if request.method == 'POST':
-        notification_sms = request.POST.get('notification_sms') == 'on'
-        delivery = request.POST.get('delivery') == 'on'
-        followup = request.POST.get('followup') == 'on'
+        customer.notification_sms = 'notification_sms' in request.POST
+        customer.delivery = 'delivery' in request.POST
+        customer.followup = 'followup' in request.POST
 
-        customer.notification_sms = notification_sms
-        customer.delivery = delivery
-        customer.followup = followup
         customer.save() 
 
-        return redirect('customer_detail', customer_full_name=customer.full_name)
+        return redirect('customer_detail', full_name=customer.full_name)
 
     return render(request, 'customer_detail.html', {'customer': customer})
 
@@ -134,71 +132,135 @@ def customer_delete(request, full_name):
 # Eggs
 
 # List all eggs
+# List all eggs
 def eggs_list(request):
     eggs = Eggs.objects.all()
-    paginator = Paginator(eggs, 10)
+    items = Item.objects.all()
+    paginator = Paginator(eggs, 10)  # Show 10 eggs per page
     
     page_number = request.GET.get('page')
     eggs = paginator.get_page(page_number)
-    return render(request, 'pages/pages/customer/eggs/list.html', {'eggs': eggs})
+    return render(request, 'pages/pages/customer/eggs/list.html', {'eggs': eggs, 'items':items})
 
 # Detail view for a specific egg
 def eggs_detail(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
-    return render(request, 'pages/pages/customer/eggs/details.html', {'egg': egg})
+    egg = get_object_or_404(Eggs, batchnumber=batch_number)
+    customers = Customer.objects.all()
+    breeds = Breed.objects.all()
+    chicks = Chicks.objects.all()  # Get all chicks for selection
+
+    if request.method == 'POST':
+        egg.batchnumber = request.POST.get('batchnumber', egg.batchnumber)
+        customer_id = request.POST.get('customer')
+        breed_id = request.POST.get('breed')
+        chick_id = request.POST.get('chick')  # Get selected chick ID
+
+        # Update foreign keys only if they are provided
+        if customer_id:
+            egg.customer_id = customer_id
+        if breed_id:
+            egg.breed_id = breed_id
+        if chick_id:
+            egg.chick_id = chick_id  # Update the chick association
+
+        egg.brought = request.POST.get('brought', egg.brought)
+        egg.returned = request.POST.get('returned', egg.returned)
+
+        # Handle photo upload
+        if 'photo' in request.FILES:
+            egg.photo = request.FILES['photo']
+
+        egg.save()
+        return redirect('eggs_detail', batch_number=egg.batchnumber)
+
+    return render(request, 'pages/pages/customer/eggs/details.html', {
+        'egg': egg,
+        'customers': customers,
+        'breeds': breeds,
+        'chicks': chicks
+    })
 
 # Create a new egg
 def eggs_create(request):
     customers = Customer.objects.all()
     breeds = Breed.objects.all()
+    items = Item.objects.all()
+    chicks = Chicks.objects.all()  # Get all chicks for selection
 
     if request.method == 'POST':
-        batchnumber = request.POST.get('batchnumber')
+        item_id = request.POST.get('item')
         customer_id = request.POST.get('customer')
         breed_id = request.POST.get('breed')
-        customercode = request.POST.get('customercode')
         photo = request.FILES.get('photo')
         brought = request.POST.get('brought')
         returned = request.POST.get('returned')
-
+        item = Item.objects.get(pk=item_id)
+        received = int(brought) - int(returned)
+        
+        # Create and save the egg
         egg = Eggs(
-            batchnumber=batchnumber,
+            item=item,
             customer_id=customer_id,
             breed_id=breed_id,
-            customercode=customercode,
             photo=photo,
             brought=brought,
-            returned=returned
+            returned=returned,
+            received=received
         )
         egg.save()
+        item.quantity=received
+        item.save()
         return redirect('eggs_list')
 
-    return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds})
+    return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items})
 
 # Update an existing egg
 def eggs_update(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
+    customers = Customer.objects.all()
+    breeds = Breed.objects.all()
+    chicks = Chicks.objects.all()  # Get all chicks for selection
+
     if request.method == 'POST':
         egg.batchnumber = request.POST.get('batchnumber', egg.batchnumber)
-        egg.customer = request.POST.get('customer', egg.customer)
-        egg.breed = request.POST.get('breed', egg.breed)
-        egg.customercode = request.POST.get('customercode', egg.customercode)
-        egg.photo = request.FILES.get('photo', egg.photo)
+        customer_id = request.POST.get('customer')
+        breed_id = request.POST.get('breed')
+        chick_id = request.POST.get('chick')  # Get selected chick ID
+
+        # Update foreign keys only if they are provided
+        if customer_id:
+            egg.customer_id = customer_id
+        if breed_id:
+            egg.breed_id = breed_id
+        if chick_id:
+            egg.chick_id = chick_id  # Update the chick association
+
         egg.brought = request.POST.get('brought', egg.brought)
         egg.returned = request.POST.get('returned', egg.returned)
-        
+
+        # Handle photo upload
+        if 'photo' in request.FILES:
+            egg.photo = request.FILES['photo']
+
         egg.save()
         return redirect('eggs_detail', batch_number=egg.batchnumber)
 
-    return render(request, 'pages/pages/customer/eggs/details.html', {'egg': egg})
+    return render(request, 'pages/pages/customer/eggs/details.html', {
+        'egg': egg,
+        'customers': customers,
+        'breeds': breeds,
+        'chicks': chicks
+    })
 
 # Delete an egg
 def eggs_delete(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
     if request.method == 'POST':
         egg.delete()
+        egg.item.delete()
         return redirect('eggs_list')  
-    return render(request, 'pages/pages/customer/eggs/details.html', {'egg': egg}) 
+    return render(request, 'pages/pages/customer/eggs/delete.html', {'egg': egg})
 
 # Customer Request
 

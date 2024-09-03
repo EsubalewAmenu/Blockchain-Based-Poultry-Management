@@ -84,68 +84,68 @@
     <!-- Card Notifications -->
     <div class="card mt-4" id="notifications">
       <div class="card-header">
-        <h5>Notifications</h5>
-        <p class="text-sm">Choose how you receive notifications. These notification settings apply to your account.</p>
+          <h5>Notifications</h5>
+          <p class="text-sm">Choose how you receive notifications. These notification settings apply to your account.</p>
       </div>
       <div class="card-body pt-0">
-        <form method="post" action="{% url 'customer_update_notifications' customer.full_name %}">
-          {% csrf_token %}
-          <div class="table-responsive">
-            <table class="table mb-0">
-              <thead>
-                <tr>
-                  <th class="ps-1" colspan="4">
-                    <p class="mb-0">Activity</p>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="ps-1" colspan="4">
-                    <div class="my-auto">
-                      <span class="text-dark d-block text-sm">SMS</span>
-                      <span class="text-xs font-weight-normal">Notify when another user mentions you in a comment</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="form-check form-switch mb-0 d-flex align-items-center justify-content-center">
-                      <input class="form-check-input" type="checkbox" name="notify_mentions_email" {% if customer.notification_sms %}checked{% endif %}>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                    <td class="ps-1" colspan="4">
-                      <div class="my-auto">
-                        <span class="text-dark d-block text-sm">Follow Up</span>
-                        <span class="text-xs font-weight-normal">Notify when Followup Occurs</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="form-check form-switch mb-0 d-flex align-items-center justify-content-center">
-                        <input class="form-check-input" type="checkbox" name="notify_mentions_email" {% if customer.notification_sms %}checked{% endif %}>
-                      </div>
-                    </td>
-                  </tr>
-                <tr>
-                  <td class="ps-1" colspan="4">
-                    <div class="my-auto">
-                      <span class="text-dark d-block text-sm">Delivery</span>
-                      <span class="text-xs font-weight-normal">Notify when delivery arrives.</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="form-check form-switch mb-0 d-flex align-items-center justify-content-center">
-                      <input class="form-check-input" type="checkbox" name="notify_comments_email" {% if customer.notification_sms %}checked{% endif %}>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <button class="btn bg-gradient-dark btn-sm mt-4" type="submit">Update Notifications</button>
-        </form>
+          <form method="post" action="{% url 'customer_update_notifications' customer.full_name %}">
+              {% csrf_token %}
+              <div class="table-responsive">
+                  <table class="table mb-0">
+                      <thead>
+                          <tr>
+                              <th class="ps-1" colspan="4">
+                                  <p class="mb-0">Activity</p>
+                              </th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td class="ps-1" colspan="4">
+                                  <div class="my-auto">
+                                      <span class="text-dark d-block text-sm">SMS</span>
+                                      <span class="text-xs font-weight-normal">Notify when another user mentions you in a comment</span>
+                                  </div>
+                              </td>
+                              <td>
+                                  <div class="form-check form-switch mb-0 d-flex align-items-center justify-content-center">
+                                      <input class="form-check-input" type="checkbox" name="notification_sms" {% if customer.notification_sms %}checked{% endif %}>
+                                  </div>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td class="ps-1" colspan="4">
+                                  <div class="my-auto">
+                                      <span class="text-dark d-block text-sm">Follow Up</span>
+                                      <span class="text-xs font-weight-normal">Notify when Followup Occurs</span>
+                                  </div>
+                              </td>
+                              <td>
+                                  <div class="form-check form-switch mb-0 d-flex align-items-center justify-content-center">
+                                      <input class="form-check-input" type="checkbox" name="followup" {% if customer.followup %}checked{% endif %}>
+                                  </div>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td class="ps-1" colspan="4">
+                                  <div class="my-auto">
+                                      <span class="text-dark d-block text-sm">Delivery</span>
+                                      <span class="text-xs font-weight-normal">Notify when delivery arrives.</span>
+                                  </div>
+                              </td>
+                              <td>
+                                  <div class="form-check form-switch mb-0 d-flex align-items-center justify-content-center">
+                                      <input class="form-check-input" type="checkbox" name="delivery" {% if customer.delivery %}checked{% endif %}>
+                                  </div>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+              <button class="btn bg-gradient-dark btn-sm mt-4" type="submit">Update Notifications</button>
+          </form>
       </div>
-    </div>
+  </div>
 
     <!-- Card Delete Account -->
     <div class="card mt-4" id="delete">

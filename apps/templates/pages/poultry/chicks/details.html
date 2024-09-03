@@ -1,0 +1,141 @@
+{% extends 'dashboard.html' %}
+
+{% load static %}
+{% block main %}
+<div class="container-fluid py-4">
+    <style>
+      /* Set a fixed height for the images */
+      .swiper-slide img {
+        width: 100%; /* Ensure the image takes the full width of the slide */
+        height: 300px; /* Set a fixed height */
+        object-fit: cover; /* Maintain aspect ratio and cover the area */
+        border-radius: 0.5rem; /* Optional: to match your existing border-radius */
+      }
+    </style>
+    
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-lg-6">
+          <h4 class="text-white">Make the changes below</h4>
+          <p class="text-white opacity-8">We're constantly trying to express ourselves and actualize our dreams. If you have the opportunity to play.</p>
+        </div>
+        <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
+          <button type="submit" name="action" value="update" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
+        </div>
+      </div>
+  
+      <div class="row mt-4">
+        <div class="col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="font-weight-bolder text-center">Chick Photo</h5>
+              <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                  <!-- Chick Photo Slide -->
+                  <div class="swiper-slide">
+                    <h6>Chick Photo</h6>
+                    {% if chick.chick_photo %}
+                      <img src="{{ chick.chick_photo.url }}" alt="{{ chick.batchnumber }} Chick Photo">
+                    {% else %}
+                      <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                    {% endif %}
+                    <input type="file" class="form-control mt-3" name="chick_photo">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="col-lg-8 mt-lg-0 mt-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="font-weight-bolder">Chick Information</h5>
+              <div class="row">
+                <div class="col-12 col-sm-6">
+                  <label>Batch Number</label>
+                  <input class="form-control" type="text" name="batchnumber" value="{{ chick.batchnumber }}">
+                </div>
+                <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                  <label>Source</label>
+                  <input class="form-control" type="text" name="source" value="{{ chick.source }}">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Breed</label>
+                  <select class="form-control" name="breed">
+                    <option value="{{chick.breed.pk}}">{{chick.breed.breed}}</option>
+                    {% for breed in breeds %}
+                      {% if breed.pk != chick.breed.pk %}
+                        <option value="{{ breed.pk }}">{{ breed.breed }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                  </select>
+                </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Age</label>
+                  <input class="form-control" type="date" name="age" value="{{ chick.age|date:'Y-m-d' }}">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Hatching Code</label>
+                  <input class="form-control" type="text" name="hatching" value="{{ chick.hatching.hatchingcode}}" disabled>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 mt-3">
+                  <label>Description</label>
+                  <textarea class="form-control" rows="5" name="description">{{ chick.description }}</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- Footer with Delete Option -->
+    <div class="row mt-4">
+      <div class="col-lg-12 text-right">
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'chicks_delete' chick.batchnumber %}">
+          Delete this Chick
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Delete Chick</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this chick?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="" method="POST" id="deleteForm" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var deleteModal = document.getElementById('deleteModal');
+  deleteModal.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget; // Button that triggered the modal
+    var url = button.getAttribute('data-url'); // Extract info from data-* attributes
+    var form = deleteModal.querySelector('#deleteForm');
+    form.action = url; // Update the form action to the delete URL
+  });
+</script>
+{% endblock %}
