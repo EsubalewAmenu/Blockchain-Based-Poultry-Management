@@ -20,9 +20,7 @@
           <p class="text-white opacity-8">View and update egg information.</p>
         </div>
         <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
-          {% if request.resolver_match.url_name == 'eggs_update' %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
-          {% endif %}
           {% if request.resolver_match.url_name == 'eggs_delete' %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Confirm Delete</button>
           {% endif %}
@@ -77,8 +75,8 @@
                   <input class="form-control" type="text" name="breed" value="{{ egg.breed.name }}">
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
-                  <label>Customer Code</label>
-                  <input class="form-control" type="text" name="customercode" value="{{ egg.customercode }}">
+                  <label>Item Code</label>
+                  <input class="form-control" type="text" name="item" value="{{ egg.item.code }}" disabled>
                 </div>
               </div>
               <div class="row">

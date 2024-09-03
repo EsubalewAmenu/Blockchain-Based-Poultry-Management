@@ -3,7 +3,7 @@
 <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-    <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/argon-dashboard-pro/pages/dashboards/default.html " target="_blank">
+    <a class="navbar-brand m-0" href="{% url 'dashboard' %}">
       <img src="{% static 'assets/img/logo-ct-dark.png' %}" class="navbar-brand-img h-100" alt="main_logo">
       <span class="ms-1 font-weight-bold">Hatchtrack</span>
     </a>
@@ -66,18 +66,13 @@
                 <span class="sidenav-normal"> Hatchery <b class="caret"></b></span>
               </a>
             </li> 
-            <li class="nav-item ">
-              <a class="nav-link " href="{% url 'incubator_list' %}">
-                <span class="sidenav-mini-icon"> B </span>
-                <span class="sidenav-normal"> Incubator <b class="caret"></b></span>
-              </a>
-            </li> 
-            <li class="nav-item ">
+            
+            <!-- <li class="nav-item ">
               <a class="nav-link " href="{% url 'incubator_capacity_list' %}">
                 <span class="sidenav-mini-icon"> B </span>
                 <span class="sidenav-normal"> Incubator Capcity <b class="caret"></b></span>
               </a>
-            </li> 
+            </li>  -->
             <li class="nav-item ">
               <a class="nav-link " href="{% url 'egg_setting_list' %}">
                 <span class="sidenav-mini-icon"> ES </span>
@@ -111,43 +106,30 @@
       <li class="nav-item">
         <a data-bs-toggle="collapse" href="#customerPages" class="nav-link " aria-controls="customerPages" role="button" aria-expanded="false">
           <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-            <i class="fa-solid fa-handshake text-success text-sm opacity-10"></i>
+            <i class="fa-solid fa-boxes-stacked text-success text-sm opacity-10"></i>
           </div>
-          <span class="nav-link-text ms-1">Customer</span>
+          <span class="nav-link-text ms-1">Inventory</span>
         </a>
         <div class="collapse " id="customerPages">
           <ul class="nav ms-4">
+            <li class="nav-item ">
+              <a class="nav-link " href="{% url 'item_list' %}">
+                <span class="sidenav-mini-icon"> IM </span>
+                <span class="sidenav-normal"> Items <b class="caret"></b></span>
+              </a>
+            </li> 
+            <li class="nav-item ">
+              <a class="nav-link " href="{% url 'item_type_list' %}">
+                <span class="sidenav-mini-icon"> IT </span>
+                <span class="sidenav-normal"> Item Types <b class="caret"></b></span>
+              </a>
+            </li> 
             <li class="nav-item ">
               <a class="nav-link " href="{% url 'customer_list' %}">
                 <span class="sidenav-mini-icon">C </span>
                 <span class="sidenav-normal"> Customers <b class="caret"></b></span>
               </a>
             </li> 
-            <li class="nav-item ">
-              <a class="nav-link " href="{% url 'eggs_list' %}">
-                <span class="sidenav-mini-icon"> E </span>
-                <span class="sidenav-normal"> Eggs <b class="caret"></b></span>
-              </a>
-            </li> 
-            <li class="nav-item ">
-              <a class="nav-link " href="{% url 'customer_request_list' %}">
-                <span class="sidenav-mini-icon"> CR </span>
-                <span class="sidenav-normal"> Customer Request <b class="caret"></b></span>
-              </a>
-            </li> 
-          </ul>
-        </div>
-      </li>
-
-      <li class="nav-item">
-        <a data-bs-toggle="collapse" href="#chickPages" class="nav-link " aria-controls="chickPages" role="button" aria-expanded="false">
-          <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-            <i class="fa-solid fa-egg text-success text-sm opacity-10"></i>
-          </div>
-          <span class="nav-link-text ms-1">Chicks</span>
-        </a>
-        <div class="collapse " id="chickPages">
-          <ul class="nav ms-4">
             <li class="nav-item ">
               <a class="nav-link " href="{% url 'chicks_list' %}">
                 <span class="sidenav-mini-icon">C </span>
@@ -161,13 +143,29 @@
               </a>
             </li> 
             <li class="nav-item ">
+              <a class="nav-link " href="{% url 'incubator_list' %}">
+                <span class="sidenav-mini-icon"> B </span>
+                <span class="sidenav-normal"> Incubator <b class="caret"></b></span>
+              </a>
+            </li> 
+            <!-- <li class="nav-item ">
               <a class="nav-link " href="{% url 'customer_request_list' %}">
                 <span class="sidenav-mini-icon"> CR </span>
                 <span class="sidenav-normal"> Customer Request <b class="caret"></b></span>
               </a>
-            </li> 
+            </li>  -->
+            
           </ul>
         </div>
+      </li>
+
+      <li class="nav-item">
+        <a href="{% url 'egg_tracker_list' %}" class="nav-link " role="button">
+          <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+            <i class="fa fa-chart-column text-success text-sm opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Tracker</span>
+        </a>
       </li>
       
     </ul>

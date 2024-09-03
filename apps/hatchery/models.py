@@ -22,7 +22,8 @@ import random
 import string
 from telelbirds import settings
 from apps.breeders.models import Breeders
-from apps.customer.models import Customer
+from apps.customer.models import Customer, Eggs
+from apps.inventory.models import Item
 
 class Hatchery(models.Model):
     """
@@ -71,9 +72,11 @@ class Incubators(models.Model):
     hatchery=models.ForeignKey(Hatchery,
         related_name="incubators_hatchery", blank=True, null=True,
         on_delete=models.SET_NULL)
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
     incubatortype=models.CharField(null=True,blank=True,max_length=50)
     manufacturer=models.CharField(null=True,blank=True,max_length=50)
     model=models.CharField(null=True,blank=True,max_length=15)
+    number = models.IntegerField(null=True, blank=True)
     year=models.CharField(null=True,blank=True,max_length=50)
     code=models.CharField(null=True,blank=True,max_length=50, unique=True)    
     created = models.DateTimeField(auto_now_add=True)
@@ -87,6 +90,19 @@ class Incubators(models.Model):
 
     def get_absolute_url(self):
         return '/incubator/{}'.format(self.code)
+    
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.generate_unique_code()
+        
+        super(Incubators, self).save(*args, **kwargs)
+
+    def generate_unique_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'INC-{random_suffix}'
+            if not Incubators.objects.filter(code=unique_code).exists():
+                return unique_code
 
 class IncubatorCapacity(models.Model):
     """
@@ -132,6 +148,7 @@ class EggSetting(models.Model):
     breeders=models.ForeignKey(Breeders,
         related_name="eggsetting_breeders", blank=True, null=True,
         on_delete=models.SET_NULL)
+    egg = models.ForeignKey(Eggs, on_delete=models.SET_NULL, null=True, blank=True)
     eggs=models.IntegerField(null=True,blank=True,max_length=50)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -144,6 +161,19 @@ class EggSetting(models.Model):
 
     def get_absolute_url(self):
         return '/egg_setting/{}'.format(self.settingcode)
+    
+    def save(self, *args, **kwargs):
+        if not self.settingcode:
+            self.settingcode = self.generate_unique_code()
+        
+        super(EggSetting, self).save(*args, **kwargs)
+
+    def generate_unique_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'EG-STG-{random_suffix}'
+            if not EggSetting.objects.filter(settingcode=unique_code).exists():
+                return unique_code
 
 
 class Incubation(models.Model):
@@ -267,7 +297,7 @@ class Hatching(models.Model):
 
     def save(self, *args, **kwargs):
         # Automatically calculate chicks hatched
-        self.chicks_hatched = self.hatched - self.deformed
+        self.chicks_hatched = self.hatched - self.deformed - self.spoilt
         
         # Generate a unique hatching code if it is not already set
         if not self.hatchingcode:

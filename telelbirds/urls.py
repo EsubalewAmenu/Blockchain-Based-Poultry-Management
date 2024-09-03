@@ -25,6 +25,7 @@ from apps.dashboard import urls as DashboardUrls
 from apps.hatchery import urls as HatcheryUrls
 from apps.customer import urls as CustomerUrls
 from apps.chicks import urls as ChicksUrls
+from apps.inventory import urls as InventoryUrls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,6 +33,7 @@ urlpatterns = [
     path('', include(HatcheryUrls)),
     path('', include(CustomerUrls)),
     path('', include(ChicksUrls)),
+    path('', include(InventoryUrls)),
     path('', TemplateView.as_view(template_name='home.html'), name='check_email'),
     path('dashboard/', include('apps.dashboard.urls')),
     path('check-email/', TemplateView.as_view(template_name='pages/authentication/reset/check_email.html'), name='check_email'),

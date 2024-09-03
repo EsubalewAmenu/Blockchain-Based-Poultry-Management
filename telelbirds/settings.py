@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'apps.chicks',
     'apps.customer',
     'apps.hatchery',
+    'apps.inventory',
 
 ]
 

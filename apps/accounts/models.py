@@ -20,8 +20,7 @@ class TimeStampedModel(models.Model):
 
 class UserSettings(TimeStampedModel):
     """
-    Model to store additional user settings and preferences. Extends User
-    model.
+    Model to store additional user settings and preferences. Extends User model.
     """
     user = models.OneToOneField(User, related_name='settings', on_delete=models.CASCADE)
     primary_phone = models.CharField(max_length=25)

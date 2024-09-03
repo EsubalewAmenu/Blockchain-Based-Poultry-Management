@@ -19,6 +19,7 @@ from apps.breeders.models import Breeders, Breed
 from apps.hatchery.models import Hatchery
 from apps.customer.models import Customer, Eggs
 from apps.hatchery.models import Hatching
+from apps.inventory.models import Item
 
 
 class Chicks(models.Model):
@@ -27,6 +28,7 @@ class Chicks(models.Model):
     """
     id = models.AutoField(primary_key=True)
     batchnumber=models.CharField(null=True, blank=True,max_length=50, unique=True)
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
     source=models.CharField(null=True,blank=True,max_length=50)
     breed=models.ForeignKey(Breed,
         related_name="breed_chicks", blank=True, null=True,

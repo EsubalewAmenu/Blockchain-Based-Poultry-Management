@@ -18,6 +18,7 @@
                   <th scope="col">Batch Number</th>
                   <th scope="col">Customer</th>
                   <th scope="col">Breed</th>
+                  <th scope="col">Item code</th>
                   <th scope="col">Brought</th>
                   <th scope="col">Returned</th>
                   <th scope="col">Received</th>
@@ -42,8 +43,11 @@
                       <span class="my-2 text-xs">{{ egg.customer.first_name }} {{ egg.customer.last_name }}</span>
                   </td>
                   <td class="font-weight-bold">
-                      <span class="my-2 text-xs">{{ egg.breed.name }}</span>
+                      <span class="my-2 text-xs">{{ egg.breed.breed }}</span>
                   </td>
+                  <td class="text-xs font-weight-bold">
+                    <span class="my-2 text-xs">{{ egg.item.code }}</span>
+                </td>
                   <td class="font-weight-bold">
                       <span class="my-2 text-xs">{{ egg.brought }}</span>
                   </td>

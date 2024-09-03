@@ -21,7 +21,10 @@ from imagekit.processors import ResizeToFit
 
 from telelbirds import settings
 from apps.breeders.models import Breeders, Breed
+from apps.inventory.models import Item
 import uuid
+import random
+import string
 
 
 class Customer(models.Model):
@@ -74,7 +77,8 @@ class Eggs(models.Model):
     Eggs Model
     """
     id = models.AutoField(primary_key=True)
-    batchnumber = models.CharField(null=True,blank=True,max_length=50, unique=True)    
+    batchnumber = models.CharField(null=True,blank=True,max_length=50, unique=True)
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)    
     customer=models.ForeignKey(Customer,
         related_name="eggs_customer", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -96,8 +100,16 @@ class Eggs(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
-        self.received = int(self.brought) - int(self.returned)
+        if not self.batchnumber:
+            self.batchnumber = self.generate_unique_batchnumber()
         super(Eggs, self).save(*args, **kwargs)
+        
+    def generate_unique_batchnumber(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'EG-{random_suffix}'
+            if not Eggs.objects.filter(batchnumber=unique_code).exists():
+                return unique_code
 
     def __str__(self):
         return self.batchnumber
