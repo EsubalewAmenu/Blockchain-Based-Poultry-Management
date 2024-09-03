@@ -7,7 +7,6 @@ from apps.customer.models import Eggs
 from apps.chicks.models import Chicks
 from apps.hatchery.models import Incubators
 from .models import ItemType, Item
-from .forms import create_model_form
 
 @login_required
 def item_type_list(request):
