@@ -1,0 +1,164 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block main %}
+<div class="row mb-5">
+    <div class="col-lg-10 mx-auto my-4 mt-lg-0 mt-4">
+        <!-- Card Profile -->
+        <div class="card card-body" id="profile">
+            <div class="row justify-content-left align-items-left">
+                <div class="col-sm-auto col-4">
+                    <div class="avatar avatar-xl position-relative">
+                        {% if employee.photo %}
+                            <img src="{{ employee.photo.url }}" alt="{{ employee.get_full_name }}" class="w-100 h-300 border-radius-lg shadow-sm">
+                        {% else %}
+                            <img src="{% static 'assets/img/default-avatar.png' %}" alt="Default Avatar" class="w-100 border-radius-lg shadow-sm">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-sm-auto col-8 my-auto">
+                    <div class="h-100">
+                        <h5 class="mb-1 font-weight-bolder">
+                            {{ employee.get_full_name }}
+                        </h5>
+                        <p class="mb-0 font-weight-bold text-sm">
+                            {{ employee.role.name }} in {{ employee.department.name }}
+                        </p>
+                        <p class="mb-0 text-sm">
+                            Employment Status: {{ employee.status }}
+                        </p>
+                        <p class="mb-0 text-sm">
+                            Start Date: {{ employee.start_date|date:"F j, Y" }}
+                        </p>
+                        {% if employee.end_date %}
+                        <p class="mb-0 text-sm">
+                            End Date: {{ employee.end_date|date:"F j, Y" }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12 d-flex flex-column ms-lg-auto ms-0">
+                    {% if employee.status == 'Active' %}
+                        <button type="button" class="btn btn-outline-primary btn-sm mb-2 mt-2" data-bs-toggle="modal" data-bs-target="#updateRoleModal">
+                            Update Role/Department
+                        </button>
+                        <a href="{% url 'deactivate_employee' employee.id %}" class="btn btn-outline-warning btn-sm mb-2">Deactivate</a>
+                        <!-- Terminate Employment Button -->
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#terminateEmployeeModal">
+                            Terminate Employment
+                        </button>
+                    {% elif employee.status == 'Inactive' %}
+                        <a href="{% url 'reactivate_employee' employee.id %}" class="btn btn-outline-success btn-sm mb-2 mt-2">Reactivate</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Employee Details -->
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card card-body mt-4" id="basic-info">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="mb-3">Employee Details</h5>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label" for="first_name">First Name</label>
+                    <p>{{ employee.user.first_name }}</p>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label" for="last_name">Last Name</label>
+                    <p>{{ employee.user.last_name }}</p>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label" for="email">Email</label>
+                    <p>{{ employee.user.email }}</p>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label" for="department">Department</label>
+                    <p>{{ employee.department.name }}</p>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label" for="role">Role</label>
+                    <p>{{ employee.role.name }}</p>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label" for="status">Status</label>
+                    <p>{{ employee.status }}</p>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label" for="start_date">Start Date</label>
+                    <p>{{ employee.start_date|date:"F j, Y" }}</p>
+                </div>
+                {% if employee.end_date %}
+                <div class="col-lg-4">
+                    <label class="form-label" for="end_date">End Date</label>
+                    <p>{{ employee.end_date|date:"F j, Y" }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if employee.status == 'Active' %}
+<!-- Update Role/Department Modal -->
+<div class="modal fade" id="updateRoleModal" tabindex="-1" aria-labelledby="updateRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateRoleModalLabel">Update Role/Department</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'update_employee_role' employee.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select name="role" id="role" class="form-select">
+                            {% for role in roles %}
+                                <option value="{{ role.id }}" {% if employee.role.id == role.id %}selected{% endif %}>{{ role.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="department" class="form-label">Department</label>
+                        <select name="department" id="department" class="form-select">
+                            {% for department in departments %}
+                                <option value="{{ department.id }}" {% if employee.department.id == department.id %}selected{% endif %}>{{ department.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Termination Confirmation Modal -->
+<div class="modal fade" id="terminateEmployeeModal" tabindex="-1" aria-labelledby="terminateEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="terminateEmployeeModalLabel">Confirm Termination</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to terminate {{ employee.get_full_name }}'s employment?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'fire_employee' employee.id %}" class="btn btn-danger">Terminate</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -27,6 +27,8 @@
           <li class="breadcrumb-item text-sm text-white active" aria-current="page">Incubators</li>
         {% elif request.path == '/incubator_capacities/' or request.path == '/incubator_capacities/create/' or request.path == '/incubator_capacities/update/' or request.path == '/incubator_capacities/delete/' %}
           <li class="breadcrumb-item text-sm text-white active" aria-current="page">Incubator Capacities</li>
+        {% elif request.path == '/human_resource/' or request.path == '/human_resource/employees/' or request.path == '/human_resource/update/' or request.path == '/human_resource/delete/' %}
+          <li class="breadcrumb-item text-sm text-white active" aria-current="page">Human Resource</li>
         {% else %}
           <li class="breadcrumb-item text-sm text-white active" aria-current="page">Dashboard</li>
         {% endif %}
@@ -38,6 +40,8 @@
           Users
         {% elif request.path == '/settings/' %}
           Settings
+        {% elif request.path == '/human_resource/' or request.path == '/human_resource/employees/' or request.path == '/human_resource/update/' or request.path == '/human_resource/delete/' %}
+          Human Resource
         {% elif request.path == '/customer/' or request.path == '/customer/create/' or request.path == '/customer/update/' or request.path == '/customer/delete/' %}
           Customers
         {% elif request.path == '/eggs/' or request.path == '/eggs/create/' or request.path == '/eggs/update/' or request.path == '/eggs/delete/' %}

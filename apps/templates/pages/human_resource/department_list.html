@@ -1,0 +1,14 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<div class="container">
+    <h1>Departments</h1>
+    <ul class="list-group">
+        {% for department in departments %}
+            <li class="list-group-item">
+                <h5>{{ department.name }}</h5>
+                <p>{{ department.description }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
