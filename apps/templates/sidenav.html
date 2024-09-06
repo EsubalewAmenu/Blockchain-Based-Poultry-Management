@@ -119,6 +119,12 @@
               </a>
             </li> 
             <li class="nav-item ">
+              <a class="nav-link " href="{% url 'item_request_list' %}">
+                <span class="sidenav-mini-icon"> IR </span>
+                <span class="sidenav-normal"> Items Request <b class="caret"></b></span>
+              </a>
+            </li> 
+            <li class="nav-item ">
               <a class="nav-link " href="{% url 'item_type_list' %}">
                 <span class="sidenav-mini-icon"> IT </span>
                 <span class="sidenav-normal"> Item Types <b class="caret"></b></span>
@@ -164,7 +170,16 @@
           <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
             <i class="fa fa-chart-column text-success text-sm opacity-10"></i>
           </div>
-          <span class="nav-link-text ms-1">Tracker</span>
+          <span class="nav-link-text ms-1">Egg Tracker</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a href="{% url 'chick_tracker_list' %}" class="nav-link " role="button">
+          <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+            <i class="fa fa-chart-column text-success text-sm opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Chick Tracker</span>
         </a>
       </li>
       

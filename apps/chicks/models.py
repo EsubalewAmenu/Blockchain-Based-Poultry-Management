@@ -7,19 +7,16 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django.db import models
 from django.db.models import ImageField
-from django.utils.safestring import mark_safe
-from django.template.defaultfilters import truncatechars, slugify  # or truncatewords
 from django.contrib.gis.db import models as gismodels
 
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
-from apps.customer.models import Eggs
 from telelbirds import settings
 from apps.breeders.models import Breeders, Breed
-from apps.hatchery.models import Hatchery
-from apps.customer.models import Customer, Eggs
 from apps.hatchery.models import Hatching
 from apps.inventory.models import Item
+from apps.customer.models import Customer
+
 
 
 class Chicks(models.Model):
@@ -28,7 +25,7 @@ class Chicks(models.Model):
     """
     id = models.AutoField(primary_key=True)
     batchnumber=models.CharField(null=True, blank=True,max_length=50, unique=True)
-    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True, choices=[['customer', 'customer'], ['hatching', 'hatching']], default='customer')
     source=models.CharField(null=True,blank=True,max_length=50)
     breed=models.ForeignKey(Breed,
         related_name="breed_chicks", blank=True, null=True,
@@ -37,6 +34,7 @@ class Chicks(models.Model):
     description=models.TextField(null=True,blank=True) 
     chick_photo = ProcessedImageField(upload_to='chicks_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
     hatching = models.ForeignKey(Hatching, blank=True, null=True, on_delete=models.SET_NULL, related_name="hatching_chicks")
+    customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.SET_NULL, related_name="chicks_customers")
     number = models.IntegerField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 

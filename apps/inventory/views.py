@@ -3,11 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.apps import apps
+from django.contrib import messages
 from apps.customer.models import Eggs
 from apps.chicks.models import Chicks
 from apps.hatchery.models import Incubators
-from .models import ItemType, Item
-from .forms import create_model_form
+from .models import ItemType, Item, ItemRequest
+from apps.hatchery.models import EggSetting
 
 @login_required
 def item_type_list(request):
@@ -170,3 +171,84 @@ def item_delete(request, code):
         'item': item,
     }
     return render(request, 'pages/inventory/item/delete.html', context)
+
+@login_required
+def item_request(request):
+    """
+    Request items from the inventory.
+    """
+    item_id = request.POST.get('item')
+    amount = request.POST.get('amount')
+    item = get_object_or_404(Item, code=item_id)
+
+    if item.quantity is None or item.quantity >= int(amount):
+       messages.error(request, "Invalid amount")
+       return redirect('item_request_list')
+        
+    item.quantity -= int(amount)
+    item.save()
+
+    item_request = ItemRequest(
+        item=item,
+        amount=amount,
+    )
+    item_request.save()
+    
+    item_request = ItemRequest(
+        item=item,
+        amount=amount,
+    )
+
+    return redirect('item_list')
+
+@login_required
+def item_request_list(request):
+    item_requests = ItemRequest.objects.all().order_by('-created_at')
+    paginator = Paginator(item_requests, 10)
+    page_number = request.GET.get('page')
+    item_requests = paginator.get_page(page_number)
+    
+    """
+    Request items from the inventory.
+    """
+    if request.method == 'POST':
+        item_id = request.POST.get('item')
+        amount = request.POST.get('amount')
+        item = get_object_or_404(Item, code=item_id)
+
+        if item.quantity == 0 or item.quantity <= int(amount):
+            messages.error(request, "Invalid amount")
+            return redirect('item_request_list')
+
+        item_request = ItemRequest(
+            item=item,
+            quantity=amount,
+            requested_by=request.user
+        )
+        item_request.save()
+
+        return redirect('item_request_list')
+    
+    
+
+    context = {
+        'item_requests': item_requests,
+        'items': Item.objects.all(),
+    }
+    return render(request, 'pages/inventory/item/item_request/list.html', context)
+
+@login_required
+def item_request_approve(request, code):
+    item_request = get_object_or_404(ItemRequest, code=code)
+    item = item_request.item
+    item.quantity -= item_request.quantity
+    item.save()
+    item_request.approve()
+    egg_setting = EggSetting.objects.get(item_request=item_request)
+    if egg_setting:
+        egg_setting.is_approved = True
+        egg_setting.save()
+    
+
+    return redirect('item_request_list')
+    

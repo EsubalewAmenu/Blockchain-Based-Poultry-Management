@@ -14,8 +14,8 @@ def create_user_settings(sender, instance, created, **kwargs):
         instance.egg.item.quantity -= int(instance.eggs)
         instance.egg.item.save()
         
-@receiver(post_save, sender=Hatching)
-def create_chicks(sender, instance, created, **kwargs):
-    if created:
-        chick = Chicks.objects.create(breed=instance.breeders.breed, source="Hatching", hatching=instance, number=instance.chicks_hatched)
-        chick.save()
+# @receiver(post_save, sender=Hatching)
+# def create_chicks(sender, instance, created, **kwargs):
+#     if created:
+#         chick = Chicks.objects.create(breed=instance.breeders.breed, source="hatching", hatching=instance, number=instance.chicks_hatched)
+#         chick.save()
