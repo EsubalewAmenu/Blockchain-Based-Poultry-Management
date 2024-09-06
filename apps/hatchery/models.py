@@ -23,7 +23,7 @@ import string
 from telelbirds import settings
 from apps.breeders.models import Breeders
 from apps.customer.models import Customer, Eggs
-from apps.inventory.models import Item
+from apps.inventory.models import Item, ItemRequest
 
 class Hatchery(models.Model):
     """
@@ -149,7 +149,9 @@ class EggSetting(models.Model):
         related_name="eggsetting_breeders", blank=True, null=True,
         on_delete=models.SET_NULL)
     egg = models.ForeignKey(Eggs, on_delete=models.SET_NULL, null=True, blank=True)
+    item_request = models.ForeignKey(ItemRequest, on_delete=models.SET_NULL, null=True, blank=True, related_name="egg_setting")
     eggs=models.IntegerField(null=True,blank=True,max_length=50)
+    is_approved = models.BooleanField(default=False, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

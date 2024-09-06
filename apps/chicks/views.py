@@ -2,8 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from apps.breeders.models import Breed
-from apps.customer.models import Eggs
+from apps.customer.models import Eggs, Customer
 from django.http import HttpResponse
+
+from apps.hatchery.models import Hatching
 from .models import Chicks
 from apps.inventory.models import Item
 
@@ -45,6 +47,8 @@ def chicks_create(request):
     breeds = Breed.objects.all()
     eggs = Eggs.objects.all()
     items = Item.objects.all()
+    customers = Customer.objects.all()
+    hatchings = Hatching.objects.all()
     if request.method == 'POST':
         item_id = request.POST.get('item')
         source = request.POST.get('source')
@@ -52,6 +56,15 @@ def chicks_create(request):
         age = request.POST.get('age')
         description = request.POST.get('description')
         number = int(request.POST.get('number'))
+        customer_id = request.POST.get('customer')
+        hatching_code = request.POST.get('hatching')
+        customer = None
+        if customer_id:
+            customer = get_object_or_404(Customer, id=customer_id)
+            
+        hatching = None
+        if hatching_code:
+            hatching = get_object_or_404(Hatching, hatchingcode=hatching_code)
         
         item = Item.objects.filter(pk=item_id).first()
         item.quantity=int(number)
@@ -64,6 +77,8 @@ def chicks_create(request):
             item=item,
             source=source,
             breed_id=breed_id,
+            customer=customer,
+            hatching=hatching,
             age=age,
             description=description,
             chick_photo=chick_photo,
@@ -74,7 +89,7 @@ def chicks_create(request):
         
         return redirect('chicks_list') 
 
-    return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items})
+    return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items, 'customers':customers, 'hatchings': hatchings})
 
 @login_required
 def chicks_update(request, batchnumber):

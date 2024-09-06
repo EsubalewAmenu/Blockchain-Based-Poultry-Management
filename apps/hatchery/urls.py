@@ -2,6 +2,8 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+    
+    path('egg-settings/create/', egg_setting_create, name='egg_setting_create'),
     path('hatchery/', hatchery_list, name='hatchery_list'),
     path('hatchery/create/', hatcher_create, name='hatchery_create'),
     path('hatchery/<str:name>/', hatchery_detail, name='hatchery_detail'),
@@ -18,8 +20,9 @@ urlpatterns = [
     path('incubators/<str:code>/update/', incubator_update, name='incubator_update'),
     path('incubator/<str:code>/delete', incubator_delete, name='incubator_delete'),
     
+    
+    
     path('egg-settings/', egg_setting_list, name='egg_setting_list'),
-    path('egg-settings/create/', egg_setting_create, name='egg_setting_create'),
     path('egg-settings/<str:settingcode>/', egg_setting_detail, name='egg_setting_detail'),
     path('egg-settings/<str:settingcode>/update/', egg_setting_update, name='egg_setting_update'),
     path('egg-settings/<str:settingcode>/delete/', egg_setting_delete, name='egg_setting_delete'),
@@ -41,8 +44,10 @@ urlpatterns = [
     path('hatching/<str:hatchingcode>/', hatching_detail, name='hatching_detail'),
     path('hatching/<str:hatchingcode>/update/', hatching_detail, name='hatching_update'),
     path('hatching/<str:hatchingcode>/delete/', hatching_delete, name='hatching_delete'),
-    path('tracker/list/', egg_tracker_list, name='egg_tracker_list'),
+    path('tracker/egg/list/', egg_tracker_list, name='egg_tracker_list'),
     path('tracker/egg/<str:batchnumber>/', egg_tracker_view, name='egg_tracker'),
+    path('tracker/chick/list/', chick_tracker_list, name='chick_tracker_list'),
+    path('tracker/chick/<str:batchnumber>/', chick_tracker_view, name='chick_tracker'),
 ]
 
 

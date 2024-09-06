@@ -66,13 +66,22 @@
                                 <label>Number of Eggs</label>
                                 <input class="form-control" type="number" name="eggs" value="{{ egg_setting.eggs }}">
                             </div>
+                            <div class="col-12 col-sm-6">
+                                <label>Egg</label>
+                                <input class="form-control" type="text" name="egg" value="{{ egg_setting.egg.batchnumber }}">
+                            </div>
                         </div>
                         <div class="row mt-3">
-                            <div class="col-12">
+                            <div class="col-12 col-sm-6">
                                 <label>Created</label>
                                 <input class="form-control" type="text" value="{{ egg_setting.created|date:'Y-m-d H:i' }}" readonly>
                             </div>
+                            <div class="col-12 col-sm-6">
+                                <label>Approved</label>
+                                <input class="form-control" type="text" value="{{ egg_setting.is_approved }}" readonly>
+                            </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

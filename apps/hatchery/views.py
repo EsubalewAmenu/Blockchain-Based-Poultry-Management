@@ -378,29 +378,33 @@ def egg_setting_detail(request, settingcode):
     })
 
 def egg_setting_create(request):
+    
     if request.method == 'POST':
         incubator_id = request.POST.get('incubator')
-        customer_id = request.POST.get('customer')
         breeders_id = request.POST.get('breeders')
-        egg_id = request.POST.get('egg')
+        item_request_item_id = request.POST.get('item_request_item')
+        item_request_quantity = request.POST.get('item_request_quantity')
         
-        egg = Eggs.objects.get(pk=egg_id)
-        eggs = request.POST.get('eggs')
-        if int(eggs)>egg.received:
+        item_request_item = get_object_or_404(Item, id=item_request_item_id)
+        
+        item_request = ItemRequest(item=item_request_item, quantity=item_request_quantity, requested_by=request.user)
+        item_request.save()
+        egg = Eggs.objects.get(item=item_request_item)
+        if int(item_request_quantity)>egg.received:
             messages.error(request, 'Not enough eggs available in the selected egg type.')
             return redirect('egg_setting_create')
 
         incubator = get_object_or_404(Incubators, pk=incubator_id)
-        customer = get_object_or_404(Customer, pk=customer_id)
         breeders = get_object_or_404(Breeders, pk=breeders_id)
+        
         
 
         egg_setting = EggSetting(
             incubator=incubator,
-            customer=customer,
             breeders=breeders,
-            eggs=eggs,
-            egg=egg,
+            item_request = item_request,
+            egg = egg,
+            eggs = item_request_quantity,
         )
         egg_setting.save()
         return redirect('egg_setting_list')
@@ -408,12 +412,19 @@ def egg_setting_create(request):
     incubators = Incubators.objects.all()
     customers = Customer.objects.all()
     breeders = Breeders.objects.all()
-    egg=Eggs.objects.all()
+    eggs = Eggs.objects.all()
+    items = Item.objects.filter(item_type__type_name="Egg")
+
+    # Get all eggs that are not in the egg_settings
+    
+    
+    
     return render(request, 'pages/poultry/hatchery/egg_setting/create.html', {
         'incubators': incubators,
         'customers': customers,
         'breeders': breeders,
-        'egg':egg,
+        'egg':eggs,
+        'items': items,
     })
 
 def egg_setting_update(request, settingcode):
@@ -613,7 +624,7 @@ def candling_create(request):
         return redirect('candling_list') 
 
     context = {
-        'incubations': Incubation.objects.all(),
+        'incubations': Incubation.objects.filter(eggsetting__is_approved=True),
         'customers': Customer.objects.all(),
         'breeders': Breeders.objects.all(),
     }
@@ -690,9 +701,7 @@ def hatching_create(request):
         # hatched = int(request.POST.get('hatched'))
         deformed = int(request.POST.get('deformed'))
         spoilt = int(request.POST.get('spoilt'))
-    
-    
-        
+
         total_count = candling.fertile_eggs + deformed + spoilt
         if total_count > candling.eggs:
             messages.error(request, 'Hatched, deformed, or spoilt cannot exceed the total eggs.')
@@ -700,20 +709,19 @@ def hatching_create(request):
         
         hatching = Hatching(
             candling=candling,
-            customer=candling.customer,
+            customer=None,
             breeders=candling.breeders,
             hatched=candling.fertile_eggs,
             deformed=deformed,
             spoilt=spoilt,
-            notify_customer=request.POST.get('notify_customer') == 'on',
         )
         
-        from datetime import datetime        
         hatching.save()
         item_type = ItemType.objects.get_or_create(type_name="Chicks")
         item = Item(item_type=item_type[0])
         item.save()
-        chick = Chicks(item=item, source='Hatching', breed=hatching.breeders.breed, age=datetime.now().date(), hatching=hatching, number=hatching.chicks_hatched)
+        from datetime import datetime
+        chick = Chicks(item=item, source='hatching', breed=hatching.breeders.breed, age=datetime.now().date(), hatching=hatching, number=hatching.chicks_hatched)
         chick.save()
         return redirect('hatching_list')
 
@@ -759,6 +767,33 @@ def egg_tracker_view(request, batchnumber):
     chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
 
     return render(request, 'pages/poultry/tracker.html', {
+        'egg': egg,
+        'egg_setting': egg_setting,
+        'incubation': incubation,
+        'candling': candling,
+        'hatching': hatching,
+        'chicks': chicks,
+    })
+def chick_tracker_list(request):
+    chicks=Chicks.objects.all()
+
+    return render(request, 'pages/poultry/chick-tracker-list.html', {
+        'chicks': chicks
+    })    
+@login_required
+def chick_tracker_view(request, batchnumber):
+    chick = get_object_or_404(Chicks, batchnumber=batchnumber)
+    
+    egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
+
+    egg_setting = EggSetting.objects.filter(egg=egg).first()
+    incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+    candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
+    hatching = Hatching.objects.filter(candling=candling).first() if candling else None
+
+    chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
+
+    return render(request, 'pages/poultry/chick-tracker.html', {
         'egg': egg,
         'egg_setting': egg_setting,
         'incubation': incubation,
