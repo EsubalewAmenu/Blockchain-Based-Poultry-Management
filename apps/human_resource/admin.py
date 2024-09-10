@@ -10,7 +10,11 @@ class EmployeeAdmin(admin.ModelAdmin):
     actions = ['hire_employees', 'fire_employees', 'deactivate_employees', 'reactivate_employees']
 
     def has_change_permission(self, request, obj=None):
-        return request.user.is_superuser or request.user.groups.filter(name='Manager').exists()
+        if request.user.is_superuser:
+            return True
+        if obj is not None and request.user.groups.filter(name='Manager').exists():
+            return obj.department == request.user.employee.department
+        return False
 
     def _change_status(self, request, queryset, status, end_date=None):
         if self.has_change_permission(request):

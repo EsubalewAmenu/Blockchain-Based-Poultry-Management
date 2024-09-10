@@ -3,7 +3,12 @@
 {% block main %}
 <div class="row mb-5">
     <div class="col-12">
-        <div class="multisteps-form mb-5">
+        <!-- Back Icon Button -->
+        <a href="{% url 'employee_list' %}" class="btn btn-link text-white p-0">
+            <i class="fas fa-arrow-left fa-lg"></i>
+        </a>
+        
+        <div class="multisteps-form mb-5 mt-3">
             <div class="row">
                 <div class="col-12 col-lg-8 mx-auto my-4">
                     <div class="card">
@@ -139,4 +144,4 @@
         </div>
     </div>
 </div>
-{% endblock %}  
+{% endblock %}

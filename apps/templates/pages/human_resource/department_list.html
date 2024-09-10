@@ -1,14 +1,195 @@
 {% extends "dashboard.html" %}
-{% block content %}
-<div class="container">
-    <h1>Departments</h1>
-    <ul class="list-group">
-        {% for department in departments %}
-            <li class="list-group-item">
-                <h5>{{ department.name }}</h5>
-                <p>{{ department.description }}</p>
-            </li>
-        {% endfor %}
-    </ul>
+
+{% block main %}
+<div class="d-sm-flex justify-content-between mb-4">
+    <h4 class="mb-0">Departments</h4>
+    <a href="{% url 'department_create' %}" class="btn btn-icon btn-outline-white">
+        <i class="fas fa-plus"></i> New Department
+    </a>
 </div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <!-- Filter Section -->
+            <div class="card-body pb-0">
+                <form method="get" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" name="search" class="form-control" placeholder="Search departments..." value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn bg-gradient-dark w-100">Filter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Department List Table -->
+            <div class="table-responsive">
+                <table class="table table-flush align-items-center mb-0" style="table-layout: fixed; width: 100%;">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col" style="width: 5%;">#</th> <!-- ID/number column with fixed width -->
+                            <th scope="col">
+                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}sort=name{% if sort == 'name' %}_desc{% endif %}">
+                                    Department Name {% if sort == 'name' %}<i class="fas fa-sort-up"></i>{% elif sort == 'name_desc' %}<i class="fas fa-sort-down"></i>{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col">Description</th>
+                            <th scope="col" style="width: 10%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for department in departments %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ department.name }}</td>
+                            <td>{{ department.description }}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <a class="btn btn-link text-secondary" href="#" role="button" id="dropdownMenuLink{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink{{ forloop.counter }}">
+                                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editModal{{ department.id }}">Edit</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal{{ department.id }}">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal{{ department.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ department.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel{{ department.id }}">Edit Department</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="post" action="{% url 'department_edit' department.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="name{{ department.id }}" class="form-label">Department Name</label>
+                                                <input type="text" class="form-control" id="name{{ department.id }}" name="name" value="{{ department.name }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="description{{ department.id }}" class="form-label">Description</label>
+                                                <textarea class="form-control" id="description{{ department.id }}" name="description" required>{{ department.description }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal{{ department.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ department.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-danger" id="deleteModalLabel{{ department.id }}">Delete Department</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete the department: <strong>{{ department.name }}</strong>?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form method="post" action="{% url 'department_delete' department.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination (if needed) -->
+            {% if departments.has_other_pages %}
+            <div class="card-footer">
+                <nav aria-label="...">
+                    <ul class="pagination justify-content-end mb-0">
+                        {% if departments.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}sort={{ sort }}&page={{ departments.previous_page_number }}" tabindex="-1">
+                                <i class="fas fa-angle-left"></i>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="javascript:;" tabindex="-1">
+                                <i class="fas fa-angle-left"></i>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% for page_num in departments.paginator.page_range %}
+                        <li class="page-item {% if departments.number == page_num %}active{% endif %}">
+                            <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}sort={{ sort }}&page={{ page_num }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        {% if departments.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}sort={{ sort }}&page={{ departments.next_page_number }}">
+                                <i class="fas fa-angle-right"></i>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="javascript:;">
+                                <i class="fas fa-angle-right"></i>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .table tbody tr {
+        height: 50px;
+    }
+
+    .table th, .table td {
+        padding-left: 20px; /* Increase padding to align content */
+        padding-right: 20px; /* Increase padding to align content */
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .table td {
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    .btn-link {
+        color: #6c757d;
+        text-decoration: none;
+    }
+    .btn-link:hover {
+        color: #495057;
+    }
+</style>
+
 {% endblock %}

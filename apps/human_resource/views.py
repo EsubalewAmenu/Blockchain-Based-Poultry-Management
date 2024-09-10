@@ -21,6 +21,9 @@ def is_manager(user):
 def is_admin_or_manager(user):
     return is_admin(user) or is_manager(user)
 
+def is_manager_of_department(user, department):
+    return is_manager(user) and user.employee.department == department
+
 # API view to get roles based on department
 def roles_by_department(request):
     department_id = request.GET.get('department_id')
@@ -33,7 +36,7 @@ def roles_by_department(request):
 
 # View for creating a new employee
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(is_admin_or_manager)
 def create_employee(request):
     if request.method == 'POST':
         errors, employee, password = _validate_and_create_employee(request)
@@ -42,8 +45,12 @@ def create_employee(request):
             messages.success(request, 'Employee created successfully!')
             return redirect('employee_list')
 
+    departments = Department.objects.all()
+    if not is_admin(request.user):
+        departments = departments.filter(id=request.user.employee.department_id)
+
     return render(request, 'pages/human_resource/employee_create.html', {
-        'departments': Department.objects.all(),
+        'departments': departments,
         'roles': Role.objects.none(),
     })
 
@@ -154,6 +161,11 @@ def no_access(request):
 @user_passes_test(is_admin_or_manager)
 def employee_detail(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
+
+    # Managers should only be able to view employees in their department
+    if is_manager(request.user) and not is_manager_of_department(request.user, employee.department):
+        return redirect('no_access')
+
     departments = Department.objects.all()
     roles = Role.objects.all()
     
@@ -208,7 +220,7 @@ def employee_delete(request, id):
 @user_passes_test(is_admin_or_manager)
 def hire_employee(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
-    if not (is_admin(request.user) or employee.department == request.user.employee.department):
+    if not (is_admin(request.user) or is_manager_of_department(request.user, employee.department)):
         return redirect('no_access')
     employee.hire()
     return redirect('employee_detail', employee_id=employee.id)
@@ -217,7 +229,7 @@ def hire_employee(request, employee_id):
 @user_passes_test(is_admin_or_manager)
 def fire_employee(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
-    if not (is_admin(request.user) or employee.department == request.user.employee.department):
+    if not (is_admin(request.user) or is_manager_of_department(request.user, employee.department)):
         return redirect('no_access')
     employee.fire()
     return redirect('employee_detail', employee_id=employee.id)
@@ -226,7 +238,7 @@ def fire_employee(request, employee_id):
 @user_passes_test(is_admin_or_manager)
 def deactivate_employee(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
-    if not (is_admin(request.user) or employee.department == request.user.employee.department):
+    if not (is_admin(request.user) or is_manager_of_department(request.user, employee.department)):
         return redirect('no_access')
     employee.deactivate()
     return redirect('employee_detail', employee_id=employee.id)
@@ -235,16 +247,88 @@ def deactivate_employee(request, employee_id):
 @user_passes_test(is_admin_or_manager)
 def reactivate_employee(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
-    if not (is_admin(request.user) or employee.department == request.user.employee.department):
+    if not (is_admin(request.user) or is_manager_of_department(request.user, employee.department)):
         return redirect('no_access')
     employee.reactivate()
     return redirect('employee_detail', employee_id=employee.id)
 
+# department CRUD operation 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(is_admin)
 def department_list(request):
+    search_query = request.GET.get('search', '')
+    sort = request.GET.get('sort', 'name')
+    
     departments = Department.objects.all()
-    return render(request, 'pages/human_resource/department_list.html', {'departments': departments})
+
+    if search_query:
+        departments = departments.filter(name__icontains=search_query)
+
+    if sort == 'name_desc':
+        departments = departments.order_by('-name')
+    else:
+        departments = departments.order_by('name')
+
+    context = {
+        'departments': departments,
+        'search_query': search_query,
+        'sort': sort
+    }
+    return render(request, 'pages/human_resource/department_list.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def department_create(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        
+        if name:
+            Department.objects.create(name=name, description=description)
+            messages.success(request, 'Department created successfully!')
+            return redirect('department_list')
+        else:
+            messages.error(request, 'Please provide a valid department name.')
+    
+    return render(request, 'pages/human_resource/department_create.html')
+
+@login_required
+@user_passes_test(is_admin)
+def department_edit(request, id):
+    department = get_object_or_404(Department, id=id)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        
+        if name:
+            department.name = name
+            department.description = description
+            department.save()
+            messages.success(request, 'Department updated successfully!')
+            return redirect('department_list')
+        else:
+            messages.error(request, 'Please provide a valid department name.')
+    
+    context = {
+        'department': department,
+    }
+    return render(request, 'pages/human_resource/department_create.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def department_delete(request, id):
+    department = get_object_or_404(Department, id=id)
+    
+    if request.method == 'POST':
+        department.delete()
+        messages.success(request, 'Department deleted successfully!')
+        return redirect('department_list')
+
+    context = {
+        'department': department,
+    }
+    return render(request, 'pages/human_resource/department_list.html', {'department': department})
 
 @login_required
 @user_passes_test(is_admin_or_manager)
