@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'apps.customer',
     'apps.hatchery',
     'apps.inventory',
+    'apps.human_resource',
 
 ]
 
