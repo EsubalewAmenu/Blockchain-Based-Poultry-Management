@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils import timezone
 import random
 import string
 
@@ -95,7 +96,13 @@ def _validate_and_create_employee(request):
     else:
         role = None
 
-    employee = Employee.objects.create(user=user, department=department, role=role)
+    # Set the start date when creating the employee
+    employee = Employee.objects.create(
+        user=user,
+        department=department,
+        role=role,
+        start_date=timezone.now().date()  # Set start_date to today's date
+    )
 
     if photo:
         fs = FileSystemStorage()
