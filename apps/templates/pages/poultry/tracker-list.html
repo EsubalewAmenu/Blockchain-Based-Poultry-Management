@@ -2,13 +2,6 @@
 {% load static %}
 
 {% block main %}
-<div class="d-sm-flex justify-content-between">
-    <div>
-        <a href="{% url 'chicks_create' %}" class="btn btn-icon btn-outline-white">
-            New Chick
-        </a>
-    </div>
-</div>
 
 <div class="table-responsive mt-3">
     <div class="card">
@@ -32,12 +25,12 @@
                 </li>
             </ul>
                       
-
             <table class="table table-flush" id="datatable-search">
                 <thead class="thead-light">
                     <tr>
                         <th scope="col">Tracker Code</th>
                         <th scope="col">Barcode</th>
+                        <th scope="col">QR Code</th> <!-- Add a column for the QR Code -->
                         <th scope="col">Batch Number</th>
                         <th scope="col">Type</th>
                     </tr>
@@ -57,6 +50,13 @@
                                         <img src="{{ tracker.barcode_image.url }}" alt="Barcode for {{ tracker.tracker_code }}" style="height: 50px;">
                                     {% else %}
                                         No Barcode
+                                    {% endif %}
+                                </td>
+                                <td> <!-- QR Code Column -->
+                                    {% if tracker.qr_code_image %}
+                                        <img src="{{ tracker.qr_code_image.url }}" alt="QR Code for {{ tracker.tracker_code }}" style="height: 50px;">
+                                    {% else %}
+                                        No QR Code
                                     {% endif %}
                                 </td>
                                 <td>
@@ -84,6 +84,13 @@
                                         <img src="{{ tracker.barcode_image.url }}" alt="Barcode for {{ tracker.tracker_code }}" style="height: 50px;">
                                     {% else %}
                                         No Barcode
+                                    {% endif %}
+                                </td>
+                                <td> <!-- QR Code Column -->
+                                    {% if tracker.qr_code_image %}
+                                        <img src="{{ tracker.qr_code_image.url }}" alt="QR Code for {{ tracker.tracker_code }}" style="height: 50px;">
+                                    {% else %}
+                                        No QR Code
                                     {% endif %}
                                 </td>
                                 <td>

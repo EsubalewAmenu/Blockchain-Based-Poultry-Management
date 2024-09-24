@@ -115,3 +115,5 @@ xlwt==1.3.0
 zipp==3.19.2
 python-barcode==0.15.1
 WeasyPrint
+qrcode[pil]
+qrcode==7.4.2
