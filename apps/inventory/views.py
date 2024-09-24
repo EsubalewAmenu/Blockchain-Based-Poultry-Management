@@ -240,9 +240,6 @@ def item_request_list(request):
 @login_required
 def item_request_approve(request, code):
     item_request = get_object_or_404(ItemRequest, code=code)
-    item = item_request.item
-    item.quantity -= item_request.quantity
-    item.save()
     item_request.approve()
     egg_setting = EggSetting.objects.get(item_request=item_request)
     if egg_setting:

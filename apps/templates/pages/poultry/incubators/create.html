@@ -62,7 +62,7 @@
                           <option value="" disabled selected>Select an Item</option>
                           <option value="None">None</option>
                           {% for item in items %}
-                              <option value="{{ item.pk }}">{{ item.code }}-{{item.item_type.type_name}}</option>
+                              <option value="{{ item.pk }}">{{ item.code }}-{{item.item_type.type_name}} | {{item.created_at}}</option>
                           {% endfor %}
                       </select>
                   </div>

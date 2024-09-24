@@ -8,12 +8,7 @@
             Request Item
         </a>
     </div>
-    <div>
-        <form method="GET" class="form-inline">
-            <input type="text" name="code" value="{{ code_filter }}" class="form-control" placeholder="Search by code">
-            <button type="submit" class="btn btn-success mt-2">Search</button>
-        </form>
-    </div>
+    
 </div>
 
 <div class="row">
@@ -150,7 +145,7 @@
                         <select class="form-control" name="item" required>
                             <option value="" disabled selected>Select an item</option>
                             {% for item in items %}
-                                <option value="{{ item.code }}">{{ item.item_type.type_name }} ({{ item.code }})</option>
+                            <option value="{{ item.pk }}">{{ item.code }} - {{ item.item_type.type_name }} | {{item.created_at}}</option>
                             {% endfor %}
                         </select>
                     </div>

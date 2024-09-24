@@ -5,9 +5,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Point
+from django.http import HttpResponse, Http404
+from django.template.loader import render_to_string
+from weasyprint import HTML
 from apps.breeders.models import *
 from apps.chicks.models import Chicks
 from apps.inventory.models import ItemType, Item
+from apps.dashboard.models import Tracker
 from .models import *
 
 # Create your views here.
@@ -754,50 +758,118 @@ def egg_tracker_list(request):
     return render(request, 'pages/poultry/tracker_list.html', {
         'eggs': eggs
     })
+
+@login_required
+def tracker_list_view(request):
+    tracker_type = request.GET.get('type', 'egg')  # Default to 'egg'
+    
+    egg_trackers = []
+    chick_trackers = []
+
+    if tracker_type == 'egg':
+        egg_trackers = Tracker.objects.filter(egg__isnull=False).select_related('egg').all()
+    elif tracker_type == 'chick':
+        chick_trackers = Tracker.objects.filter(chick__isnull=False).select_related('chick').all()
+
+    return render(request, 'pages/poultry/tracker-list.html', {
+        'egg_trackers': egg_trackers,
+        'chick_trackers': chick_trackers,
+        'tracker_type': tracker_type,
+    })
+
     
 @login_required
-def egg_tracker_view(request, batchnumber):
-    egg = get_object_or_404(Eggs, batchnumber=batchnumber)
+def tracker_details_view(request, tracker_code):
+    tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
+    tracker_type = 'egg' if tracker.egg else 'chick'
 
-    egg_setting = EggSetting.objects.filter(egg=egg).first()
-    incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
-    candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
-    hatching = Hatching.objects.filter(candling=candling).first() if candling else None
+    if tracker_type == 'egg':
+        egg = tracker.egg
+        egg_setting = EggSetting.objects.filter(egg=egg).first()
+        incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+        candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
+        hatching = Hatching.objects.filter(candling=candling).first() if candling else None
+        chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
 
-    chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
+        return render(request, 'pages/poultry/tracker-details.html', {
+            'tracker_type': 'egg',
+            'egg': egg,
+            'tracker': tracker,
+            'egg_setting': egg_setting,
+            'incubation': incubation,
+            'candling': candling,
+            'hatching': hatching,
+            'chicks': chicks,
+        })
 
-    return render(request, 'pages/poultry/tracker.html', {
-        'egg': egg,
+    elif tracker_type == 'chick':
+        chick = tracker.chick
+        egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
+        egg_setting = EggSetting.objects.filter(egg=egg).first()
+        incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+        candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
+        hatching = Hatching.objects.filter(candling=candling).first() if candling else None
+        chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
+
+        return render(request, 'pages/poultry/tracker-details.html', {
+            'tracker_type': 'chick',
+            'chick': chick,
+            'tracker': tracker,
+            'egg': egg,
+            'egg_setting': egg_setting,
+            'incubation': incubation,
+            'candling': candling,
+            'hatching': hatching,
+            'chicks': chicks,
+        })
+        
+@login_required
+def tracker_pdf_view(request, tracker_code):
+    tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
+
+    if tracker.egg:
+        egg = tracker.egg
+        egg_setting = EggSetting.objects.filter(egg=egg).first()
+        incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+        candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
+        hatching = Hatching.objects.filter(candling=candling).first() if candling else None
+        chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
+        tracker_type = 'egg'
+    else:
+        chick = tracker.chick
+        egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
+        egg_setting = EggSetting.objects.filter(egg=egg).first() if egg else None
+        incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+        candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
+        hatching = Hatching.objects.filter(candling=candling).first() if candling else None
+        chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
+        tracker_type = 'chick'
+
+    # Render the HTML template for the PDF
+    html_string = render_to_string('pages/poultry/tracker-details-pdf.html', {
+        'tracker_type': tracker_type,
+        'egg': egg if tracker_type == 'egg' else None,
+        'chick': chick if tracker_type == 'chick' else None,
+        'tracker': tracker,
         'egg_setting': egg_setting,
         'incubation': incubation,
         'candling': candling,
         'hatching': hatching,
         'chicks': chicks,
     })
-def chick_tracker_list(request):
-    chicks=Chicks.objects.all()
 
-    return render(request, 'pages/poultry/chick-tracker-list.html', {
-        'chicks': chicks
-    })    
-@login_required
-def chick_tracker_view(request, batchnumber):
-    chick = get_object_or_404(Chicks, batchnumber=batchnumber)
-    
-    egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
+    # Generate PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{tracker_code}_{tracker_type}_tracker_details.pdf"'
+    HTML(string=html_string).write_pdf(response)
 
-    egg_setting = EggSetting.objects.filter(egg=egg).first()
-    incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
-    candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
-    hatching = Hatching.objects.filter(candling=candling).first() if candling else None
+    return response
 
-    chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
+def tracker_barcode_image_view(request, tracker_code):
+    tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
 
-    return render(request, 'pages/poultry/chick-tracker.html', {
-        'egg': egg,
-        'egg_setting': egg_setting,
-        'incubation': incubation,
-        'candling': candling,
-        'hatching': hatching,
-        'chicks': chicks,
-    })
+    if tracker.barcode_image:
+        with open(tracker.barcode_image.path, 'rb') as f:
+            return HttpResponse(f.read(), content_type='image/png')
+    else:
+        raise Http404("Barcode image not found.")

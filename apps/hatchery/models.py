@@ -24,6 +24,11 @@ from telelbirds import settings
 from apps.breeders.models import Breeders
 from apps.customer.models import Customer, Eggs
 from apps.inventory.models import Item, ItemRequest
+import uuid
+from django.core.files import File
+from io import BytesIO
+import barcode
+from barcode.writer import ImageWriter
 
 class Hatchery(models.Model):
     """
@@ -361,3 +366,4 @@ class Holding(models.Model):
 
     def get_absolute_url(self):
         return '/holding/{}'.format(self.holdingcode)
+

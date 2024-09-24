@@ -44,10 +44,11 @@ urlpatterns = [
     path('hatching/<str:hatchingcode>/', hatching_detail, name='hatching_detail'),
     path('hatching/<str:hatchingcode>/update/', hatching_detail, name='hatching_update'),
     path('hatching/<str:hatchingcode>/delete/', hatching_delete, name='hatching_delete'),
-    path('tracker/egg/list/', egg_tracker_list, name='egg_tracker_list'),
-    path('tracker/egg/<str:batchnumber>/', egg_tracker_view, name='egg_tracker'),
-    path('tracker/chick/list/', chick_tracker_list, name='chick_tracker_list'),
-    path('tracker/chick/<str:batchnumber>/', chick_tracker_view, name='chick_tracker'),
+    path('tracker/list/', tracker_list_view, name='tracker_list'),
+    path('tracker/<str:tracker_code>/', tracker_details_view, name='tracker_detail'),
+    path('tracker/pdf/<str:tracker_code>/', tracker_pdf_view, name='tracker_pdf'),
+    path('tracker/<str:tracker_code>/barcode', tracker_barcode_image_view, name='tracker_barcode_image'),
+
 ]
 
 
