@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -823,8 +824,7 @@ def tracker_details_view(request, tracker_code):
             'chicks': chicks,
         })
         
-@login_required
-def tracker_pdf_view(request, tracker_code):
+def tracker_public_view(request, tracker_code):
     tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
 
     if tracker.egg:
@@ -838,32 +838,25 @@ def tracker_pdf_view(request, tracker_code):
     else:
         chick = tracker.chick
         egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
-        egg_setting = EggSetting.objects.filter(egg=egg).first() if egg else None
+        egg_setting = EggSetting.objects.filter(egg=egg).first()
         incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
-        chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
         tracker_type = 'chick'
 
-    # Render the HTML template for the PDF
-    html_string = render_to_string('pages/poultry/tracker-details-pdf.html', {
-        'tracker_type': tracker_type,
-        'egg': egg if tracker_type == 'egg' else None,
-        'chick': chick if tracker_type == 'chick' else None,
+
+    context = {
         'tracker': tracker,
+        'tracker_type': tracker_type,
+        'egg': egg,
         'egg_setting': egg_setting,
         'incubation': incubation,
         'candling': candling,
-        'hatching': hatching,
-        'chicks': chicks,
-    })
+        'hatching': hatching
+        }
 
-    # Generate PDF
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{tracker_code}_{tracker_type}_tracker_details.pdf"'
-    HTML(string=html_string).write_pdf(response)
+    return render(request, 'pages/poultry/tracker-details-public.html', context)
 
-    return response
 
 def tracker_barcode_image_view(request, tracker_code):
     tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
@@ -873,3 +866,12 @@ def tracker_barcode_image_view(request, tracker_code):
             return HttpResponse(f.read(), content_type='image/png')
     else:
         raise Http404("Barcode image not found.")
+    
+def tracker_qrcode_image_view(request, tracker_code):
+    tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
+
+    if tracker.qr_code_image:
+        with open(tracker.qr_code_image.path, 'rb') as f:
+            return HttpResponse(f.read(), content_type='image/png')
+    else:
+        raise Http404("Qrcode image not found.")

@@ -46,9 +46,9 @@ urlpatterns = [
     path('hatching/<str:hatchingcode>/delete/', hatching_delete, name='hatching_delete'),
     path('tracker/list/', tracker_list_view, name='tracker_list'),
     path('tracker/<str:tracker_code>/', tracker_details_view, name='tracker_detail'),
-    path('tracker/pdf/<str:tracker_code>/', tracker_pdf_view, name='tracker_pdf'),
+    path('tracker/public/<str:tracker_code>/', tracker_public_view, name='tracker_public'),
     path('tracker/<str:tracker_code>/barcode', tracker_barcode_image_view, name='tracker_barcode_image'),
-
+    path('tracker/<str:tracker_code>/qrcode', tracker_qrcode_image_view, name='tracker_qr_code'),
 ]
 
 
