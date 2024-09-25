@@ -25,10 +25,17 @@ from .models import UserSettings, UserWalletAddress
 import random
 import string
 
-
 logger = logging.getLogger(__name__)
 
+# Utility functions to check roles
+def is_admin(user):
+    return user.is_superuser
 
+def is_manager(user):
+    return user.groups.filter(name='Manager').exists()
+
+def is_staff(user):
+    return not is_admin(user) and not is_manager(user)
 
 @login_required
 def logout_view(request):
@@ -163,8 +170,12 @@ def update_user(request):
         return redirect('usersettings')
     return render(request, 'pages/pages/account/settings.html', {'user': user})
 
+# View for changing password (accessible by all logged-in users)
 @login_required
 def change_password(request):
+    """
+    View for users to change their password.
+    """
     if request.method == 'POST':
         current_password = request.POST.get('current_password')
         new_password = request.POST.get('new_password')
@@ -172,20 +183,23 @@ def change_password(request):
 
         if not request.user.check_password(current_password):
             messages.error(request, 'Current password is incorrect.')
-            return render(request, 'pages/pages/account/settings.html')
+            return redirect('update_user')
 
         if new_password != confirm_password:
             messages.error(request, 'New passwords do not match.')
-            return render(request, 'pages/pages/account/settings.html')
+            return redirect('update_user')
 
         user = request.user
         user.set_password(new_password)
         user.save()
+
+        # Update session to keep the user logged in
         update_session_auth_hash(request, user)
         messages.success(request, 'Your password has been updated successfully.')
-        return redirect('usersettings')
+        return redirect('update_user')
 
-    return render(request, 'pages/pages/account/settings.html')
+    return redirect('update_user')
+
 
 @login_required
 def update_wallet_address(request):
@@ -229,14 +243,18 @@ def disconnect_wallet(request):
 
     return redirect('usersettings') 
 
-
+# View for deleting user (self-deletion)
+@login_required
 def delete_user(request):
+    """
+    View to allow users to delete their own account.
+    """
     user = get_object_or_404(User, pk=request.user.pk)
     if request.method == 'POST':
         user.delete()
         messages.success(request, 'Your account has been deleted successfully.')
         return redirect('login')
-    return render(request, 'pages/pages/account/settings.html', {'user': user})
+    return redirect('update_user')
 
 class UserSettingsView(LoginRequiredMixin, FormView):
     success_url = '.'
@@ -246,8 +264,8 @@ class UserSettingsView(LoginRequiredMixin, FormView):
 
     def get_initial(self):
         user = self.request.user
-        settings = user.settings
-
+        settings, created = UserSettings.objects.get_or_create(user=user)
+        
         return {
             'username': user.username,
             'first_name': user.first_name,

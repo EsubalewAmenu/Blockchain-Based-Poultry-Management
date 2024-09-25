@@ -33,10 +33,13 @@
                             Employment Status: {{ employee.status }}
                         </p>
                         <p class="mb-0 text-sm">
+                            <!-- Displaying Start Date -->
                             Start Date: {{ employee.start_date|date:"F j, Y" }}
                         </p>
-                        {% if employee.end_date %}
+                        
+                        {% if employee.status == 'Terminated' and employee.end_date %}
                         <p class="mb-0 text-sm">
+                            <!-- Displaying End Date if employee is terminated -->
                             End Date: {{ employee.end_date|date:"F j, Y" }}
                         </p>
                         {% endif %}

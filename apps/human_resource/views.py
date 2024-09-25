@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils import timezone
 import random
 import string
 
@@ -24,15 +25,16 @@ def is_admin_or_manager(user):
 def is_manager_of_department(user, department):
     return is_manager(user) and user.employee.department == department
 
+
 # API view to get roles based on department
 def roles_by_department(request):
     department_id = request.GET.get('department_id')
-    
     if not department_id:
         return JsonResponse({'roles': []})
 
     roles = Role.objects.filter(department_id=department_id).values('id', 'name')
     return JsonResponse({'roles': list(roles)})
+
 
 # View for creating a new employee
 @login_required
@@ -40,11 +42,26 @@ def roles_by_department(request):
 def create_employee(request):
     if request.method == 'POST':
         errors, employee, password = _validate_and_create_employee(request)
+        
+        # If there are no errors, send the account creation email and redirect
         if not errors:
             _send_account_creation_email(employee.user, request.POST.get('email'), password)
             messages.success(request, 'Employee created successfully!')
             return redirect('employee_list')
 
+        # If there are errors, re-render the form with the existing data and errors
+        departments = Department.objects.all()
+        if not is_admin(request.user):
+            departments = departments.filter(id=request.user.employee.department_id)
+
+        return render(request, 'pages/human_resource/employee_create.html', {
+            'form_data': request.POST,
+            'departments': departments,
+            'roles': Role.objects.none(),
+            'errors': errors,
+        })
+
+    # Handle GET request to render the empty form
     departments = Department.objects.all()
     if not is_admin(request.user):
         departments = departments.filter(id=request.user.employee.department_id)
@@ -54,6 +71,8 @@ def create_employee(request):
         'roles': Role.objects.none(),
     })
 
+
+# Helper function to validate and create an employee
 def _validate_and_create_employee(request):
     errors = {}
     first_name = request.POST.get('first_name')
@@ -63,30 +82,45 @@ def _validate_and_create_employee(request):
     role_id = request.POST.get('role')
     photo = request.FILES.get('photo')
 
+    # Validate first name and last name
     if not first_name:
         errors['first_name'] = 'First name is required.'
     if not last_name:
         errors['last_name'] = 'Last name is required.'
+
+    # Validate email
     if not email:
         errors['email'] = 'Email is required.'
     elif User.objects.filter(email=email).exists():
-        errors['email'] = 'An account with this email already exists.'
+        errors['email'] = 'An account with this email already exists. Please use a different email.'
+
+    # Validate department
     if not department_id:
         errors['department'] = 'Department is required.'
 
     department = get_object_or_404(Department, id=department_id)
 
+    # Validate role if department is not "Admin"
     if department.name != 'Admin' and not role_id:
         errors['role'] = 'Role is required.'
 
+    # If there are errors, return them immediately
     if errors:
         return errors, None, None
 
     # Generate a random password
     password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
 
-    user = User.objects.create_user(username=email, email=email, first_name=first_name, last_name=last_name, password=password)
+    # Create the User object
+    user = User.objects.create_user(
+        username=email,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        password=password
+    )
 
+    # Assign role if applicable
     if role_id:
         role = Role.objects.get(id=role_id)
         if role.role_type == 'Manager':
@@ -95,8 +129,15 @@ def _validate_and_create_employee(request):
     else:
         role = None
 
-    employee = Employee.objects.create(user=user, department=department, role=role)
+    # Create the Employee object
+    employee = Employee.objects.create(
+        user=user,
+        department=department,
+        role=role,
+        start_date=timezone.now().date()
+    )
 
+    # Handle profile photo upload
     if photo:
         fs = FileSystemStorage()
         employee.photo = fs.save(photo.name, photo)
@@ -104,6 +145,8 @@ def _validate_and_create_employee(request):
 
     return None, employee, password
 
+
+# Helper function to send account creation email
 def _send_account_creation_email(user, email, password):
     subject = 'Your Account Has Been Created'
     message = (
@@ -151,10 +194,11 @@ def employee_list(request):
         'selected_status': status,
         'search_query': search_query
     })
-
+    
 @login_required
 def no_access(request):
     return render(request, 'pages/human_resource/no_access.html')
+
 
 # View for displaying employee details
 @login_required
