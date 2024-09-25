@@ -191,6 +191,7 @@ def eggs_create(request):
     if request.method == 'POST':
         item_id = request.POST.get('item')
         customer_id = request.POST.get('customer')
+        chicks_batch = request.POST.get('chick')
         breed_id = request.POST.get('breed')
         photo = request.FILES.get('photo')
         brought = request.POST.get('brought')
@@ -198,10 +199,20 @@ def eggs_create(request):
         item = Item.objects.get(pk=item_id)
         received = int(brought) - int(returned)
         
+        customer = None
+        if customer_id:
+            customer = get_object_or_404(Customer, id=customer_id)
+        batch = None
+        if chicks_batch:
+            chicks = get_object_or_404(Chicks, batchnumber=chicks_batch)
+            batch = chicks.batchnumber
+        
+        
         # Create and save the egg
         egg = Eggs(
             item=item,
-            customer_id=customer_id,
+            customer=customer,
+            chicks=batch,
             breed_id=breed_id,
             photo=photo,
             brought=brought,

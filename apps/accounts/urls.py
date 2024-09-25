@@ -19,7 +19,10 @@ urlpatterns = [
     path('user/delete/', delete_user, name='delete_user'),
     path('password/change/', change_password, name='change_password'),
     path('settings/', UserSettingsView.as_view(), name='usersettings'),
+    path('user/wallet/update/', update_wallet_address, name='update_wallet_address'),
+    path('user/wallet/disconnect', disconnect_wallet, name='disconnect_wallet'),
     path('login/', login_view, name='login'),
+    path('signin_with_wallet/', signin_with_wallet, name='signin_with_wallet'),
     path('logout/', logout_view, name='logout'),
     path('reset-password/', reset_password, name='reset_password'),
     

@@ -78,10 +78,12 @@ class Eggs(models.Model):
     """
     id = models.AutoField(primary_key=True)
     batchnumber = models.CharField(null=True,blank=True,max_length=50, unique=True)
-    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)    
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
+    source = models.CharField(max_length=50, null=True, blank=True, choices=[['customer', 'customer'], ['farm', 'farm']], default='customer')
     customer=models.ForeignKey(Customer,
         related_name="eggs_customer", blank=True, null=True,
         on_delete=models.SET_NULL)
+    chicks = models.CharField(blank=True, null=True, max_length=50)
     breed=models.ForeignKey(Breed,
         related_name="eggs_breed", blank=True, null=True,
         on_delete=models.SET_NULL)

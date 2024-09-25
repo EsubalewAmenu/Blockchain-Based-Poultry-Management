@@ -17,6 +17,7 @@
               <tr>
                   <th scope="col">Batch Number</th>
                   <th scope="col">Customer</th>
+                  <th scope="col">Chicks</th>
                   <th scope="col">Breed</th>
                   <th scope="col">Item code</th>
                   <th scope="col">Brought</th>
@@ -40,7 +41,20 @@
                       </div>
                   </td>
                   <td class="font-weight-bold">
-                      <span class="my-2 text-xs">{{ egg.customer.first_name }} {{ egg.customer.last_name }}</span>
+                      <span class="my-2 text-xs">
+                      {% if egg.customer.full_name %}
+                        {{ egg.customer.full_name }}
+                      {% else %}
+                        -
+                      {% endif %}</span>
+                  </td>
+                  <td class="font-weight-bold">
+                      <span class="my-2 text-xs">
+                      {% if egg.chicks %}
+                        {{ egg.chicks }}
+                      {% else %}
+                        -
+                      {% endif %}</span>
                   </td>
                   <td class="font-weight-bold">
                       <span class="my-2 text-xs">{{ egg.breed.breed }}</span>

@@ -1,0 +1,114 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block main %}
+
+<div class="table-responsive mt-3">
+    <div class="card">
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="trackerTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {% if tracker_type == 'egg' %}active success{% else %}text-secondary{% endif %}" 
+                       id="egg-tab" 
+                       href="{% url 'tracker_list' %}?type=egg" 
+                       role="tab" 
+                       aria-controls="egg-trackers" 
+                       aria-selected="{% if tracker_type == 'egg' %}true{% else %}false{% endif %}">Egg Trackers</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {% if tracker_type == 'chick' %}active success{% else %}text-secondary{% endif %}" 
+                       id="chick-tab" 
+                       href="{% url 'tracker_list' %}?type=chick" 
+                       role="tab" 
+                       aria-controls="chick-trackers" 
+                       aria-selected="{% if tracker_type == 'chick' %}true{% else %}false{% endif %}">Chick Trackers</a>
+                </li>
+            </ul>
+                      
+            <table class="table table-flush" id="datatable-search">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Tracker Code</th>
+                        <th scope="col">Barcode</th>
+                        <th scope="col">QR Code</th> <!-- Add a column for the QR Code -->
+                        <th scope="col">Batch Number</th>
+                        <th scope="col">Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <div class="tab-content" id="trackerTabContent">
+                        <div class="tab-pane fade {% if tracker_type == 'egg' %}show active{% endif %}" id="egg-trackers" role="tabpanel" aria-labelledby="egg-tab">
+                            {% for tracker in egg_trackers %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'tracker_detail' tracker.tracker_code %}" class="text-decoration-none">
+                                        <p class="text-xs font-weight-bold">{{ tracker.tracker_code }}</p>
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if tracker.barcode_image %}
+                                        <img src="{{ tracker.barcode_image.url }}" alt="Barcode for {{ tracker.tracker_code }}" style="height: 50px;">
+                                    {% else %}
+                                        No Barcode
+                                    {% endif %}
+                                </td>
+                                <td> <!-- QR Code Column -->
+                                    {% if tracker.qr_code_image %}
+                                        <img src="{{ tracker.qr_code_image.url }}" alt="QR Code for {{ tracker.tracker_code }}" style="height: 50px;">
+                                    {% else %}
+                                        No QR Code
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if tracker.egg %}
+                                        {{ tracker.egg.batchnumber }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>Egg</td>
+                            </tr>
+                            {% endfor %}
+                        </div>
+
+                        <div class="tab-pane fade {% if tracker_type == 'chick' %}show active{% endif %}" id="chick-trackers" role="tabpanel" aria-labelledby="chick-tab">
+                            {% for tracker in chick_trackers %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'tracker_detail' tracker.tracker_code %}" class="text-decoration-none">
+                                        <p class="text-xs font-weight-bold">{{ tracker.tracker_code }}</p>
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if tracker.barcode_image %}
+                                        <img src="{{ tracker.barcode_image.url }}" alt="Barcode for {{ tracker.tracker_code }}" style="height: 50px;">
+                                    {% else %}
+                                        No Barcode
+                                    {% endif %}
+                                </td>
+                                <td> <!-- QR Code Column -->
+                                    {% if tracker.qr_code_image %}
+                                        <img src="{{ tracker.qr_code_image.url }}" alt="QR Code for {{ tracker.tracker_code }}" style="height: 50px;">
+                                    {% else %}
+                                        No QR Code
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if tracker.chick %}
+                                        {{ tracker.chick.batchnumber }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>Chick</td>
+                            </tr>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

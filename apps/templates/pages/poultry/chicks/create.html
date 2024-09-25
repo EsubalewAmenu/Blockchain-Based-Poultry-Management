@@ -41,7 +41,7 @@
                                                             <option value="" disabled selected>Select an Item</option>
                                                             <option value="None">None</option>
                                                             {% for item in items %}
-                                                                <option value="{{ item.pk }}">{{ item.code }}-{{item.item_type.type_name}}</option>
+                                                                <option value="{{ item.pk }}">{{ item.code }}-{{item.item_type.type_name}} | {{item.created_at}}</option>
                                                             {% endfor %}
                                                         </select>
                                                     </div>
@@ -55,9 +55,13 @@
                                                     </div>
                                                 </div>
                                                 <div class="row mt-3">
-                                                    <div class="col-12 col-sm-6">
-                                                        <label>Source</label>
-                                                        <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Egg" name='source'/>
+                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                                        <label for="source" class="form-label">Source</label>
+                                                        <select class="form-control" name="source" id="source" required>
+                                                            <option value="" disabled selected>Select a source</option>
+                                                            <option value="customer">Customer</option>
+                                                            <option value="hatching">Hatching</option>
+                                                        </select>
                                                     </div>
                                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                                         <label>Age</label>
@@ -68,6 +72,24 @@
                                                     <div class="col-12 col-sm-6">
                                                         <label>Chick Photo</label>
                                                         <input class="multisteps-form__input form-control" type="file" class="form-control" name='chick_photo'/>
+                                                    </div>
+                                                    <div class="col-12 col-sm-6" id="customerField" style="display: none;">
+                                                        <label>Customer</label>
+                                                        <select class="multisteps-form__input form-control" name="customer">
+                                                            <option value="">Select a Customer</option>
+                                                            {% for customer in customers %}
+                                                                <option value="{{ customer.id }}">{{ customer.full_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-sm-6" id="hatchingField" style="display: none;">
+                                                        <label>Hatching</label>
+                                                        <select class="multisteps-form__input form-control" name="hatching">
+                                                            <option value="">Select Hatching</option>
+                                                            {% for hatching in hatchings %}
+                                                                <option value="{{ hatching.hatchingcode }}">{{ hatching.hatchingcode }}</option>
+                                                            {% endfor %}
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="row mt-3">
@@ -114,4 +136,22 @@
     </div>
   </div>
 </div>
+<script>
+    document.getElementById('source').addEventListener('change', function() {
+        var selectedSource = this.value;
+        var customerField = document.getElementById('customerField');
+        var hatchingField = document.getElementById('hatchingField');
+  
+        // Reset fields
+        customerField.style.display = 'none';
+        hatchingField.style.display = 'none';
+  
+        // Show the relevant field based on the selected source
+        if (selectedSource === 'customer') {
+            customerField.style.display = 'block';
+        } else if (selectedSource === 'hatching') {
+            hatchingField.style.display = 'block';
+        }
+    });
+  </script>
 {%endblock%}

@@ -21,7 +21,7 @@ from django.conf import settings
 from apps.core.utils import to_mg
 from django.urls import reverse_lazy
 from .forms import UserSettingsForm
-from .models import UserSettings
+from .models import UserSettings, UserWalletAddress
 import random
 import string
 
@@ -63,6 +63,29 @@ def login_view(request):
                 login(request, user)
                 return HttpResponseRedirect('/dashboard/')
     return render(request, 'pages/authentication/signin/illustration.html')
+
+@csrf_exempt
+@axes_dispatch
+def signin_with_wallet(request):
+    if request.method == 'POST':
+        wallet_address = request.POST.get('wallet_address')
+        print("Wallet address: %s" % wallet_address)
+        if wallet_address:
+            # Look for a user associated with this wallet address
+            try:
+                wallet = UserWalletAddress.objects.get(address=wallet_address)
+                user = wallet.user
+                
+                # Log the user in
+                login(request, user)
+                messages.success(request, 'Successfully signed in with wallet.')
+                return redirect('dashboard')  # Redirect to the user's dashboard or desired page
+            except UserWalletAddress.DoesNotExist:
+                messages.error(request, 'Wallet address not found.')
+        else:
+            messages.error(request, 'No wallet address provided.')
+
+    return redirect('login')
 
 @csrf_exempt
 @login_required
@@ -177,6 +200,49 @@ def change_password(request):
 
     return redirect('update_user')
 
+
+@login_required
+def update_wallet_address(request):
+    user = request.user
+    wallet_address, created = UserWalletAddress.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        address = request.POST.get('wallet_address')
+        provider = request.POST.get('wallet_provider')
+
+        if address and provider:
+            wallet_address.address = address
+            wallet_address.provider = provider
+            wallet_address.save()
+            messages.success(request, 'Wallet address updated successfully.')
+        else:
+            messages.error(request, 'Please provide both a wallet address and provider.')
+
+        return redirect('usersettings')
+
+    # Render template with the current wallet address (if any)
+    context = {
+        'user': user,
+        'wallet_address': wallet_address
+    }
+    return render(request, 'pages/pages/account/settings.html', context)
+
+@login_required
+def disconnect_wallet(request):
+    # Get the wallet address for the logged-in user
+    wallet_address = UserWalletAddress.objects.filter(user=request.user).first()
+
+    # If a wallet is connected, clear the wallet address and provider
+    if wallet_address and wallet_address.address:
+        wallet_address.address = ""
+        wallet_address.provider = ""
+        wallet_address.save()
+        messages.success(request, "Wallet disconnected successfully.")
+    else:
+        messages.error(request, "No wallet connected to disconnect.")
+
+    return redirect('usersettings') 
+
 # View for deleting user (self-deletion)
 @login_required
 def delete_user(request):
@@ -225,29 +291,6 @@ class UserSettingsView(LoginRequiredMixin, FormView):
             user.save()
 
             user.settings.time_zone = form.cleaned_data['time_zone']
-
-            glucose_unit = form.cleaned_data['glucose_unit']
-            user.settings.glucose_unit = glucose_unit
-
-            user.settings.default_category = form.cleaned_data['default_category']
-
-            glucose_low = form.cleaned_data['glucose_low']
-            glucose_high = form.cleaned_data['glucose_high']
-            glucose_target_min = form.cleaned_data['glucose_target_min']
-            glucose_target_max = form.cleaned_data['glucose_target_max']
-
-            # If user's glucose unit setting is set to mmol/L, convert the
-            # values to mg/dL.
-            if glucose_unit.name == 'mmol/L':
-                glucose_low = to_mg(glucose_low)
-                glucose_high = to_mg(glucose_high)
-                glucose_target_min = to_mg(glucose_target_min)
-                glucose_target_max = to_mg(glucose_target_max)
-
-            user.settings.glucose_low = glucose_low
-            user.settings.glucose_high = glucose_high
-            user.settings.glucose_target_min = glucose_target_min
-            user.settings.glucose_target_max = glucose_target_max
             user.settings.save()
 
             logger.info('Account Settings updated by %s', user)

@@ -22,7 +22,13 @@
         </div>
       </div>
     </div>
-    
+    {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
     <!-- Card Basic Info -->
     <div class="card mt-4" id="basic-info">
       <div class="card-header">
@@ -35,13 +41,15 @@
             <div class="col-6">
               <label class="form-label">First Name</label>
               <div class="input-group">
-                <input id="first_name" name="first_name" class="form-control" type="text" value="{{ request.user.first_name }}" required="required">
+                <input id="first_name" name="first_name" class="form-control" type="text"
+                  value="{{ request.user.first_name }}" required="required">
               </div>
             </div>
             <div class="col-6">
               <label class="form-label">Last Name</label>
               <div class="input-group">
-                <input id="last_name" name="last_name" class="form-control" type="text" value="{{ request.user.last_name }}" required="required">
+                <input id="last_name" name="last_name" class="form-control" type="text"
+                  value="{{ request.user.last_name }}" required="required">
               </div>
             </div>
           </div>
@@ -49,13 +57,15 @@
             <div class="col-6">
               <label class="form-label mt-4">Email</label>
               <div class="input-group">
-                <input id="email" name="email" class="form-control" type="email" value="{{ request.user.email }}" placeholder="example@email.com">
+                <input id="email" name="email" class="form-control" type="email" value="{{ request.user.email }}"
+                  placeholder="example@email.com">
               </div>
             </div>
             <div class="col-6">
               <label class="form-label mt-4">Primary Phone</label>
               <div class="input-group">
-                <input id="primary_phone" name="primary_phone" class="form-control" type="text" value="{{ request.user.settings.primary_phone }}" placeholder="+40 735 631 620">
+                <input id="primary_phone" name="primary_phone" class="form-control" type="text"
+                  value="{{ request.user.settings.primary_phone }}" placeholder="+40 735 631 620">
               </div>
             </div>
           </div>
@@ -63,13 +73,15 @@
             <div class="col-6">
               <label class="form-label mt-4">Secondary Phone</label>
               <div class="input-group">
-                <input id="secondary_phone" name="secondary_phone" class="form-control" type="text" value="{{ request.user.settings.secondary_phone }}" placeholder="+40 735 631 620">
+                <input id="secondary_phone" name="secondary_phone" class="form-control" type="text"
+                  value="{{ request.user.settings.secondary_phone }}" placeholder="+40 735 631 620">
               </div>
             </div>
             <div class="col-6">
               <label class="form-label mt-4">Date of Birth</label>
               <div class="input-group">
-                <input id="date_of_birth" name="date_of_birth" class="form-control" type="date" value="{{ request.user.settings.date_of_birth|date:'Y-m-d' }}">
+                <input id="date_of_birth" name="date_of_birth" class="form-control" type="date"
+                  value="{{ request.user.settings.date_of_birth|date:'Y-m-d' }}">
               </div>
             </div>
           </div>
@@ -77,7 +89,8 @@
             <div class="col-12">
               <label class="form-label mt-4">Address</label>
               <div class="input-group">
-                <input id="address" name="address" class="form-control" type="text" value="{{ request.user.settings.address }}" placeholder="123 Main St">
+                <input id="address" name="address" class="form-control" type="text"
+                  value="{{ request.user.settings.address }}" placeholder="123 Main St">
               </div>
             </div>
           </div>
@@ -85,20 +98,14 @@
         </form>
       </div>
     </div>
-    
+
     <!-- Card Change Password -->
     <div class="card mt-4" id="password">
       <div class="card-header">
         <h5>Change Password</h5>
       </div>
       <div class="card-body pt-0">
-        {% if messages %}
-                      <ul>
-                          {% for message in messages %}
-                              <li>{{ message }}</li>
-                          {% endfor %}
-                      </ul>
-                  {% endif %}
+        
         <form method="post" action="{% url 'change_password' %}">
           {% csrf_token %}
           <label class="form-label">Current password</label>
@@ -117,7 +124,176 @@
         </form>
       </div>
     </div>
+
+    <!-- Card Logout -->
+    <div class="card mt-4" id="wallet">
+      <div class="card-header">
+        <h5>Wallet Address</h5>
+      </div>
+      <div class="card-body pt-0">
+        <form method="POST" action="{% url 'update_wallet_address' %}" id="walletForm">
+          {% csrf_token %}
+          <input type="hidden" id="walletAddressInput" name="wallet_address" value="{{ request.user.wallet_address.address }}">
+          <input type="hidden" id="walletProviderInput" name="wallet_provider" value="{{ request.user.wallet_address.provider }}">
     
+          <div class="row">
+            <div class="col-12">
+              <!-- Wallet Address Display -->
+              <div id="walletAddressDisplay" class="mt-3" {% if request.user.wallet_address.address %} style="display:block;" {% else %} style="display:none;" {% endif %}>
+                
+                <div class="row">
+                <div class="col-9">
+                  <label class="form-label">Connected Wallet Address</label>
+                <input id="walletAddressText" name="walletAddressText" class="form-control" type="text"
+                  value="{{ request.user.wallet_address.address }}" name="wallet_address" required="required">
+                </div>
+                <div class="col-3">
+                  <label class="form-label">Wallet Address Provider</label>
+                  <input id="walletAddressText" name="walletAddressText" name="wallet_provider" class="form-control" type="text"
+                    value="{{ request.user.wallet_address.provider }}" required="required">
+                  </div>
+              </div>
+              </div>
+            </div>
+    
+            <!-- Only show wallet select if no wallet is connected -->
+            <div class="col-6" id="walletSelectContainer" {% if request.user.wallet_address.address %} style="display:none;" {% else %} style="display:block;" {% endif %}>
+              <select class="form-control" id="walletSelect">
+                <option value="" disabled selected>Select Wallet</option>
+              </select>
+            </div>
+          </div>
+    
+          <div class="row">
+            <div class="col-12 mt-3">
+              <button type="submit" class="btn btn-success" id="connectWalletButton" {% if request.user.wallet_address.address %} style="display:none;" {% else %} style="display:inline-block;" {% endif %}>Connect Wallet</button>
+              {% comment %} <button type="submit" class="btn btn-primary" id="updateWalletButton" {% if request.user.wallet_address.address %} style="display:inline-block;" {% else %} style="display:none;" {% endif %}>Update Wallet Address</button> {% endcomment %}
+            </div>
+          </div>
+        </form>
+        <!-- Separate Form for Disconnecting the Wallet -->
+        <form method="POST" action="{% url 'disconnect_wallet' %}" id="disconnectWalletForm">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger mt-3" id="disconnectWalletButton" {% if request.user.wallet_address.address %} style="display:inline-block;" {% else %} style="display:none;" {% endif %}>
+            Disconnect Wallet
+          </button>
+        </form>
+      </div>
+    
+      <script>
+        let connectedWallet = null;
+    
+        window.addEventListener('load', async () => {
+          const wallets = {
+            nami: window.cardano?.nami,
+            eternl: window.cardano?.eternl,
+            yoroi: window.cardano?.yoroi,
+          };
+    
+          function populateWalletOptions() {
+            const walletSelect = document.getElementById('walletSelect');
+            const availableWallets = Object.keys(wallets).filter(wallet => wallets[wallet]);
+    
+            availableWallets.forEach(wallet => {
+              const option = document.createElement('option');
+              option.value = wallet;
+              option.text = wallet.charAt(0).toUpperCase() + wallet.slice(1);
+              walletSelect.appendChild(option);
+            });
+    
+            if (availableWallets.length === 0) {
+              const option = document.createElement('option');
+              option.value = "";
+              option.text = "No supported wallets found";
+              walletSelect.appendChild(option);
+              walletSelect.disabled = true;
+            }
+          }
+    
+          populateWalletOptions();
+    
+          async function connectWallet(walletName) {
+            const wallet = wallets[walletName];
+            if (wallet) {
+              try {
+                connectedWallet = await wallet.enable();
+    
+                // Enable disconnect button and hide connect button
+                document.getElementById('disconnectWalletButton').style.display = 'inline-block';
+                document.getElementById('connectWalletButton').style.display = 'none';
+                {% comment %} document.getElementById('updateWalletButton').style.display = 'inline-block'; {% endcomment %}
+    
+                return connectedWallet;
+              } catch (error) {
+                console.error(`User denied access to ${walletName} wallet`);
+                console.log(error);
+              }
+            } else {
+              console.error(`${walletName} wallet is not installed`);
+            }
+          }
+    
+          function disconnectWallet() {
+            if (connectedWallet) {
+              connectedWallet = null; // Clear the connected wallet state
+              console.log('Wallet disconnected');
+    
+              // Hide disconnect button, show connect button
+              document.getElementById('disconnectWalletButton').style.display = 'none';
+              document.getElementById('connectWalletButton').style.display = 'inline-block';
+              {% comment %} document.getElementById('updateWalletButton').style.display = 'none'; {% endcomment %}
+              document.getElementById('walletAddressDisplay').style.display = 'none'; // Hide address
+    
+              // Clear any stored session data related to the wallet connection
+              localStorage.removeItem('connectedWallet');
+              sessionStorage.removeItem('connectedWallet');
+    
+              // Optionally, reset any UI elements related to the wallet connection
+              document.getElementById('walletSelect').value = ""; // Reset wallet selection
+    
+            } else {
+              console.log('No wallet is connected');
+            }
+          }
+    
+          // Event listener for Connect Wallet button
+          document.getElementById('connectWalletButton').addEventListener('click', async () => {
+            const walletSelect = document.getElementById('walletSelect');
+            const selectedWallet = walletSelect.value;
+    
+            if (selectedWallet) {
+              connectedWallet = await connectWallet(selectedWallet);
+    
+              if (connectedWallet) {
+                const addresses = await connectedWallet.getUsedAddresses();
+                const address = addresses[0];
+    
+                // Set the address and provider in the hidden form inputs
+                document.getElementById('walletAddressInput').value = address;
+                document.getElementById('walletProviderInput').value = selectedWallet;
+    
+                // Display wallet address and show disconnect button
+                document.getElementById('walletAddressText').innerText = address;
+                document.getElementById('walletAddressDisplay').style.display = 'block';
+                document.getElementById('walletSelectContainer').style.display = 'none'; // Hide wallet selection
+    
+                // Automatically submit the form to save wallet address and provider
+                document.getElementById('walletForm').submit();
+              }
+            } else {
+              console.log('Please select a wallet first.');
+            }
+          });
+    
+          // Event listener for Disconnect Wallet button
+          document.getElementById('disconnectWalletButton').addEventListener('click', () => {
+            disconnectWallet();
+          });
+        });
+      </script>
+    </div>
+    
+
     <!-- Card Delete Account -->
     <div class="card mt-4" id="delete">
       <div class="card-header">
@@ -138,7 +314,8 @@
         </div>
         <form action="{% url 'delete_user'%}" method="post" class="ms-auto">
           {% csrf_token %}
-          <button class="btn bg-gradient-danger mb-0 ms-2" type="submit" onclick="return confirm('Are you sure you want to delete your account?');">Delete Account</button>
+          <button class="btn bg-gradient-danger mb-0 ms-2" type="submit"
+            onclick="return confirm('Are you sure you want to delete your account?');">Delete Account</button>
         </form>
       </div>
     </div>

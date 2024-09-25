@@ -1015,7 +1015,7 @@ var argon = {
               '</div>',
             showCancelButton: true,
             customClass: {
-              confirmButton: 'btn btn-primary',
+              confirmButton: 'btn btn-success mt-2',
               cancelButton: 'btn btn-danger'
             },
             buttonsStyling: false
