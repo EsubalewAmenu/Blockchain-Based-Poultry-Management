@@ -132,43 +132,20 @@ def create_user(request):
 
 @login_required
 def update_user(request):
-    """
-    Allow users to update their own profile. No user can access other users' profiles.
-    """
-    # Get the current logged-in user
-    current_user = request.user
-
-    # Ensure the user has a UserSettings object
-    if not hasattr(current_user, 'settings'):
-        UserSettings.objects.create(user=current_user)
-
+    user = get_object_or_404(User, pk=request.user.pk)
     if request.method == 'POST':
-        form = UserSettingsForm(request.POST, instance=current_user.settings)
-        if form.is_valid():
-            # Update user profile
-            current_user.first_name = form.cleaned_data['first_name']
-            current_user.last_name = form.cleaned_data['last_name']
-            current_user.email = form.cleaned_data['email']
-            current_user.save()
-
-            # Update user settings
-            current_user.settings.primary_phone = form.cleaned_data['primary_phone']
-            current_user.settings.secondary_phone = form.cleaned_data['secondary_phone']
-            current_user.settings.date_of_birth = form.cleaned_data['date_of_birth']
-            current_user.settings.address = form.cleaned_data['address']
-            current_user.settings.save()
-
-            messages.success(request, 'Your profile has been updated successfully.')
-            return redirect('update_user')
-        else:
-            messages.error(request, 'There was an error updating your profile.')
-    else:
-        form = UserSettingsForm(instance=current_user.settings)
-
-    return render(request, 'pages/account/settings.html', {
-        'form': form,
-        'user': current_user,  # Pass the current user to the template
-    })
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.email = request.POST.get('email')
+        user.settings.primary_phone = request.POST.get('primary_phone')
+        user.settings.secondary_phone = request.POST.get('secondary_phone')
+        user.settings.date_of_birth = request.POST.get('date_of_birth')
+        user.settings.address = request.POST.get('address')
+        user.save()
+        user.settings.save()
+        messages.success(request, 'User profile updated successfully.')
+        return redirect('usersettings')
+    return render(request, 'pages/pages/account/settings.html', {'user': user})
 
 # View for changing password (accessible by all logged-in users)
 @login_required
