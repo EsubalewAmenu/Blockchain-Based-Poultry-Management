@@ -25,10 +25,17 @@ from .models import UserSettings
 import random
 import string
 
-
 logger = logging.getLogger(__name__)
 
+# Utility functions to check roles
+def is_admin(user):
+    return user.is_superuser
 
+def is_manager(user):
+    return user.groups.filter(name='Manager').exists()
+
+def is_staff(user):
+    return not is_admin(user) and not is_manager(user)
 
 @login_required
 def logout_view(request):
@@ -125,23 +132,50 @@ def create_user(request):
 
 @login_required
 def update_user(request):
-    user = get_object_or_404(User, pk=request.user.pk)
-    if request.method == 'POST':
-        user.first_name = request.POST.get('first_name')
-        user.last_name = request.POST.get('last_name')
-        user.email = request.POST.get('email')
-        user.settings.primary_phone = request.POST.get('primary_phone')
-        user.settings.secondary_phone = request.POST.get('secondary_phone')
-        user.settings.date_of_birth = request.POST.get('date_of_birth')
-        user.settings.address = request.POST.get('address')
-        user.save()
-        user.settings.save()
-        messages.success(request, 'User profile updated successfully.')
-        return redirect('usersettings')
-    return render(request, 'pages/pages/account/settings.html', {'user': user})
+    """
+    Allow users to update their own profile. No user can access other users' profiles.
+    """
+    # Get the current logged-in user
+    current_user = request.user
 
+    # Ensure the user has a UserSettings object
+    if not hasattr(current_user, 'settings'):
+        UserSettings.objects.create(user=current_user)
+
+    if request.method == 'POST':
+        form = UserSettingsForm(request.POST, instance=current_user.settings)
+        if form.is_valid():
+            # Update user profile
+            current_user.first_name = form.cleaned_data['first_name']
+            current_user.last_name = form.cleaned_data['last_name']
+            current_user.email = form.cleaned_data['email']
+            current_user.save()
+
+            # Update user settings
+            current_user.settings.primary_phone = form.cleaned_data['primary_phone']
+            current_user.settings.secondary_phone = form.cleaned_data['secondary_phone']
+            current_user.settings.date_of_birth = form.cleaned_data['date_of_birth']
+            current_user.settings.address = form.cleaned_data['address']
+            current_user.settings.save()
+
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('update_user')
+        else:
+            messages.error(request, 'There was an error updating your profile.')
+    else:
+        form = UserSettingsForm(instance=current_user.settings)
+
+    return render(request, 'pages/account/settings.html', {
+        'form': form,
+        'user': current_user,  # Pass the current user to the template
+    })
+
+# View for changing password (accessible by all logged-in users)
 @login_required
 def change_password(request):
+    """
+    View for users to change their password.
+    """
     if request.method == 'POST':
         current_password = request.POST.get('current_password')
         new_password = request.POST.get('new_password')
@@ -149,28 +183,35 @@ def change_password(request):
 
         if not request.user.check_password(current_password):
             messages.error(request, 'Current password is incorrect.')
-            return render(request, 'pages/pages/account/settings.html')
+            return redirect('update_user')
 
         if new_password != confirm_password:
             messages.error(request, 'New passwords do not match.')
-            return render(request, 'pages/pages/account/settings.html')
+            return redirect('update_user')
 
         user = request.user
         user.set_password(new_password)
         user.save()
+
+        # Update session to keep the user logged in
         update_session_auth_hash(request, user)
         messages.success(request, 'Your password has been updated successfully.')
-        return redirect('usersettings')
+        return redirect('update_user')
 
-    return render(request, 'pages/pages/account/settings.html')
+    return redirect('update_user')
 
+# View for deleting user (self-deletion)
+@login_required
 def delete_user(request):
+    """
+    View to allow users to delete their own account.
+    """
     user = get_object_or_404(User, pk=request.user.pk)
     if request.method == 'POST':
         user.delete()
         messages.success(request, 'Your account has been deleted successfully.')
         return redirect('login')
-    return render(request, 'pages/pages/account/settings.html', {'user': user})
+    return redirect('update_user')
 
 class UserSettingsView(LoginRequiredMixin, FormView):
     success_url = '.'
@@ -180,8 +221,8 @@ class UserSettingsView(LoginRequiredMixin, FormView):
 
     def get_initial(self):
         user = self.request.user
-        settings = user.settings
-
+        settings, created = UserSettings.objects.get_or_create(user=user)
+        
         return {
             'username': user.username,
             'first_name': user.first_name,
