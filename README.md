@@ -35,7 +35,6 @@ Hatchtrack is a comprehensive poultry management system designed to streamline t
 ### 6. **Human Resource Management**
 
 - Manage staff details, attendance, and roles within the hatchery and poultry farms.
-- Assign specific tasks related to the hatchery, breeding, and inventory processes.
 
 ### 7. **Interactive Analytics and Dashboard**
 
