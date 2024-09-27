@@ -106,9 +106,9 @@ To get started with Hatchtrack, follow these instructions:
     docker-compose up -d
    ```
 5. **Stop the application**
-```
-docker compose down
-```
+   ```
+   docker compose down
+   ```
 
 6. **Access the application:**
    The application will be accessible at `http://localhost:11000`.
