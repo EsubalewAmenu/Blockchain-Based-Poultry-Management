@@ -46,12 +46,6 @@ Hatchtrack is a comprehensive poultry management system designed to streamline t
 
 Hatchtrack is fully containerized using Docker to simplify setup, configuration, and deployment. Docker ensures that the application can run consistently across multiple environments.
 
-### Docker Features:
-
-- **Multi-container support:** Each major component (database, web server, application) runs in its own Docker container.
-- **Environment isolation:** Each environment (development, production) can be replicated using Docker Compose files.
-- **Simplified setup:** Easily spin up and tear down the application using Docker commands for streamlined development.
-
 ### Environment Variables
 
 The application relies on certain environment variables for configuration, especially for email and database settings. Here’s a list of environment variables to be set up:
