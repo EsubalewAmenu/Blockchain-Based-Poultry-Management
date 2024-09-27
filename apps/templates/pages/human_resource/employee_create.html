@@ -1,0 +1,146 @@
+{% extends "dashboard.html" %}
+
+{% block main %}
+<div class="row mb-5">
+    <div class="col-12">
+        <!-- Back Icon Button -->
+        <a href="{% url 'employee_list' %}" class="btn btn-link text-white p-0">
+            <i class="fas fa-arrow-left fa-lg"></i>
+        </a>
+        
+        <div class="multisteps-form mb-5 mt-3">
+            <div class="row">
+                <div class="col-12 col-lg-8 mx-auto my-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="font-weight-bolder mb-0">Create New Employee</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-8 m-auto">
+                    <form class="multisteps-form__form mb-8" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+                            <h5 class="font-weight-bolder">Employee Info</h5>
+                            <div class="multisteps-form__content">
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label>First Name</label>
+                                        <input class="multisteps-form__input form-control" type="text" name="first_name" placeholder="eg. John" value="{{ form_data.first_name|default:'' }}" required />
+                                        {% if errors.first_name %}
+                                            <small class="text-danger">{{ errors.first_name }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label>Last Name</label>
+                                        <input class="multisteps-form__input form-control" type="text" name="last_name" placeholder="eg. Doe" value="{{ form_data.last_name|default:'' }}" required />
+                                        {% if errors.last_name %}
+                                            <small class="text-danger">{{ errors.last_name }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label>Email</label>
+                                        <input class="multisteps-form__input form-control" type="email" name="email" placeholder="eg. johndoe@example.com" value="{{ form_data.email|default:'' }}" required />
+                                        {% if errors.email %}
+                                            <small class="text-danger">{{ errors.email }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label>Phone Number</label>
+                                        <input class="multisteps-form__input form-control" type="text" name="phone" placeholder="eg. +123456789" value="{{ form_data.phone|default:'' }}" required />
+                                        {% if errors.phone %}
+                                            <small class="text-danger">{{ errors.phone }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label>Department</label>
+                                        <select class="multisteps-form__input form-control" name="department" id="department-select" required>
+                                            <option value="" selected disabled>Select Department</option>
+                                            {% for department in departments %}
+                                                <option value="{{ department.id }}" {% if form_data.department == department.id|stringformat:"s" %}selected{% endif %}>{{ department.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% if errors.department %}
+                                            <small class="text-danger">{{ errors.department }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mt-3" id="role-container">
+                                    <div class="col-12">
+                                        <label>Role</label>
+                                        <select class="multisteps-form__input form-control" name="role" id="role-select" required>
+                                            <option value="" selected disabled>Select Role</option>
+                                        </select>
+                                        {% if errors.role %}
+                                            <small class="text-danger">{{ errors.role }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label>Profile Photo</label>
+                                        <input class="multisteps-form__input form-control" type="file" name="photo" accept="image/*" />
+                                        {% if errors.photo %}
+                                            <small class="text-danger">{{ errors.photo }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="button-row d-flex mt-4">
+                                    <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Create Employee</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <script>
+                        document.getElementById('department-select').addEventListener('change', function() {
+                            const departmentId = this.value;
+                            const departmentName = this.options[this.selectedIndex].text;
+                            const roleContainer = document.getElementById('role-container');
+                            const roleSelect = document.getElementById('role-select');
+                            
+                            // Clear any existing options
+                            roleSelect.innerHTML = '<option value="" selected disabled>Select Role</option>';
+                            
+                            if (departmentId && departmentName === 'Admin') {
+                                roleContainer.style.display = 'none';
+                                roleSelect.removeAttribute('required');
+                            } else {
+                                roleContainer.style.display = 'block';
+                                roleSelect.setAttribute('required', 'true');
+                                
+                                // Fetch roles based on the selected department
+                                fetch(`/human_resource/roles_by_department/?department_id=${departmentId}`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.roles.length === 0) {
+                                            roleSelect.innerHTML = '<option value="" disabled>No roles available</option>';
+                                        } else {
+                                            data.roles.forEach(role => {
+                                                const option = document.createElement('option');
+                                                option.value = role.id;
+                                                option.textContent = role.name;
+                                                roleSelect.appendChild(option);
+                                            });
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching roles:', error));
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

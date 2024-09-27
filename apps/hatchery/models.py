@@ -18,10 +18,17 @@ from django.contrib.gis.db import models as gismodels
 
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
-
+import random
+import string
 from telelbirds import settings
 from apps.breeders.models import Breeders
-from apps.customer.models import Customer
+from apps.customer.models import Customer, Eggs
+from apps.inventory.models import Item, ItemRequest
+import uuid
+from django.core.files import File
+from io import BytesIO
+import barcode
+from barcode.writer import ImageWriter
 
 class Hatchery(models.Model):
     """
@@ -30,7 +37,7 @@ class Hatchery(models.Model):
     id = models.AutoField(primary_key=True)
     name=models.CharField(null=True,blank=True,max_length=50)
     photo = ProcessedImageField(upload_to='hatchery_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
-    email=models.EmailField(null=True,blank=True,max_length=50)
+    email=models.EmailField(null=True,blank=True,max_length=50, unique=True)
     phone=models.CharField(null=True,blank=True,max_length=15)
     address=models.CharField(null=True,blank=True,max_length=50)
     location=gismodels.PointField(
@@ -70,11 +77,13 @@ class Incubators(models.Model):
     hatchery=models.ForeignKey(Hatchery,
         related_name="incubators_hatchery", blank=True, null=True,
         on_delete=models.SET_NULL)
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
     incubatortype=models.CharField(null=True,blank=True,max_length=50)
     manufacturer=models.CharField(null=True,blank=True,max_length=50)
     model=models.CharField(null=True,blank=True,max_length=15)
+    number = models.IntegerField(null=True, blank=True)
     year=models.CharField(null=True,blank=True,max_length=50)
-    code=models.CharField(null=True,blank=True,max_length=50)    
+    code=models.CharField(null=True,blank=True,max_length=50, unique=True)    
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -86,6 +95,19 @@ class Incubators(models.Model):
 
     def get_absolute_url(self):
         return '/incubator/{}'.format(self.code)
+    
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.generate_unique_code()
+        
+        super(Incubators, self).save(*args, **kwargs)
+
+    def generate_unique_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'INC-{random_suffix}'
+            if not Incubators.objects.filter(code=unique_code).exists():
+                return unique_code
 
 class IncubatorCapacity(models.Model):
     """
@@ -93,7 +115,7 @@ class IncubatorCapacity(models.Model):
     """
     id = models.AutoField(primary_key=True)
     incubator=models.ForeignKey(Incubators,
-        related_name="ncubatorcapacity_incubator", blank=True, null=True,
+        related_name="incubatorcapacity_incubator", blank=True, null=True,
         on_delete=models.SET_NULL)
     breed=models.CharField(null=True,blank=True,max_length=50)
     capacity=models.IntegerField(null=True,blank=True,max_length=50)
@@ -109,7 +131,7 @@ class IncubatorCapacity(models.Model):
         managed = True  
 
     def save(self, *args, **kwargs):
-        self.available = self.capacity - self.occupied
+        self.available = int(self.capacity) - int(self.occupied)
         super(IncubatorCapacity, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -121,7 +143,7 @@ class EggSetting(models.Model):
     EggSetting Model
     """
     id = models.AutoField(primary_key=True)
-    settingcode=models.CharField(null=True,blank=True,max_length=50)
+    settingcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
     incubator=models.ForeignKey(Incubators,
         related_name="eggsetting_incubator", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -131,7 +153,10 @@ class EggSetting(models.Model):
     breeders=models.ForeignKey(Breeders,
         related_name="eggsetting_breeders", blank=True, null=True,
         on_delete=models.SET_NULL)
+    egg = models.ForeignKey(Eggs, on_delete=models.SET_NULL, null=True, blank=True)
+    item_request = models.ForeignKey(ItemRequest, on_delete=models.SET_NULL, null=True, blank=True, related_name="egg_setting")
     eggs=models.IntegerField(null=True,blank=True,max_length=50)
+    is_approved = models.BooleanField(default=False, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -143,6 +168,19 @@ class EggSetting(models.Model):
 
     def get_absolute_url(self):
         return '/egg_setting/{}'.format(self.settingcode)
+    
+    def save(self, *args, **kwargs):
+        if not self.settingcode:
+            self.settingcode = self.generate_unique_code()
+        
+        super(EggSetting, self).save(*args, **kwargs)
+
+    def generate_unique_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'EG-STG-{random_suffix}'
+            if not EggSetting.objects.filter(settingcode=unique_code).exists():
+                return unique_code
 
 
 class Incubation(models.Model):
@@ -150,7 +188,7 @@ class Incubation(models.Model):
     Incubation Model
     """
     id = models.AutoField(primary_key=True)
-    incubationcode=models.CharField(null=True,blank=True,max_length=50)
+    incubationcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
     eggsetting=models.ForeignKey(EggSetting,
         related_name="incubation_eggsetting", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -172,6 +210,18 @@ class Incubation(models.Model):
 
     def get_absolute_url(self):
         return '/incubation/{}'.format(self.incubationcode)
+    
+    def save(self, *args, **kwargs):
+        if not self.incubationcode:
+            self.incubationcode = self.generate_unique_incubation_code()
+        super().save(*args, **kwargs)
+
+    def generate_unique_incubation_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'INC-CODE-{random_suffix}'
+            if not Incubation.objects.filter(incubationcode=unique_code).exists():
+                return unique_code
 
 
 class Candling(models.Model):
@@ -179,7 +229,7 @@ class Candling(models.Model):
     Candling Model
     """
     id = models.AutoField(primary_key=True)
-    candlingcode=models.CharField(null=True,blank=True,max_length=50)
+    candlingcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
     incubation=models.ForeignKey(Incubation,
         related_name="candling_incubation", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -204,8 +254,20 @@ class Candling(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
+        if not self.candlingcode:
+            self.candlingcode = self.generate_unique_candling_code()
         self.fertile_eggs = self.eggs - self.spoilt_eggs
         super(Candling, self).save(*args, **kwargs)
+
+    def generate_unique_candling_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'CANDLE-{random_suffix}'
+            if not Candling.objects.filter(candlingcode=unique_code).exists():
+                return unique_code
+
+    def get_absolute_url(self):
+        return '/candling/{}'.format(self.candlingcode)
 
     def get_absolute_url(self):
         return '/candling/{}'.format(self.candlingcode)
@@ -216,7 +278,7 @@ class Hatching(models.Model):
     Hatching Model
     """
     id = models.AutoField(primary_key=True)
-    hatchingcode=models.CharField(null=True,blank=True,max_length=50)
+    hatchingcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
     candling=models.ForeignKey(Candling,
         related_name="hatching_candling", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -241,8 +303,24 @@ class Hatching(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
-        self.chicks_hatched = self.hatched - self.deformed
-        super(Hatching, self).save(*args, **kwargs)
+        # Automatically calculate chicks hatched
+        self.chicks_hatched = self.hatched - self.deformed - self.spoilt
+        
+        # Generate a unique hatching code if it is not already set
+        if not self.hatchingcode:
+            self.hatchingcode = self.generate_unique_hatching_code()
+        
+        super(Hatching, self).save(*args, **kwargs)  # Ensure the correct class is used
+
+    def generate_unique_hatching_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'HTC-{random_suffix}'
+            if not Hatching.objects.filter(hatchingcode=unique_code).exists():
+                return unique_code
+
+    def get_absolute_url(self):
+        return '/hatching/{}'.format(self.hatchingcode)
 
     def get_absolute_url(self):
         return '/Hatching/{}'.format(self.hatchingcode)
@@ -288,3 +366,4 @@ class Holding(models.Model):
 
     def get_absolute_url(self):
         return '/holding/{}'.format(self.holdingcode)
+

@@ -14,13 +14,32 @@ def breed_list(request):
     
     page_number = request.GET.get('page')
     breeds = paginator.get_page(page_number)
-    return render(request, 'pages/ecommerce/products/products-list.html', {'breeds': breeds})
+    
+    messages.success(request, 'Breed list loaded successfully.')
+    return render(request, 'pages/poultry/breeds/list.html', {'breeds': breeds})
 
 
 @login_required
 def breed_detail(request, code):
     breed = get_object_or_404(Breed, code=code)
-    return render(request, 'pages/ecommerce/products/product-page.html', {'breed': breed})
+    if request.method == 'POST':
+        breed.code = request.POST.get('code', breed.code)
+        breed.poultry_type = request.POST.get('poultry_type', breed.poultry_type)
+        breed.breed = request.POST.get('breed', breed.breed)
+        breed.purpose = request.POST.get('purpose', breed.purpose)
+        breed.eggs_year = request.POST.get('eggs_year', breed.eggs_year)
+        breed.adult_weight = request.POST.get('adult_weight', breed.adult_weight)
+        breed.description = request.POST.get('description', breed.description)
+        if request.FILES.get('front_photo'):
+            breed.front_photo = request.FILES.get('front_photo')
+        if request.FILES.get('side_photo'):
+            breed.side_photo = request.FILES.get('side_photo')
+        if request.FILES.get('back_photo'):
+            breed.back_photo = request.FILES.get('back_photo')
+        breed.save()
+        messages.success(request, 'Breed updated successfully.')
+        return redirect('breed_update')
+    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
 
 @login_required
 @csrf_exempt
@@ -36,9 +55,7 @@ def breed_create(request):
         front_photo = request.FILES.get('front_photo')
         side_photo = request.FILES.get('side_photo')
         back_photo = request.FILES.get('back_photo')
-        
-        print(front_photo)
-        print(side_photo)
+
         breed = Breed.objects.create(
             code=code,
             poultry_type=poultry_type,
@@ -51,21 +68,23 @@ def breed_create(request):
             side_photo=side_photo,
             back_photo=back_photo
         )
+        breed.save()
+        messages.success(request, "Breed has been created successfully")
         return redirect('breed_list')
     
-    return render(request, 'pages/ecommerce/products/new-product.html')
+    return render(request, 'pages/poultry/breeds/create.html')
 
 @login_required
-def breed_update(request, pk):
-    breed = get_object_or_404(Breed, pk=pk)
+def breed_update(request, code):
+    breed = get_object_or_404(Breed, code=code)
     if request.method == 'POST':
-        breed.code = request.POST.get('code')
-        breed.poultry_type = request.POST.get('poultry_type')
-        breed.breed = request.POST.get('breed')
-        breed.purpose = request.POST.get('purpose')
-        breed.eggs_year = request.POST.get('eggs_year')
-        breed.adult_weight = request.POST.get('adult_weight')
-        breed.description = request.POST.get('description')
+        breed.code = request.POST.get('code', breed.code)
+        breed.poultry_type = request.POST.get('poultry_type', breed.poultry_type)
+        breed.breed = request.POST.get('breed', breed.breed)
+        breed.purpose = request.POST.get('purpose', breed.purpose)
+        breed.eggs_year = request.POST.get('eggs_year', breed.eggs_year)
+        breed.adult_weight = request.POST.get('adult_weight', breed.adult_weight)
+        breed.description = request.POST.get('description', breed.description)
         if request.FILES.get('front_photo'):
             breed.front_photo = request.FILES.get('front_photo')
         if request.FILES.get('side_photo'):
@@ -73,28 +92,21 @@ def breed_update(request, pk):
         if request.FILES.get('back_photo'):
             breed.back_photo = request.FILES.get('back_photo')
         breed.save()
+        messages.success(request, 'Breed updated successfully.')
         return redirect('breed_list')
     
-    return render(request, 'pages/ecommerce/products/edit-product.html', {'breed': breed})
+    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
 
 @login_required
-def breed_delete(request, pk):
-    breed = get_object_or_404(Breed, pk=pk)
+def breed_delete(request, code):
+    breed = get_object_or_404(Breed, code=code)
 
     if request.method == 'POST':
         breed.delete()
         messages.success(request, 'Breed deleted successfully.')
         return redirect('breed_list')
     
-    # Optionally handle GET request if needed, e.g., show a message or redirect
     return redirect('breed_list')
-
-@login_required
-def breeders_list(request):
-    breeders = Breeders.objects.all()
-    return render(request, 'your_template.html', {'breeders': breeders})
-
-
 
 
 # List View
@@ -106,13 +118,38 @@ def breeders_list(request):
     page_number = request.GET.get('page')
     breeders = paginator.get_page(page_number)
     
-    return render(request, 'pages/ecommerce/breeders/list.html', {'breeders': breeders})
+    return render(request, 'pages/poultry/breeders/list.html', {'breeders': breeders})
 
 # Detail View
 @login_required
 def breeders_detail(request, batch):
     breeder = get_object_or_404(Breeders, batch=batch)
-    return render(request, 'pages/ecommerce/breeders/details.html', {'breeder': breeder})
+    if request.method == 'POST':
+        # Update breeder instance with the new data from the request
+        breeder.batch = request.POST.get('batch', breeder.batch)
+                # Retrieve the Breed instance based on the submitted breed ID or slug
+        breed = request.POST.get('breed')  # Assuming you are sending the breed ID
+        if breed:
+            breeder.breed = get_object_or_404(Breed, breed=breed, pk=1)
+        else:
+            breeder.breed=breeder.breed
+        breeder.hens = request.POST.get('hens', breeder.hens)
+        breeder.cocks = request.POST.get('cocks', breeder.cocks)
+        breeder.mortality = request.POST.get('mortality', breeder.mortality)
+        breeder.butchered = request.POST.get('butchered', breeder.butchered)
+        breeder.sold = request.POST.get('sold', breeder.sold)
+        breeder.current_number = request.POST.get('current_number', breeder.current_number)
+
+        # Handle file uploads
+        if request.FILES.get('hens_photo'):
+            breeder.hens_photo = request.FILES['hens_photo']
+        if request.FILES.get('cocks_photo'):
+            breeder.cocks_photo = request.FILES['cocks_photo']
+
+        breeder.save()
+        return redirect('breeders_list')
+
+    return render(request, 'pages/poultry/breeders/details.html', {'breeder': breeder})
 
 # Create View
 @login_required
@@ -125,20 +162,44 @@ def breeders_create(request):
             return redirect('breeders_list')
     else:
         form = BreedersForm()
-    return render(request, 'pages/ecommerce/breeders/create.html', {'form': form, 'breeds':breeds})
+    return render(request, 'pages/poultry/breeders/create.html', {'form': form, 'breeds':breeds})
 
 # Update View
 @login_required
 def breeders_update(request, batch):
     breeder = get_object_or_404(Breeders, batch=batch)
+    
     if request.method == 'POST':
-        form = BreedersForm(request.POST, request.FILES, instance=breeder)
-        if form.is_valid():
-            form.save()
-            return redirect('breeders_detail', batch=batch)
-    else:
-        form = BreedersForm(instance=breeder)
-    return render(request, 'breeders/breeders_form.html', {'form': form})
+        # Update breeder instance with the new data from the request
+        breeder.batch = request.POST.get('batch', breeder.batch)
+        breed_name = request.POST.get('breed')
+        if breed_name:
+            try:
+                breed = Breed.objects.get(breed=breed_name)
+                breeder.breed = breed
+            except Breed.DoesNotExist:
+                breeder.breed = None
+        breeder.hens = request.POST.get('hens', breeder.hens)
+        breeder.cocks = request.POST.get('cocks', breeder.cocks)
+        breeder.mortality = request.POST.get('mortality', breeder.mortality)
+        breeder.butchered = request.POST.get('butchered', breeder.butchered)
+        breeder.sold = request.POST.get('sold', breeder.sold)
+        breeder.current_number = request.POST.get('current_number', breeder.current_number)
+
+        # Handle file uploads
+        if request.FILES.get('hens_photo'):
+            breeder.hens_photo = request.FILES['hens_photo']
+        if request.FILES.get('cocks_photo'):
+            breeder.cocks_photo = request.FILES['cocks_photo']
+
+        # Save the updated breeder instance
+        breeder.save()
+        return redirect('breeders_list')  # Redirect to the breeder detail page after saving
+
+    # Render the template with the breeder instance
+    return render(request, 'pages/poultry/breeders/details.html', {
+        'breeder': breeder  # Pass the breeder instance for additional context
+    })
 
 # Delete View
 @login_required
@@ -147,4 +208,3 @@ def breeders_delete(request, batch):
     if request.method == 'POST':
         breeder.delete()
         return redirect('breeders_list')
-    return render(request, 'breeders/breeders_confirm_delete.html', {'breeder': breeder})

@@ -21,6 +21,10 @@ from imagekit.processors import ResizeToFit
 
 from telelbirds import settings
 from apps.breeders.models import Breeders, Breed
+from apps.inventory.models import Item
+import uuid
+import random
+import string
 
 
 class Customer(models.Model):
@@ -32,7 +36,7 @@ class Customer(models.Model):
     last_name=models.CharField(null=True,blank=True,max_length=50)
     full_name=models.CharField(null=True,blank=True,max_length=50)
     photo = ProcessedImageField(upload_to='customer_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
-    email=models.EmailField(null=True,blank=True,max_length=50)
+    email=models.EmailField(null=True,blank=True,max_length=50, unique=True)
     phone=models.CharField(null=True,blank=True,max_length=15)
     address=models.CharField(null=True,blank=True,max_length=50)
     location=gismodels.PointField(
@@ -73,10 +77,13 @@ class Eggs(models.Model):
     Eggs Model
     """
     id = models.AutoField(primary_key=True)
-    batchnumber = models.CharField(null=True,blank=True,max_length=50)    
+    batchnumber = models.CharField(null=True,blank=True,max_length=50, unique=True)
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
+    source = models.CharField(max_length=50, null=True, blank=True, choices=[['customer', 'customer'], ['farm', 'farm']], default='customer')
     customer=models.ForeignKey(Customer,
         related_name="eggs_customer", blank=True, null=True,
         on_delete=models.SET_NULL)
+    chicks = models.CharField(blank=True, null=True, max_length=50)
     breed=models.ForeignKey(Breed,
         related_name="eggs_breed", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -95,8 +102,16 @@ class Eggs(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
-        self.received = self.brought - self.returned
+        if not self.batchnumber:
+            self.batchnumber = self.generate_unique_batchnumber()
         super(Eggs, self).save(*args, **kwargs)
+        
+    def generate_unique_batchnumber(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'EG-{random_suffix}'
+            if not Eggs.objects.filter(batchnumber=unique_code).exists():
+                return unique_code
 
     def __str__(self):
         return self.batchnumber
@@ -123,5 +138,11 @@ class CustomerRequest(models.Model):
         verbose_name_plural = "CustomerRequests"
         managed = True
     
+    def save(self, *args, **kwargs):
+        prefix = "REQ-"
+        unique_id = str(uuid.uuid4().hex[:8])
+        self.requestcode = f"{prefix}{unique_id}"
+        super(CustomerRequest, self).save(*args, **kwargs)
+        
     def get_absolute_url(self):
         return '/customer_request/{}'.format(self.requestcode)

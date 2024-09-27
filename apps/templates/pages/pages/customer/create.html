@@ -1,0 +1,138 @@
+{% extends 'dashboard.html' %}
+{% block main %}
+<div class="row mb-5">
+  <div class="col-12">
+    <div class="multisteps-form mb-5">
+      <!--progress bar-->
+      <div class="row">
+        <div class="col-12 col-lg-8 mx-auto my-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="multisteps-form__progress">
+                <button class="multisteps-form__progress-btn js-active" type="button" title="User Info">
+                  <span>Customer Info</span>
+                </button>
+                <button class="multisteps-form__progress-btn" type="button" title="Contact Info">Contact Info</button>
+                <button class="multisteps-form__progress-btn" type="button" title="Address">Address</button>
+                <button class="multisteps-form__progress-btn" type="button" title="Notifications">Notifications</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--form panels-->
+      <div class="row">
+        <div class="col-12 col-lg-8 m-auto">
+          <form class="multisteps-form__form mb-8" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!--User Info Panel-->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+              <h5 class="font-weight-bolder mb-0">Customer Info</h5>
+              <p class="mb-0 text-sm">Mandatory information</p>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12 mt-3 mt-sm-0">
+                    <label>First Name</label>
+                    <input class="multisteps-form__input form-control" type="text" name="first_name" placeholder="eg. John" required />
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12 mt-3 mt-sm-0">
+                    <label>Last Name</label>
+                    <input class="multisteps-form__input form-control" type="text" name="last_name" placeholder="eg. Doe" required />
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <label>Email Address</label>
+                    <input class="multisteps-form__input form-control" type="email" name="email" placeholder="eg. johndoe@example.com" required />
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <label>Profile Photo</label>
+                    <input class="multisteps-form__input form-control" type="file" name="photo" accept="image/*" />
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                </div>
+              </div>
+            </div>
+            <!--Contact Info Panel-->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+              <h5 class="font-weight-bolder">Contact Info</h5>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12 col-sm-6">
+                    <label>Primary Phone</label>
+                    <input class="multisteps-form__input form-control" type="text" name="phone" placeholder="eg. +123456789" required />
+                  </div>
+                  <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                    <label>Address</label>
+                    <input class="multisteps-form__input form-control" type="text" name="address" placeholder="eg. 123 Main St" required />
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-light mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                  <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                </div>
+              </div>
+            </div>
+            <!--Location Info Panel-->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+              <h5 class="font-weight-bolder">Location Info</h5>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <label>Latitude</label>
+                    <input class="multisteps-form__input form-control" type="text" name="latitude" placeholder="eg. 34.0522" />
+                  </div>
+                  <div class="col-12 mt-3">
+                    <label>Longitude</label>
+                    <input class="multisteps-form__input form-control" type="text" name="longitude" placeholder="eg. -118.2437" />
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-light mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                  <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                </div>
+              </div>
+            </div>
+            <!--Notifications Panel-->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+              <h5 class="font-weight-bolder">Notifications</h5>
+              <div class="multisteps-form__content">
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <div class="form-check">
+                    <label>Receive SMS Notifications</label>
+                    <input class="form-check-input" type="checkbox" name="notification_sms" />
+                    </div>
+                  </div>
+                  <div class="col-12 mt-3">
+                    <div class="form-check">
+                    <label>Delivery Notifications</label>
+                    <input class="form-check-input" type="checkbox" name="delivery" />
+                    </div>
+                  </div>
+                  <div class="col-12 mt-3">
+                    <div class="form-check">
+                    <label>Follow-up Notifications</label>
+                    <input class="form-check-input" type="checkbox" name="followup" />
+                    </div>
+                  </div>
+                </div>
+                <div class="button-row d-flex mt-4">
+                  <button class="btn bg-gradient-light mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                  <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,60 +1,119 @@
-Poultry Farm Management System: TelelBirds
-==========================================
+# Hatchtrack
 
-**The Chicken came before the Egg**
+Hatchtrack is a comprehensive poultry management system designed to streamline the operations of hatcheries, breeders, inventory, and human resources. The project also includes interactive analytics and dashboard functionalities to provide real-time insights and manage chicks and egg tracking processes.
 
-A web-based application and platform for keeping track of the entire production system of a Poultry farm,from breeding, egg production, hatchery to chicks management. Written in Python using the Django framework.
+## Features
 
-<b>Main Site:</b> https://www.telelbirds.com - HATCHING SOON!
+### 1. **Breeders and Breed Management**
 
-<b>Features:</b>
+- Add, update, and manage breeders and their associated breeds.
+- Track the number of hens, cocks, mortality, and other relevant breeder data.
+- Easily upload and manage photos of breeders.
 
-* <b>Simple, easy to use.</b>  Entering glucose data should be faster than finding a pen and paper and writing down the number.  Fields have pre-set values where it makes sense (such as the date, time, and category based on time of day).
-* <b>Send notifications via email/sms.</b>  Email it to your doctor before your visit, no more carrying log books (and you're saving trees)!  Can be sent as a CSV or PDF attachment.
-* <b>Reporting.</b>  Simple reports to see how you're doing.  Highlight how many times you have lows and highs. Show averages by day and category using nice-looking charts and graphs.
-* <b>Data filtering.</b>  Advanced filtering: filter by glucose range, date range, category, tag, and notes.
-* <b>Tagging.</b>  An optional tag field to help further organize and make sense of your data. For example, it might be useful to add tags to a record such as: exercise, sick, insulin, fasting, etc.
-* <b>Expenditure estimation.</b>  Estimate expenditures based on data from the last 3 months.
-* <b>Import data from CSV.</b> Import existing data from other software/systems.
-* <b>Mobile friendly.</b>  Layout adapts to screen size.
+### 2. **Hatchery Management**
 
+- Handle hatchery processes such as egg setting, candling, incubation, and hatching.
+- Record and manage egg batches with detailed hatchery information.
+- Monitor hatchery progress and performance throughout the incubation cycle.
 
-<b>Systems:</b>
+### 3. **Chick and Egg Tracker Management**
 
-* <b>Hatchery.</b> Track incubators capacity and availability for Setting and Incubation Services.
-* <b>Chicks.</b> Track a clutch of chicks or multiple batches on the farm.
-* <b>Breeders.</b> Track and monitor several breeders of poultry and other birds. 
-* <b>Medication Schedules.</b>
-* <b>Tagging.</b>
-* <b>Finance.</b>
-* <b>Deliveries.</b>
-* <b>Mobile friendly.</b>
+- Track chicks and eggs using unique codes for detailed lifecycle monitoring.
+- Manage separate tracker codes and barcodes for each egg or chick for easy identification.
+- Generate reports and view tracker details in PDF format.
 
-<b>Some point in the future: 2021:</b>
+### 4. **Inventory Management**
 
-* A simple TelelBird Android app that works offline and auto-syncs with the remote database via REST calls.
+- Keep track of stock levels, poultry feed, equipment, and other assets.
+- Manage incoming and outgoing inventory for seamless hatchery and poultry operations.
 
+### 5. **Poultry Management**
 
-Installation/Running the App
-----------------------------
+- Track the current number of birds, including hens, cocks, butchered, and sold birds.
+- Calculate mortality rates and adjust poultry counts accordingly.
 
-1. Install the required libraries listed in the requirements file with pip: *pip install -r requirements.txt*
-2. If you just want to run a demo of the app, use the <b>local_demo.py</b> file which uses an SQLite database and will be created automatically. Otherwise, for development, please use PostgreSQL and the local_settings.py file.  Set the database settings and environment variables accordingly.
-3. Run the makemigration command: e.g. *python manage.py makemigration --noinput --settings=settings.local_demo*
-4. Run the migration: e.g. *python manage.py migrate --settings=settings.local_demo*
-5. (Optional) Populate your database with dummy data: e.g. *python manage.py load_random_breed_data admin --settings=settings.local_demo* (note that 'telelbirds' can be changed to any username you like, the password will always be 'demo').
-6. Run the local web server: e.g. *python manage.py runserver --settings=settings.local_demo*
+### 6. **Human Resource Management**
 
-3rd-Party Apps/Libraries/Plugins
---------------------------------
+- Manage staff details, attendance, and roles within the hatchery and poultry farms.
+- Assign specific tasks related to the hatchery, breeding, and inventory processes.
 
-TelelBirds uses the following:
+### 7. **Interactive Analytics and Dashboard**
 
-* Twitter Bootstrap 3 (http://getbootstrap.com)
-* South (http://south.aeracode.org)
-* Django Crispy Forms (http://django-crispy-forms.readthedocs.org/en/latest)
-* Django Braces (http://django-braces.readthedocs.org/en/v1.2.2/)
-* Django Compressor (http://django-compressor.readthedocs.org/en/latest/)
-* Bootstrap DateTimePicker (http://eonasdan.github.io/bootstrap-datetimepicker/)
-* Datatables (http://datatables.net)
-* Highcharts (http://www.highcharts.com/)/ AMCHARTS
+- Visualize data related to hatcheries, breeders, inventory, and human resources.
+- Interactive charts and graphs provide actionable insights for decision-making.
+
+## Docker Configuration
+
+Hatchtrack is fully containerized using Docker to simplify setup, configuration, and deployment. Docker ensures that the application can run consistently across multiple environments.
+
+### Docker Features:
+
+- **Multi-container support:** Each major component (database, web server, application) runs in its own Docker container.
+- **Environment isolation:** Each environment (development, production) can be replicated using Docker Compose files.
+- **Simplified setup:** Easily spin up and tear down the application using Docker commands for streamlined development.
+
+### Environment Variables
+
+The application relies on certain environment variables for configuration, especially for email and database settings. Here’s a list of environment variables to be set up:
+
+#### Email Configuration
+
+```env
+EMAIL_USE_TLS=True  # Set to True to use TLS
+EMAIL_HOST=smtp.gmail.com  # Email service provider
+EMAIL_PORT=587  # Port for TLS
+EMAIL_HOST_USER=your_email@example.com  # Your email address
+EMAIL_HOST_PASSWORD=your_email_password  # Your email password or app-specific password
+```
+
+#### PostgreSQL Database Configuration
+
+```env
+POSTGRES_DB=your_database_name  # Name of your PostgreSQL database
+POSTGRES_USER=your_database_user  # PostgreSQL username
+POSTGRES_PASSWORD=your_database_password  # PostgreSQL password
+```
+
+#### General Database Configuration
+
+```env
+DB_NAME=your_database_name  # Name of your database
+DB_HOST=localhost  # Database host (e.g., localhost or IP address)
+DB_PASSWORD=your_database_password  # Database password
+DB_PORT=5432  # Default PostgreSQL port
+DB_USER=your_database_user  # Database username
+```
+
+### Setup
+
+To get started with Hatchtrack, follow these instructions:
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/EsubalewAmenu/Blockchain-Based-Poultry-Management.git
+   cd Blockchain-Based-Poultry-Management
+   ```
+2. **Create `.env` file**Set up your environment variables by creating a `.env` file in the project root and include the configurations mentioned above.
+3. **Build the Docker images:**
+
+   ```bash
+   docker-compose build
+   ```
+4. **Run the application:**
+
+   ```bash
+    docker-compose up -d
+   ```
+5. **Stop the application**
+```
+docker compose down
+```
+
+6. **Access the application:**
+   The application will be accessible at `http://localhost:11000`.
+
+## Requirements
+
+- Docker
+- Docker Compose

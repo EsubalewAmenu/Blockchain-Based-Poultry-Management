@@ -1,0 +1,141 @@
+{% extends 'dashboard.html' %}
+
+{% load static %}
+{% block main %}
+<div class="container-fluid py-4">
+    <style>
+      /* Set a fixed height for the images */
+      .swiper-slide img {
+        width: 100%; /* Ensure the image takes the full width of the slide */
+        height: 300px; /* Set a fixed height */
+        object-fit: cover; /* Maintain aspect ratio and cover the area */
+        border-radius: 0.5rem; /* Optional: to match your existing border-radius */
+      }
+    </style>
+    
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-lg-6">
+          <h4 class="text-white">Make the changes below</h4>
+          <p class="text-white opacity-8">We're constantly trying to express ourselves and actualize our dreams.</p>
+        </div>
+        <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
+          <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save</button>
+        </div>
+      </div>
+  
+      <div class="row mt-4">
+        <div class="col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="font-weight-bolder text-center">Hatchery Photo</h5>
+              <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                  <!-- Hatchery Photo Slide -->
+                  <div class="swiper-slide">
+                    {% if hatchery.photo %}
+                      <img src="{{ hatchery.photo.url }}" alt="{{ hatchery.name }} Photo">
+                    {% else %}
+                      <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                    {% endif %}
+                    <input type="file" class="form-control mt-3" name="photo">
+                  </div>
+                </div>
+                <hr/>
+                <br/>
+                <div class="swiper-pagination"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="col-lg-8 mt-lg-0 mt-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="font-weight-bolder">Hatchery Information</h5>
+              <div class="row">
+                <div class="col-12 col-sm-6">
+                  <label>Name</label>
+                  <input class="form-control" type="text" name="name" value="{{ hatchery.name }}" required>
+                </div>
+                <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                  <label>Email</label>
+                  <input class="form-control" type="email" name="email" value="{{ hatchery.email }}" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Phone</label>
+                  <input class="form-control" type="tel" name="phone" value="{{ hatchery.phone }}" required>
+                </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Address</label>
+                  <input class="form-control" type="text" name="address" value="{{ hatchery.address }}" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Latitude</label>
+                  <input class="form-control" type="number" step="any" name="latitude" value="{{ hatchery.latitude }}" required>
+                </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Longitude</label>
+                  <input class="form-control" type="number" step="any" name="longitude" value="{{ hatchery.longitude }}" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Total Capacity</label>
+                  <input class="form-control" type="number" name="totalcapacity" value="{{ hatchery.totalcapacity }}" required>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer with Delete Option -->
+      <div class="row mt-4">
+        <div class="col-lg-12 text-right">
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'hatchery_delete' hatchery.name %}">
+            Delete this Hatchery
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete hatchery</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this hatchery?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="" method="POST" id="deleteForm" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget; // Button that triggered the modal
+      var url = button.getAttribute('data-url'); // Extract info from data-* attributes
+      var form = deleteModal.querySelector('#deleteForm');
+      form.action = url; // Update the form action to the delete URL
+    });
+  </script>
+</div>
+{% endblock %}

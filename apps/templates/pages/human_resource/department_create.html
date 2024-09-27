@@ -1,0 +1,52 @@
+{% extends "dashboard.html" %}
+
+{% block main %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="multisteps-form mb-5">
+            <div class="row">
+                <div class="col-12 col-lg-8 mx-auto my-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="font-weight-bolder mb-0">Create New Department</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-8 m-auto">
+                    <form class="multisteps-form__form mb-8" method="post">
+                        {% csrf_token %}
+                        <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+                            <h5 class="font-weight-bolder">Department Info</h5>
+                            <div class="multisteps-form__content">
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label>Department Name</label>
+                                        <input class="multisteps-form__input form-control" type="text" name="name" placeholder="eg. Human Resources" value="{{ form_data.name|default:'' }}" required />
+                                        {% if errors.name %}
+                                            <small class="text-danger">{{ errors.name }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label>Description</label>
+                                        <textarea class="multisteps-form__input form-control" name="description" placeholder="Department description" required>{{ form_data.description|default:'' }}</textarea>
+                                        {% if errors.description %}
+                                            <small class="text-danger">{{ errors.description }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="button-row d-flex mt-4">
+                                    <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Create Department</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

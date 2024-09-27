@@ -1,148 +1,2885 @@
-{% extends 'base.html' %}
-
 {% load static %}
-{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block extracss %}
-<link href="{% static 'bootstrap/css/carousel.css' %}" rel="stylesheet">
-{% endblock %}
+<head>
+    <meta charset="utf-8">
 
-{% block customcss %}
-    <style>
-        body {margin-top: 40px;}
-    </style>
-{% endblock %}
 
-{% block rootcontainer %}
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron" style="background-color:#777; color:white">
-      <div class="container">
-        <div class="row">
-            <div class="col-md-7">
-                <h1 class="text-center">Keep track of your blood glucose the easy way!</h1>
-                <p class="text-center">
-                    <b>GlucoseTracker</b> is a <b>simple</b> and <b>easy to use</b>
-                    web application for keeping track of your blood glucose levels.
-                    <br><br>
-                    It's <b>completely free</b> with no ads. Modern look and mobile friendly!
-                    <br><br>
-                    <b>{{ glucose_count|intcomma }}</b> Glucose Readings Logged
-                    <br><br>
-                    <a class="btn btn-lg btn-success" href="{ url 'signup' %}" role="button">
-                        Sign Up Today
-                    </a>
-                </p>
-                <br>
+    <!-- Start of headStart -->
+
+    <!-- End of headStart -->
+    <meta name="viewport" content="width=device-width">
+    <meta name="generator" content="Framer d275c2b">
+    <title>My Framer Site</title>
+    <meta name="description" content="Made with Framer">
+    <meta name="framer-search-index"
+        content="https://framerusercontent.com/sites/36pmnpzJqofbsn0TkRR9Ye/searchIndex-lvO9VsUF6Kk-.json">
+    <link rel="icon" href="https://framerusercontent.com/sites/icons/default-favicon.v3.png">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="My Framer Site">
+    <meta property="og:description" content="Made with Framer">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="My Framer Site">
+    <meta name="twitter:description" content="Made with Framer">
+
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="">
+
+    <meta name="robots" content="max-image-preview:large">
+    <link rel="canonical" href="https://Hatchtrack.framer.ai/">
+    <meta property="og:url" content="https://Hatchtrack.framer.ai/">
+    <link rel="alternate" href="https://Hatchtrack.framer.ai/" hreflang="en">
+    <link rel="alternate" href="https://Hatchtrack.framer.ai/en/" hreflang="en-US">
+    <link rel="alternate" href="https://Hatchtrack.framer.ai/" hreflang="x-default">
+    <link rel="modulepreload" fetchpriority="low"
+        href="https://framerusercontent.com/sites/36pmnpzJqofbsn0TkRR9Ye/chunk-GFSK2XTT.mjs">
+    <link rel="modulepreload" fetchpriority="low"
+        href="https://framerusercontent.com/sites/36pmnpzJqofbsn0TkRR9Ye/chunk-ELYU6EKT.mjs">
+    <link rel="modulepreload" fetchpriority="low"
+        href="https://framerusercontent.com/sites/36pmnpzJqofbsn0TkRR9Ye/qxX68gWyz2Hg2ccmukkpCesoqBlg6DSbhTNlpSv15ZM.ZZOT6HB3.mjs">
+    <link rel="modulepreload" fetchpriority="low"
+        href="https://framerusercontent.com/sites/36pmnpzJqofbsn0TkRR9Ye/chunk-HRPB76ST.mjs">
+    <link rel="modulepreload" fetchpriority="low"
+        href="https://framerusercontent.com/sites/36pmnpzJqofbsn0TkRR9Ye/chunk-AIRJH74W.mjs">
+    <link rel="modulepreload" fetchpriority="low"
+        href="https://framerusercontent.com/sites/36pmnpzJqofbsn0TkRR9Ye/chunk-42U43NKG.mjs">
+    <style data-framer-css-ssr-minified="" data-framer-components="framer-at7PM">
+        html,
+        body,
+        #main {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: inherit
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        figure {
+            margin: 0
+        }
+
+        body,
+        input,
+        textarea,
+        select,
+        button {
+            font-size: 12px;
+            font-family: sans-serif
+        }
+
+        #__framer-badge-container {
+            position: fixed;
+            bottom: 0;
+            padding: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: right;
+            pointer-events: none;
+            z-index: 314159
+        }
+
+        .__framer-badge {
+            pointer-events: auto
+        }
+
+        @font-face {
+            font-family: Nunito;
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshdTk3j77e.woff2) format("woff2");
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F
+        }
+
+        @font-face {
+            font-family: Nunito;
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshdTA3j77e.woff2) format("woff2");
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116
+        }
+
+        @font-face {
+            font-family: Nunito;
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshdTs3j77e.woff2) format("woff2");
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB
+        }
+
+        @font-face {
+            font-family: Nunito;
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshdTo3j77e.woff2) format("woff2");
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF
+        }
+
+        @font-face {
+            font-family: Nunito;
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshdTQ3jw.woff2) format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
+        @font-face {
+            font-family: Unbounded;
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/unbounded/v7/Yq6F-LOTXCb04q32xlpat-6uR42XTqtG6__244fNgc6L.woff2) format("woff2");
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F
+        }
+
+        @font-face {
+            font-family: Unbounded;
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/unbounded/v7/Yq6F-LOTXCb04q32xlpat-6uR42XTqtG6__2447Ngc6L.woff2) format("woff2");
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116
+        }
+
+        @font-face {
+            font-family: Unbounded;
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/unbounded/v7/Yq6F-LOTXCb04q32xlpat-6uR42XTqtG6__244XNgc6L.woff2) format("woff2");
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB
+        }
+
+        @font-face {
+            font-family: Unbounded;
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/unbounded/v7/Yq6F-LOTXCb04q32xlpat-6uR42XTqtG6__244TNgc6L.woff2) format("woff2");
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF
+        }
+
+        @font-face {
+            font-family: Unbounded;
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/unbounded/v7/Yq6F-LOTXCb04q32xlpat-6uR42XTqtG6__244rNgQ.woff2) format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
+        @font-face {
+            font-family: Unbounded Placeholder;
+            src: local("Arial");
+            ascent-override: 73.13%;
+            descent-override: 18.01%;
+            line-gap-override: 0%;
+            size-adjust: 136.07%
+        }
+
+        @font-face {
+            font-family: Nunito Placeholder;
+            src: local("Arial");
+            ascent-override: 99.46%;
+            descent-override: 34.73%;
+            line-gap-override: 0%;
+            size-adjust: 101.65%
+        }
+
+        [data-framer-component-type] {
+            position: absolute
+        }
+
+        [data-framer-component-type=Text] {
+            cursor: inherit
+        }
+
+        [data-framer-component-text-autosized] * {
+            white-space: pre
+        }
+
+        [data-framer-component-type=Text]>* {
+            text-align: var(--framer-text-alignment, start)
+        }
+
+        [data-framer-component-type=Text] span span,
+        [data-framer-component-type=Text] p span,
+        [data-framer-component-type=Text] h1 span,
+        [data-framer-component-type=Text] h2 span,
+        [data-framer-component-type=Text] h3 span,
+        [data-framer-component-type=Text] h4 span,
+        [data-framer-component-type=Text] h5 span,
+        [data-framer-component-type=Text] h6 span {
+            display: block
+        }
+
+        [data-framer-component-type=Text] span span span,
+        [data-framer-component-type=Text] p span span,
+        [data-framer-component-type=Text] h1 span span,
+        [data-framer-component-type=Text] h2 span span,
+        [data-framer-component-type=Text] h3 span span,
+        [data-framer-component-type=Text] h4 span span,
+        [data-framer-component-type=Text] h5 span span,
+        [data-framer-component-type=Text] h6 span span {
+            display: unset
+        }
+
+        [data-framer-component-type=Text] div div span,
+        [data-framer-component-type=Text] a div span,
+        [data-framer-component-type=Text] span span span,
+        [data-framer-component-type=Text] p span span,
+        [data-framer-component-type=Text] h1 span span,
+        [data-framer-component-type=Text] h2 span span,
+        [data-framer-component-type=Text] h3 span span,
+        [data-framer-component-type=Text] h4 span span,
+        [data-framer-component-type=Text] h5 span span,
+        [data-framer-component-type=Text] h6 span span,
+        [data-framer-component-type=Text] a {
+            font-family: var(--font-family);
+            font-style: var(--font-style);
+            font-weight: min(calc(var(--framer-font-weight-increase, 0) + var(--font-weight, 400)), 900);
+            color: var(--text-color);
+            letter-spacing: var(--letter-spacing);
+            font-size: var(--font-size);
+            text-transform: var(--text-transform);
+            text-decoration: var(--text-decoration);
+            line-height: var(--line-height)
+        }
+
+        [data-framer-component-type=Text] div div span,
+        [data-framer-component-type=Text] a div span,
+        [data-framer-component-type=Text] span span span,
+        [data-framer-component-type=Text] p span span,
+        [data-framer-component-type=Text] h1 span span,
+        [data-framer-component-type=Text] h2 span span,
+        [data-framer-component-type=Text] h3 span span,
+        [data-framer-component-type=Text] h4 span span,
+        [data-framer-component-type=Text] h5 span span,
+        [data-framer-component-type=Text] h6 span span,
+        [data-framer-component-type=Text] a {
+            --font-family: var(--framer-font-family);
+            --font-style: var(--framer-font-style);
+            --font-weight: var(--framer-font-weight);
+            --text-color: var(--framer-text-color);
+            --letter-spacing: var(--framer-letter-spacing);
+            --font-size: var(--framer-font-size);
+            --text-transform: var(--framer-text-transform);
+            --text-decoration: var(--framer-text-decoration);
+            --line-height: var(--framer-line-height)
+        }
+
+        [data-framer-component-type=Text] a,
+        [data-framer-component-type=Text] a div span,
+        [data-framer-component-type=Text] a span span span,
+        [data-framer-component-type=Text] a p span span,
+        [data-framer-component-type=Text] a h1 span span,
+        [data-framer-component-type=Text] a h2 span span,
+        [data-framer-component-type=Text] a h3 span span,
+        [data-framer-component-type=Text] a h4 span span,
+        [data-framer-component-type=Text] a h5 span span,
+        [data-framer-component-type=Text] a h6 span span {
+            --font-family: var(--framer-link-font-family, var(--framer-font-family));
+            --font-style: var(--framer-link-font-style, var(--framer-font-style));
+            --font-weight: var(--framer-link-font-weight, var(--framer-font-weight));
+            --text-color: var(--framer-link-text-color, var(--framer-text-color));
+            --font-size: var(--framer-link-font-size, var(--framer-font-size));
+            --text-transform: var(--framer-link-text-transform, var(--framer-text-transform));
+            --text-decoration: var(--framer-link-text-decoration, var(--framer-text-decoration))
+        }
+
+        [data-framer-component-type=Text] a:hover,
+        [data-framer-component-type=Text] a div span:hover,
+        [data-framer-component-type=Text] a span span span:hover,
+        [data-framer-component-type=Text] a p span span:hover,
+        [data-framer-component-type=Text] a h1 span span:hover,
+        [data-framer-component-type=Text] a h2 span span:hover,
+        [data-framer-component-type=Text] a h3 span span:hover,
+        [data-framer-component-type=Text] a h4 span span:hover,
+        [data-framer-component-type=Text] a h5 span span:hover,
+        [data-framer-component-type=Text] a h6 span span:hover {
+            --font-family: var(--framer-link-hover-font-family, var(--framer-link-font-family, var(--framer-font-family)));
+            --font-style: var(--framer-link-hover-font-style, var(--framer-link-font-style, var(--framer-font-style)));
+            --font-weight: var(--framer-link-hover-font-weight, var(--framer-link-font-weight, var(--framer-font-weight)));
+            --text-color: var(--framer-link-hover-text-color, var(--framer-link-text-color, var(--framer-text-color)));
+            --font-size: var(--framer-link-hover-font-size, var(--framer-link-font-size, var(--framer-font-size)));
+            --text-transform: var(--framer-link-hover-text-transform, var(--framer-link-text-transform, var(--framer-text-transform)));
+            --text-decoration: var(--framer-link-hover-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration)))
+        }
+
+        [data-framer-component-type=Text].isCurrent a,
+        [data-framer-component-type=Text].isCurrent a div span,
+        [data-framer-component-type=Text].isCurrent a span span span,
+        [data-framer-component-type=Text].isCurrent a p span span,
+        [data-framer-component-type=Text].isCurrent a h1 span span,
+        [data-framer-component-type=Text].isCurrent a h2 span span,
+        [data-framer-component-type=Text].isCurrent a h3 span span,
+        [data-framer-component-type=Text].isCurrent a h4 span span,
+        [data-framer-component-type=Text].isCurrent a h5 span span,
+        [data-framer-component-type=Text].isCurrent a h6 span span {
+            --font-family: var(--framer-link-current-font-family, var(--framer-link-font-family, var(--framer-font-family)));
+            --font-style: var(--framer-link-current-font-style, var(--framer-link-font-style, var(--framer-font-style)));
+            --font-weight: var(--framer-link-current-font-weight, var(--framer-link-font-weight, var(--framer-font-weight)));
+            --text-color: var(--framer-link-current-text-color, var(--framer-link-text-color, var(--framer-text-color)));
+            --font-size: var(--framer-link-current-font-size, var(--framer-link-font-size, var(--framer-font-size)));
+            --text-transform: var(--framer-link-current-text-transform, var(--framer-link-text-transform, var(--framer-text-transform)));
+            --text-decoration: var(--framer-link-current-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration)))
+        }
+
+        p.framer-text,
+        div.framer-text,
+        h1.framer-text,
+        h2.framer-text,
+        h3.framer-text,
+        h4.framer-text,
+        h5.framer-text,
+        h6.framer-text,
+        ol.framer-text,
+        ul.framer-text {
+            margin: 0;
+            padding: 0
+        }
+
+        p.framer-text,
+        div.framer-text,
+        h1.framer-text,
+        h2.framer-text,
+        h3.framer-text,
+        h4.framer-text,
+        h5.framer-text,
+        h6.framer-text,
+        li.framer-text,
+        ol.framer-text,
+        ul.framer-text,
+        span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-blockquote-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif));
+            font-style: var(--framer-blockquote-font-style, var(--framer-font-style, normal));
+            font-weight: var(--framer-blockquote-font-weight, var(--framer-font-weight, 400));
+            color: var(--framer-blockquote-text-color, var(--framer-text-color, #000));
+            font-size: calc(var(--framer-blockquote-font-size, var(--framer-font-size, 16px)) * var(--framer-font-size-scale, 1));
+            letter-spacing: var(--framer-blockquote-letter-spacing, var(--framer-letter-spacing, 0));
+            text-transform: var(--framer-blockquote-text-transform, var(--framer-text-transform, none));
+            text-decoration: var(--framer-blockquote-text-decoration, var(--framer-text-decoration, none));
+            line-height: var(--framer-blockquote-line-height, var(--framer-line-height, 1.2em));
+            text-align: var(--framer-blockquote-text-alignment, var(--framer-text-alignment, start));
+            -webkit-text-stroke-width: var(--framer-text-stroke-width, initial);
+            -webkit-text-stroke-color: var(--framer-text-stroke-color, initial);
+            -moz-font-feature-settings: var(--framer-font-open-type-features, initial);
+            -webkit-font-feature-settings: var(--framer-font-open-type-features, initial);
+            font-feature-settings: var(--framer-font-open-type-features, initial);
+            text-wrap: var(--framer-text-wrap-override, var(--framer-text-wrap))
+        }
+
+        .framer-fit-text .framer-text {
+            white-space: nowrap;
+            white-space-collapse: preserve
+        }
+
+        strong.framer-text {
+            font-family: var(--framer-blockquote-font-family-bold, var(--framer-font-family-bold));
+            font-style: var(--framer-blockquote-font-style-bold, var(--framer-font-style-bold));
+            font-weight: var(--framer-blockquote-font-weight-bold, var(--framer-font-weight-bold, bolder))
+        }
+
+        em.framer-text {
+            font-family: var(--framer-blockquote-font-family-italic, var(--framer-font-family-italic));
+            font-style: var(--framer-blockquote-font-style-italic, var(--framer-font-style-italic, italic));
+            font-weight: var(--framer-blockquote-font-weight-italic, var(--framer-font-weight-italic))
+        }
+
+        em.framer-text>strong.framer-text {
+            font-family: var(--framer-blockquote-font-family-bold-italic, var(--framer-font-family-bold-italic));
+            font-style: var(--framer-blockquote-font-style-bold-italic, var(--framer-font-style-bold-italic, italic));
+            font-weight: var(--framer-blockquote-font-weight-bold-italic, var(--framer-font-weight-bold-italic, bolder))
+        }
+
+        p.framer-text:not(:first-child),
+        div.framer-text:not(:first-child),
+        h1.framer-text:not(:first-child),
+        h2.framer-text:not(:first-child),
+        h3.framer-text:not(:first-child),
+        h4.framer-text:not(:first-child),
+        h5.framer-text:not(:first-child),
+        h6.framer-text:not(:first-child),
+        ol.framer-text:not(:first-child),
+        ul.framer-text:not(:first-child),
+        blockquote.framer-text:not(:first-child),
+        .framer-image.framer-text:not(:first-child) {
+            margin-top: var(--framer-blockquote-paragraph-spacing, var(--framer-paragraph-spacing, 0))
+        }
+
+        li.framer-text>ul.framer-text:nth-child(2),
+        li.framer-text>ol.framer-text:nth-child(2) {
+            margin-top: 0
+        }
+
+        .framer-text[data-text-fill] {
+            display: inline-block;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: max(0em, calc(calc(1.3em - var(--framer-blockquote-line-height, var(--framer-line-height, 1.3em))) / 2));
+            margin: min(0em, calc(calc(1.3em - var(--framer-blockquote-line-height, var(--framer-line-height, 1.3em))) / -2))
+        }
+
+        code.framer-text,
+        code.framer-text span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-blockquote-font-family, var(--framer-code-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif)));
+            font-style: var(--framer-blockquote-font-style, var(--framer-code-font-style, var(--framer-font-style, normal)));
+            font-weight: var(--framer-blockquote-font-weight, var(--framer-code-font-weight, var(--framer-font-weight, 400)));
+            color: var(--framer-blockquote-text-color, var(--framer-code-text-color, var(--framer-text-color, #000)));
+            font-size: calc(var(--framer-blockquote-font-size, var(--framer-font-size, 16px)) * var(--framer-font-size-scale, 1));
+            letter-spacing: var(--framer-blockquote-letter-spacing, var(--framer-letter-spacing, 0));
+            line-height: var(--framer-blockquote-line-height, var(--framer-line-height, 1.2em))
+        }
+
+        blockquote.framer-text {
+            margin-block-start: initial;
+            margin-block-end: initial;
+            margin-inline-start: initial;
+            margin-inline-end: initial;
+            unicode-bidi: initial
+        }
+
+        a.framer-text,
+        a.framer-text span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-blockquote-font-family, var(--framer-link-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif)));
+            font-style: var(--framer-blockquote-font-style, var(--framer-link-font-style, var(--framer-font-style, normal)));
+            font-weight: var(--framer-blockquote-font-weight, var(--framer-link-font-weight, var(--framer-font-weight, 400)));
+            color: var(--framer-blockquote-text-color, var(--framer-link-text-color, var(--framer-text-color, #000)));
+            font-size: calc(var(--framer-blockquote-font-size, var(--framer-font-size, 16px)) * var(--framer-font-size-scale, 1));
+            text-transform: var(--framer-blockquote-text-transform, var(--framer-link-text-transform, var(--framer-text-transform, none)));
+            text-decoration: var(--framer-blockquote-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration, none)));
+            cursor: var(--framer-custom-cursors, pointer)
+        }
+
+        code.framer-text a.framer-text,
+        code.framer-text a.framer-text span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-blockquote-font-family, var(--framer-code-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif)));
+            font-style: var(--framer-blockquote-font-style, var(--framer-code-font-style, var(--framer-font-style, normal)));
+            font-weight: var(--framer-blockquote-font-weight, var(--framer-code-font-weight, var(--framer-font-weight, 400)));
+            color: var(--framer-blockquote-text-color, var(--framer-link-text-color, var(--framer-code-text-color, var(--framer-text-color, #000))));
+            font-size: calc(var(--framer-blockquote-font-size, var(--framer-font-size, 16px)) * var(--framer-font-size-scale, 1))
+        }
+
+        a.framer-text:hover,
+        a.framer-text:hover span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-link-hover-font-family, var(--framer-blockquote-font-family, var(--framer-link-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif))));
+            font-style: var(--framer-link-hover-font-style, var(--framer-blockquote-font-style, var(--framer-link-font-style, var(--framer-font-style, normal))));
+            font-weight: var(--framer-link-hover-font-weight, var(--framer-blockquote-font-weight, var(--framer-link-font-weight, var(--framer-font-weight, 400))));
+            color: var(--framer-link-hover-text-color, var(--framer-blockquote-text-color, var(--framer-link-text-color, var(--framer-text-color, #000))));
+            font-size: calc(var(--framer-link-hover-font-size, var(--framer-blockquote-font-size, var(--framer-font-size, 16px))) * var(--framer-font-size-scale, 1));
+            text-transform: var(--framer-link-hover-text-transform, var(--framer-blockquote-text-transform, var(--framer-link-text-transform, var(--framer-text-transform, none))));
+            text-decoration: var(--framer-link-hover-text-decoration, var(--framer-blockquote-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration, none))))
+        }
+
+        code.framer-text a.framer-text:hover,
+        code.framer-text a.framer-text:hover span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-blockquote-font-family, var(--framer-code-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif)));
+            font-style: var(--framer-blockquote-font-style, var(--framer-code-font-style, var(--framer-font-style, normal)));
+            font-weight: var(--framer-blockquote-font-weight, var(--framer-code-font-weight, var(--framer-font-weight, 400)));
+            color: var(--framer-link-hover-text-color, var(--framer-blockquote-text-color, var(--framer-link-text-color, var(--framer-code-text-color, var(--framer-text-color, #000)))));
+            font-size: calc(var(--framer-link-hover-font-size, var(--framer-blockquote-font-size, var(--framer-link-font-size, var(--framer-font-size, 16px)))) * var(--framer-font-size-scale, 1))
+        }
+
+        a.framer-text[data-framer-page-link-current],
+        a.framer-text[data-framer-page-link-current] span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-link-current-font-family, var(--framer-link-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif)));
+            font-style: var(--framer-link-current-font-style, var(--framer-link-font-style, var(--framer-font-style, normal)));
+            font-weight: var(--framer-link-current-font-weight, var(--framer-link-font-weight, var(--framer-font-weight, 400)));
+            color: var(--framer-link-current-text-color, var(--framer-link-text-color, var(--framer-text-color, #000)));
+            font-size: calc(var(--framer-link-current-font-size, var(--framer-link-font-size, var(--framer-font-size, 16px))) * var(--framer-font-size-scale, 1));
+            text-transform: var(--framer-link-current-text-transform, var(--framer-link-text-transform, var(--framer-text-transform, none)));
+            text-decoration: var(--framer-link-current-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration, none)))
+        }
+
+        code.framer-text a.framer-text[data-framer-page-link-current],
+        code.framer-text a.framer-text[data-framer-page-link-current] span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-code-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif));
+            font-style: var(--framer-code-font-style, var(--framer-font-style, normal));
+            font-weight: var(--framer-code-font-weight, var(--framer-font-weight, 400));
+            color: var(--framer-link-current-text-color, var(--framer-link-text-color, var(--framer-code-text-color, var(--framer-text-color, #000))));
+            font-size: calc(var(--framer-link-current-font-size, var(--framer-link-font-size, var(--framer-font-size, 16px))) * var(--framer-font-size-scale, 1))
+        }
+
+        a.framer-text[data-framer-page-link-current]:hover,
+        a.framer-text[data-framer-page-link-current]:hover span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-link-hover-font-family, var(--framer-link-current-font-family, var(--framer-link-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif))));
+            font-style: var(--framer-link-hover-font-style, var(--framer-link-current-font-style, var(--framer-link-font-style, var(--framer-font-style, normal))));
+            font-weight: var(--framer-link-hover-font-weight, var(--framer-link-current-font-weight, var(--framer-link-font-weight, var(--framer-font-weight, 400))));
+            color: var(--framer-link-hover-text-color, var(--framer-link-current-text-color, var(--framer-link-text-color, var(--framer-text-color, #000))));
+            font-size: calc(var(--framer-link-hover-font-size, var(--framer-link-current-font-size, var(--framer-link-font-size, var(--framer-font-size, 16px)))) * var(--framer-font-size-scale, 1));
+            text-transform: var(--framer-link-hover-text-transform, var(--framer-link-current-text-transform, var(--framer-link-text-transform, var(--framer-text-transform, none))));
+            text-decoration: var(--framer-link-hover-text-decoration, var(--framer-link-current-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration, none))))
+        }
+
+        code.framer-text a.framer-text[data-framer-page-link-current]:hover,
+        code.framer-text a.framer-text[data-framer-page-link-current]:hover span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-code-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif));
+            font-style: var(--framer-code-font-style, var(--framer-font-style, normal));
+            font-weight: var(--framer-code-font-weight, var(--framer-font-weight, 400));
+            color: var(--framer-link-hover-text-color, var(--framer-link-current-text-color, var(--framer-link-text-color, var(--framer-code-text-color, var(--framer-text-color, #000)))));
+            font-size: calc(var(--framer-link-hover-font-size, var(--framer-link-current-font-size, var(--framer-link-font-size, var(--framer-font-size, 16px)))) * var(--framer-font-size-scale, 1))
+        }
+
+        .framer-image.framer-text {
+            display: block;
+            max-width: 100%;
+            height: auto
+        }
+
+        .text-styles-preset-reset.framer-text {
+            --framer-font-family: Inter, Inter Placeholder, sans-serif;
+            --framer-font-style: normal;
+            --framer-font-weight: 500;
+            --framer-text-color: #000;
+            --framer-font-size: 16px;
+            --framer-letter-spacing: 0;
+            --framer-text-transform: none;
+            --framer-text-decoration: none;
+            --framer-line-height: 1.2em;
+            --framer-text-alignment: start;
+            --framer-font-open-type-features: normal
+        }
+
+        ol.framer-text {
+            --list-style-type: decimal
+        }
+
+        ul.framer-text,
+        ol.framer-text {
+            display: table;
+            width: 100%
+        }
+
+        li.framer-text {
+            display: table-row;
+            counter-increment: list-item;
+            list-style: none
+        }
+
+        ol.framer-text>li.framer-text:before {
+            display: table-cell;
+            width: 2.25ch;
+            box-sizing: border-box;
+            padding-inline-end: .75ch;
+            content: counter(list-item, var(--list-style-type)) ".";
+            white-space: nowrap
+        }
+
+        ul.framer-text>li.framer-text:before {
+            display: table-cell;
+            width: 2.25ch;
+            box-sizing: border-box;
+            padding-inline-end: .75ch;
+            content: "\2022"
+        }
+
+        .framer-text-module[style*=aspect-ratio]>:first-child {
+            width: 100%
+        }
+
+        @supports not (aspect-ratio: 1) {
+            .framer-text-module[style*=aspect-ratio] {
+                position: relative
+            }
+        }
+
+        @supports not (aspect-ratio: 1) {
+            .framer-text-module[style*=aspect-ratio]:before {
+                content: "";
+                display: block;
+                padding-bottom: calc(100% / calc(var(--aspect-ratio)))
+            }
+        }
+
+        @supports not (aspect-ratio: 1) {
+            .framer-text-module[style*=aspect-ratio]>:first-child {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%
+            }
+        }
+
+        [data-framer-component-type=DeprecatedRichText] {
+            cursor: inherit
+        }
+
+        [data-framer-component-type=DeprecatedRichText] .text-styles-preset-reset {
+            --framer-font-family: Inter, Inter Placeholder, sans-serif;
+            --framer-font-style: normal;
+            --framer-font-weight: 500;
+            --framer-text-color: #000;
+            --framer-font-size: 16px;
+            --framer-letter-spacing: 0;
+            --framer-text-transform: none;
+            --framer-text-decoration: none;
+            --framer-line-height: 1.2em;
+            --framer-text-alignment: start;
+            --framer-font-open-type-features: normal
+        }
+
+        [data-framer-component-type=DeprecatedRichText] p,
+        [data-framer-component-type=DeprecatedRichText] div,
+        [data-framer-component-type=DeprecatedRichText] h1,
+        [data-framer-component-type=DeprecatedRichText] h2,
+        [data-framer-component-type=DeprecatedRichText] h3,
+        [data-framer-component-type=DeprecatedRichText] h4,
+        [data-framer-component-type=DeprecatedRichText] h5,
+        [data-framer-component-type=DeprecatedRichText] h6 {
+            margin: 0;
+            padding: 0
+        }
+
+        [data-framer-component-type=DeprecatedRichText] p,
+        [data-framer-component-type=DeprecatedRichText] div,
+        [data-framer-component-type=DeprecatedRichText] h1,
+        [data-framer-component-type=DeprecatedRichText] h2,
+        [data-framer-component-type=DeprecatedRichText] h3,
+        [data-framer-component-type=DeprecatedRichText] h4,
+        [data-framer-component-type=DeprecatedRichText] h5,
+        [data-framer-component-type=DeprecatedRichText] h6,
+        [data-framer-component-type=DeprecatedRichText] li,
+        [data-framer-component-type=DeprecatedRichText] ol,
+        [data-framer-component-type=DeprecatedRichText] ul,
+        [data-framer-component-type=DeprecatedRichText] span:not([data-text-fill]) {
+            font-family: var(--framer-font-family, Inter, Inter Placeholder, sans-serif);
+            font-style: var(--framer-font-style, normal);
+            font-weight: var(--framer-font-weight, 400);
+            color: var(--framer-text-color, #000);
+            font-size: var(--framer-font-size, 16px);
+            letter-spacing: var(--framer-letter-spacing, 0);
+            text-transform: var(--framer-text-transform, none);
+            text-decoration: var(--framer-text-decoration, none);
+            line-height: var(--framer-line-height, 1.2em);
+            text-align: var(--framer-text-alignment, start)
+        }
+
+        [data-framer-component-type=DeprecatedRichText] p:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] div:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] h1:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] h2:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] h3:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] h4:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] h5:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] h6:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] ol:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] ul:not(:first-child),
+        [data-framer-component-type=DeprecatedRichText] .framer-image:not(:first-child) {
+            margin-top: var(--framer-paragraph-spacing, 0)
+        }
+
+        [data-framer-component-type=DeprecatedRichText] span[data-text-fill] {
+            display: inline-block;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        [data-framer-component-type=DeprecatedRichText] a,
+        [data-framer-component-type=DeprecatedRichText] a span:not([data-text-fill]) {
+            font-family: var(--framer-link-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif));
+            font-style: var(--framer-link-font-style, var(--framer-font-style, normal));
+            font-weight: var(--framer-link-font-weight, var(--framer-font-weight, 400));
+            color: var(--framer-link-text-color, var(--framer-text-color, #000));
+            font-size: var(--framer-link-font-size, var(--framer-font-size, 16px));
+            text-transform: var(--framer-link-text-transform, var(--framer-text-transform, none));
+            text-decoration: var(--framer-link-text-decoration, var(--framer-text-decoration, none))
+        }
+
+        [data-framer-component-type=DeprecatedRichText] a:hover,
+        [data-framer-component-type=DeprecatedRichText] a:hover span:not([data-text-fill]) {
+            font-family: var(--framer-link-hover-font-family, var(--framer-link-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif)));
+            font-style: var(--framer-link-hover-font-style, var(--framer-link-font-style, var(--framer-font-style, normal)));
+            font-weight: var(--framer-link-hover-font-weight, var(--framer-link-font-weight, var(--framer-font-weight, 400)));
+            color: var(--framer-link-hover-text-color, var(--framer-link-text-color, var(--framer-text-color, #000)));
+            font-size: var(--framer-link-hover-font-size, var(--framer-link-font-size, var(--framer-font-size, 16px)));
+            text-transform: var(--framer-link-hover-text-transform, var(--framer-link-text-transform, var(--framer-text-transform, none)));
+            text-decoration: var(--framer-link-hover-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration, none)))
+        }
+
+        a[data-framer-page-link-current],
+        a[data-framer-page-link-current] span:not([data-text-fill]) {
+            font-family: var(--framer-link-current-font-family, var(--framer-link-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif)));
+            font-style: var(--framer-link-current-font-style, var(--framer-link-font-style, var(--framer-font-style, normal)));
+            font-weight: var(--framer-link-current-font-weight, var(--framer-link-font-weight, var(--framer-font-weight, 400)));
+            color: var(--framer-link-current-text-color, var(--framer-link-text-color, var(--framer-text-color, #000)));
+            font-size: var(--framer-link-current-font-size, var(--framer-link-font-size, var(--framer-font-size, 16px)));
+            text-transform: var(--framer-link-current-text-transform, var(--framer-link-text-transform, var(--framer-text-transform, none)));
+            text-decoration: var(--framer-link-current-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration, none)))
+        }
+
+        a[data-framer-page-link-current]:hover,
+        a[data-framer-page-link-current]:hover span:not([data-text-fill]) {
+            font-family: var(--framer-link-hover-font-family, var(--framer-link-current-font-family, var(--framer-link-font-family, var(--framer-font-family, Inter, Inter Placeholder, sans-serif))));
+            font-style: var(--framer-link-hover-font-style, var(--framer-link-current-font-style, var(--framer-link-font-style, var(--framer-font-style, normal))));
+            font-weight: var(--framer-link-hover-font-weight, var(--framer-link-current-font-weight, var(--framer-link-font-weight, var(--framer-font-weight, 400))));
+            color: var(--framer-link-hover-text-color, var(--framer-link-current-text-color, var(--framer-link-text-color, var(--framer-text-color, #000))));
+            font-size: var(--framer-link-hover-font-size, var(--framer-link-current-font-size, var(--framer-link-font-size, var(--framer-font-size, 16px))));
+            text-transform: var(--framer-link-hover-text-transform, var(--framer-link-current-text-transform, var(--framer-link-text-transform, var(--framer-text-transform, none))));
+            text-decoration: var(--framer-link-hover-text-decoration, var(--framer-link-current-text-decoration, var(--framer-link-text-decoration, var(--framer-text-decoration, none))))
+        }
+
+        [data-framer-component-type=DeprecatedRichText] strong {
+            font-weight: bolder
+        }
+
+        [data-framer-component-type=DeprecatedRichText] em {
+            font-style: italic
+        }
+
+        [data-framer-component-type=DeprecatedRichText] .framer-image {
+            display: block;
+            max-width: 100%;
+            height: auto
+        }
+
+        [data-framer-component-type=DeprecatedRichText] ul,
+        [data-framer-component-type=DeprecatedRichText] ol {
+            display: table;
+            width: 100%;
+            padding-left: 0;
+            margin: 0
+        }
+
+        [data-framer-component-type=DeprecatedRichText] li {
+            display: table-row;
+            counter-increment: list-item;
+            list-style: none
+        }
+
+        [data-framer-component-type=DeprecatedRichText] ol>li:before {
+            display: table-cell;
+            width: 2.25ch;
+            box-sizing: border-box;
+            padding-right: .75ch;
+            content: counter(list-item) ".";
+            white-space: nowrap
+        }
+
+        [data-framer-component-type=DeprecatedRichText] ul>li:before {
+            display: table-cell;
+            width: 2.25ch;
+            box-sizing: border-box;
+            padding-right: .75ch;
+            content: "\2022"
+        }
+
+        :not([data-framer-generated])>[data-framer-stack-content-wrapper]>*,
+        :not([data-framer-generated])>[data-framer-stack-content-wrapper]>[data-framer-component-type],
+        :not([data-framer-generated])>[data-framer-stack-content-wrapper]>[data-framer-legacy-stack-gap-enabled]>*,
+        :not([data-framer-generated])>[data-framer-stack-content-wrapper]>[data-framer-legacy-stack-gap-enabled]>[data-framer-component-type] {
+            position: relative
+        }
+
+        .flexbox-gap-not-supported [data-framer-legacy-stack-gap-enabled=true]>*,
+        [data-framer-legacy-stack-gap-enabled=true][data-framer-stack-flexbox-gap=false] {
+            margin-top: calc(var(--stack-gap-y) / 2);
+            margin-bottom: calc(var(--stack-gap-y) / 2);
+            margin-right: calc(var(--stack-gap-x) / 2);
+            margin-left: calc(var(--stack-gap-x) / 2)
+        }
+
+        [data-framer-stack-content-wrapper][data-framer-stack-gap-enabled=true] {
+            row-gap: var(--stack-native-row-gap);
+            column-gap: var(--stack-native-column-gap)
+        }
+
+        .flexbox-gap-not-supported [data-framer-stack-content-wrapper][data-framer-stack-gap-enabled=true] {
+            row-gap: unset;
+            column-gap: unset
+        }
+
+        .flexbox-gap-not-supported [data-framer-stack-direction-reverse=false] [data-framer-legacy-stack-gap-enabled=true]>*:first-child,
+        [data-framer-stack-direction-reverse=false] [data-framer-legacy-stack-gap-enabled=true][data-framer-stack-flexbox-gap=false]>*:first-child,
+        .flexbox-gap-not-supported [data-framer-stack-direction-reverse=true] [data-framer-legacy-stack-gap-enabled=true]>*:last-child,
+        [data-framer-stack-direction-reverse=true] [data-framer-legacy-stack-gap-enabled=true][data-framer-stack-flexbox-gap=false]>*:last-child {
+            margin-top: 0;
+            margin-left: 0
+        }
+
+        .flexbox-gap-not-supported [data-framer-stack-direction-reverse=false] [data-framer-legacy-stack-gap-enabled=true]>*:last-child,
+        [data-framer-stack-direction-reverse=false] [data-framer-legacy-stack-gap-enabled=true][data-framer-stack-flexbox-gap=false]>*:last-child,
+        .flexbox-gap-not-supported [data-framer-stack-direction-reverse=true] [data-framer-legacy-stack-gap-enabled=true]>*:first-child,
+        [data-framer-stack-direction-reverse=true] [data-framer-legacy-stack-gap-enabled=true][data-framer-stack-flexbox-gap=false]>*:first-child {
+            margin-right: 0;
+            margin-bottom: 0
+        }
+
+        NavigationContainer [data-framer-component-type=NavigationContainer]>*,
+        [data-framer-component-type=NavigationContainer]>[data-framer-component-type] {
+            position: relative
+        }
+
+        [data-framer-component-type=Scroll]::-webkit-scrollbar {
+            display: none
+        }
+
+        [data-framer-component-type=ScrollContentWrapper]>* {
+            position: relative
+        }
+
+        [data-framer-component-type=NativeScroll] {
+            -webkit-overflow-scrolling: touch
+        }
+
+        [data-framer-component-type=NativeScroll]>* {
+            position: relative
+        }
+
+        [data-framer-component-type=NativeScroll].direction-both {
+            overflow-x: scroll;
+            overflow-y: scroll
+        }
+
+        [data-framer-component-type=NativeScroll].direction-vertical {
+            overflow-x: hidden;
+            overflow-y: scroll
+        }
+
+        [data-framer-component-type=NativeScroll].direction-horizontal {
+            overflow-x: scroll;
+            overflow-y: hidden
+        }
+
+        [data-framer-component-type=NativeScroll].direction-vertical>* {
+            width: 100% !important
+        }
+
+        [data-framer-component-type=NativeScroll].direction-horizontal>* {
+            height: 100% !important
+        }
+
+        [data-framer-component-type=NativeScroll].scrollbar-hidden::-webkit-scrollbar {
+            display: none
+        }
+
+        [data-framer-component-type=PageContentWrapper]>*,
+        [data-framer-component-type=PageContentWrapper]>[data-framer-component-type] {
+            position: relative
+        }
+
+        [data-framer-component-type=DeviceComponent].no-device>* {
+            width: 100% !important;
+            height: 100% !important
+        }
+
+        [data-is-present=false],
+        [data-is-present=false] * {
+            pointer-events: none !important
+        }
+
+        [data-framer-cursor=pointer] {
+            cursor: pointer
+        }
+
+        [data-framer-cursor=grab] {
+            cursor: grab
+        }
+
+        [data-framer-cursor=grab]:active {
+            cursor: grabbing
+        }
+
+        [data-framer-component-type=Frame] *,
+        [data-framer-component-type=Stack] * {
+            pointer-events: auto
+        }
+
+        [data-framer-generated] * {
+            pointer-events: unset
+        }
+
+        .svgContainer svg {
+            display: block
+        }
+
+        [data-reset=button] {
+            border-width: 0;
+            padding: 0;
+            background: none
+        }
+
+        [data-hide-scrollbars=true]::-webkit-scrollbar {
+            width: 0px;
+            height: 0px
+        }
+
+        [data-hide-scrollbars=true]::-webkit-scrollbar-thumb {
+            background: transparent
+        }
+
+        .framer-cursor-none,
+        .framer-cursor-none * {
+            cursor: none !important
+        }
+
+        .framer-pointer-events-none,
+        .framer-pointer-events-none * {
+            pointer-events: none !important
+        }
+
+        @supports (aspect-ratio: 1) {
+            body {
+                --framer-aspect-ratio-supported: auto
+            }
+        }
+
+        .framer-body-Q9Y9bQnlX-framer-at7PM {
+            background: #2F3E46
+        }
+
+        .framer-at7PM.framer-ww6wxr,
+        .framer-at7PM .framer-ww6wxr {
+            display: block
+        }
+
+        .framer-at7PM.framer-1jn1gni {
+            align-content: center;
+            align-items: center;
+            background-color: #2f3e46;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 1200px
+        }
+
+        .framer-at7PM .framer-1w9os6t {
+            align-content: center;
+            align-items: center;
+            background-color: #cad2c5;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 50px;
+            height: min-content;
+            justify-content: center;
+            min-height: 800px;
+            overflow: hidden;
+            padding: 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-2redwz {
+            --framer-link-text-color: #0099ff;
+            --framer-link-text-decoration: underline;
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            max-width: 1000px;
+            position: relative;
+            white-space: pre;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-13dwp82 {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: center;
+            max-width: 1000px;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 100%;
+            z-index: 1
+        }
+
+        .framer-at7PM .framer-1sf6q7f,
+        .framer-at7PM .framer-1vojdp4,
+        .framer-at7PM .framer-1msapsg,
+        .framer-at7PM .framer-1qm6c1g,
+        .framer-at7PM .framer-7trf1h,
+        .framer-at7PM .framer-11ynp14 {
+            --framer-link-text-color: #0099ff;
+            --framer-link-text-decoration: underline;
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            position: relative;
+            white-space: pre;
+            width: auto
+        }
+
+        .framer-at7PM .framer-1srylac,
+        .framer-at7PM .framer-n2pokl {
+            align-content: center;
+            align-items: center;
+            background-color: #84a98c;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 10px;
+            height: 40px;
+            justify-content: center;
+            overflow: visible;
+            padding: 15px;
+            position: relative;
+            width: min-content
+        }
+
+        .framer-at7PM .framer-1awxafe {
+            align-content: center;
+            align-items: center;
+            background-color: #52796f;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-3xwnll {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: flex-start;
+            max-width: 1000px;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%;
+            z-index: 1
+        }
+
+        .framer-at7PM .framer-9sxok6,
+        .framer-at7PM .framer-mz48tz,
+        .framer-at7PM .framer-z3to5,
+        .framer-at7PM .framer-dsf31q {
+            --framer-link-text-color: #0099ff;
+            --framer-link-text-decoration: underline;
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            overflow: visible;
+            position: relative;
+            white-space: pre-wrap;
+            width: 100%;
+            word-break: break-word;
+            word-wrap: break-word
+        }
+
+        .framer-at7PM .framer-17wqfj8 {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: center;
+            max-width: 600px;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-sq9zdv,
+        .framer-at7PM .framer-tbg18r,
+        .framer-at7PM .framer-z9rbcb,
+        .framer-at7PM .framer-qiud65,
+        .framer-at7PM .framer-1qzr11u,
+        .framer-at7PM .framer-16i3qq9 {
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            overflow: visible;
+            position: relative;
+            white-space: pre-wrap;
+            width: 100%;
+            word-break: break-word;
+            word-wrap: break-word
+        }
+
+        .framer-at7PM .framer-ezkt0b,
+        .framer-at7PM .framer-1wrijod {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: center;
+            max-width: 1000px;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1ti3ndq,
+        .framer-at7PM .framer-1gwsc3t,
+        .framer-at7PM .framer-t3p5a8 {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: 1 0 0px;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 10px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 1px
+        }
+
+        .framer-at7PM .framer-158rgu,
+        .framer-at7PM .framer-mcggfk,
+        .framer-at7PM .framer-5c8tfi {
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            max-width: 400px;
+            overflow: visible;
+            position: relative;
+            white-space: pre-wrap;
+            width: 100%;
+            word-break: break-word;
+            word-wrap: break-word
+        }
+
+        .framer-at7PM .framer-ck4rn4 {
+            align-content: center;
+            align-items: center;
+            background-color: #354f52;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: 400px;
+            justify-content: center;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1qt44j3 {
+            flex: none;
+            inset: -3px 0;
+            overflow: visible;
+            position: absolute;
+            z-index: 1
+        }
+
+        .framer-at7PM .framer-tg64jj,
+        .framer-at7PM .framer-mm368y {
+            align-content: center;
+            align-items: center;
+            background-color: #2f3e46;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-15yufjf {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: flex-start;
+            max-width: 1000px;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1zrf7a {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: 1 0 0px;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 1px
+        }
+
+        .framer-at7PM .framer-13n0paz {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: 1 0 0px;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 1px
+        }
+
+        .framer-at7PM .framer-qr55zr,
+        .framer-at7PM .framer-1cq527w,
+        .framer-at7PM .framer-1lmguh1,
+        .framer-at7PM .framer-uk6ja8,
+        .framer-at7PM .framer-1m84047,
+        .framer-at7PM .framer-wlozuz,
+        .framer-at7PM .framer-1q0dxsi,
+        .framer-at7PM .framer-mgx7qy,
+        .framer-at7PM .framer-1alnahh,
+        .framer-at7PM .framer-kbltef,
+        .framer-at7PM .framer-52jpjh,
+        .framer-at7PM .framer-qyviqv {
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            overflow: visible;
+            position: relative;
+            white-space: pre;
+            width: auto
+        }
+
+        .framer-at7PM .framer-1ikxaf8 {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: min-content;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1aoy8aa {
+            --border-bottom-width: 1px;
+            --border-color: #394b55;
+            --border-left-width: 0px;
+            --border-right-width: 0px;
+            --border-style: solid;
+            --border-top-width: 0px;
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            height: min-content;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 0 0 10px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1p8vkfj,
+        .framer-at7PM .framer-1r453xi {
+            --border-bottom-width: 1px;
+            --border-color: #394b55;
+            --border-left-width: 0px;
+            --border-right-width: 0px;
+            --border-style: solid;
+            --border-top-width: 0px;
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            height: min-content;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 10px 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-10kneak {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            height: min-content;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 10px 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1pjqqc3 {
+            align-content: center;
+            align-items: center;
+            background-color: #2f3e46;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: 400px;
+            justify-content: center;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1gppdvc {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 100px;
+            height: 148px;
+            justify-content: center;
+            max-width: 1000px;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 1000px
+        }
+
+        .framer-at7PM .framer-1fkgo8g,
+        .framer-at7PM .framer-d0w8x0 {
+            aspect-ratio: .8728971962616823 / 1;
+            flex: none;
+            height: 104%;
+            min-width: 100px;
+            overflow: visible;
+            position: relative;
+            width: var(--framer-aspect-ratio-supported, 135px)
+        }
+
+        .framer-at7PM .framer-15owetp {
+            aspect-ratio: .8728971962616823 / 1;
+            flex: none;
+            height: 105%;
+            min-width: 100px;
+            overflow: visible;
+            position: relative;
+            width: var(--framer-aspect-ratio-supported, 136px)
+        }
+
+        .framer-at7PM .framer-qgsoaq {
+            aspect-ratio: .8728971962616823 / 1;
+            flex: none;
+            height: 104%;
+            min-width: 100px;
+            overflow: visible;
+            position: relative;
+            width: var(--framer-aspect-ratio-supported, 134px)
+        }
+
+        .framer-at7PM .framer-1opka7q,
+        .framer-at7PM .framer-177s3zp,
+        .framer-at7PM .framer-6144p1 {
+            align-content: flex-start;
+            align-items: flex-start;
+            background-color: #394b55;
+            border-radius: 20px;
+            display: flex;
+            flex: 1 0 0px;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: flex-start;
+            min-height: 380px;
+            overflow: hidden;
+            padding: 20px;
+            position: relative;
+            width: 1px;
+            will-change: var(--framer-will-change-override, transform)
+        }
+
+        .framer-at7PM .framer-fw00g9,
+        .framer-at7PM .framer-1pj71tw,
+        .framer-at7PM .framer-95uk13 {
+            align-content: center;
+            align-items: center;
+            background-color: #2f3e46;
+            border-radius: 10px;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: 200px;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%;
+            will-change: var(--framer-will-change-override, transform)
+        }
+
+        .framer-at7PM .framer-ni3bno {
+            aspect-ratio: 1.41287284144427 / 1;
+            flex: none;
+            height: var(--framer-aspect-ratio-supported, 216px);
+            overflow: visible;
+            position: relative;
+            width: 305px
+        }
+
+        .framer-at7PM .framer-28210k,
+        .framer-at7PM .framer-1sxcczy,
+        .framer-at7PM .framer-v3auf2 {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-ex7mrk {
+            aspect-ratio: 1.41287284144427 / 1;
+            flex: none;
+            height: var(--framer-aspect-ratio-supported, 224px);
+            overflow: visible;
+            position: relative;
+            width: 316px
+        }
+
+        .framer-at7PM .framer-1u50di0 {
+            aspect-ratio: 1.41287284144427 / 1;
+            flex: none;
+            height: var(--framer-aspect-ratio-supported, 223px);
+            overflow: visible;
+            position: relative;
+            width: 315px
+        }
+
+        .framer-at7PM .framer-1mmua2 {
+            align-content: flex-start;
+            align-items: flex-start;
+            background-color: #2f3e46;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: center;
+            overflow: visible;
+            padding: 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1k1zcnb {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: flex-start;
+            max-width: 100%;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 1000px
+        }
+
+        .framer-at7PM .framer-1libsuz {
+            --framer-link-text-color: #0099ff;
+            --framer-link-text-decoration: underline;
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            max-width: 100%;
+            overflow: visible;
+            position: relative;
+            white-space: pre-wrap;
+            width: 800px;
+            word-break: break-word;
+            word-wrap: break-word
+        }
+
+        .framer-at7PM .framer-e7z12f {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 15px;
+            height: min-content;
+            justify-content: center;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: min-content
+        }
+
+        .framer-at7PM .framer-166vn91 {
+            align-content: center;
+            align-items: center;
+            background-color: #cad2c5;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 10px;
+            height: 40px;
+            justify-content: center;
+            overflow: visible;
+            padding: 15px;
+            position: relative;
+            width: min-content
+        }
+
+        .framer-at7PM .framer-1lvxnfg {
+            --border-bottom-width: 0px;
+            --border-color: rgba(0, 0, 0, .05);
+            --border-left-width: 0px;
+            --border-right-width: 0px;
+            --border-style: solid;
+            --border-top-width: 1px;
+            align-content: center;
+            align-items: center;
+            background-color: #2f3e46;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 100px;
+            height: min-content;
+            justify-content: center;
+            overflow: visible;
+            padding: 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-1mb7akz {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: flex-start;
+            max-width: 1000px;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-5k9hco,
+        .framer-at7PM .framer-ha6jjl,
+        .framer-at7PM .framer-9vpq2k {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 15px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 300px
+        }
+
+        .framer-at7PM .framer-4y7mzh,
+        .framer-at7PM .framer-57zusu,
+        .framer-at7PM .framer-1ywcxa,
+        .framer-at7PM .framer-vehpyj,
+        .framer-at7PM .framer-p1x7e4,
+        .framer-at7PM .framer-1s66tb0,
+        .framer-at7PM .framer-flsekw,
+        .framer-at7PM .framer-1pii4vx,
+        .framer-at7PM .framer-7kwz3u,
+        .framer-at7PM .framer-z75lvk,
+        .framer-at7PM .framer-g9e1xb,
+        .framer-at7PM .framer-mtqbpq {
+            --framer-link-hover-text-color: rgba(153, 153, 153, .6);
+            --framer-link-text-decoration: none;
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            overflow: visible;
+            position: relative;
+            white-space: pre;
+            width: auto
+        }
+
+        .framer-at7PM .framer-j91vkm,
+        .framer-at7PM .framer-10n5atq,
+        .framer-at7PM .framer-ye1utr {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 10px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: min-content
+        }
+
+        .framer-at7PM .framer-nwekjk {
+            --border-bottom-width: 0px;
+            --border-color: #394b55;
+            --border-left-width: 0px;
+            --border-right-width: 0px;
+            --border-style: solid;
+            --border-top-width: 1px;
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: center;
+            max-width: 1000px;
+            overflow: visible;
+            padding: 100px 0 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-at7PM .framer-l9032b {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: min-content
+        }
+
+        .framer-at7PM .framer-2jv1lu,
+        .framer-at7PM .framer-1rdamx5,
+        .framer-at7PM .framer-1n6qn3a,
+        .framer-at7PM .framer-mgnd9e {
+            flex: none;
+            height: 32px;
+            position: relative;
+            width: 32px
+        }
+
+        .framer-at7PM .framer-14mpm2f {
+            --framer-link-hover-text-color: rgba(153, 153, 153, .6);
+            --framer-link-text-decoration: none;
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            overflow: hidden;
+            position: relative;
+            white-space: pre-wrap;
+            width: 100%;
+            word-break: break-word;
+            word-wrap: break-word
+        }
+
+        @supports (background: -webkit-named-image(i)) and (not (scale:1)) {
+
+            .framer-at7PM.framer-1jn1gni,
+            .framer-at7PM .framer-1w9os6t,
+            .framer-at7PM .framer-13dwp82,
+            .framer-at7PM .framer-1srylac,
+            .framer-at7PM .framer-1awxafe,
+            .framer-at7PM .framer-3xwnll,
+            .framer-at7PM .framer-17wqfj8,
+            .framer-at7PM .framer-ezkt0b,
+            .framer-at7PM .framer-1ti3ndq,
+            .framer-at7PM .framer-1gwsc3t,
+            .framer-at7PM .framer-t3p5a8,
+            .framer-at7PM .framer-ck4rn4,
+            .framer-at7PM .framer-tg64jj,
+            .framer-at7PM .framer-15yufjf,
+            .framer-at7PM .framer-1zrf7a,
+            .framer-at7PM .framer-13n0paz,
+            .framer-at7PM .framer-1ikxaf8,
+            .framer-at7PM .framer-1pjqqc3,
+            .framer-at7PM .framer-1gppdvc,
+            .framer-at7PM .framer-mm368y,
+            .framer-at7PM .framer-1wrijod,
+            .framer-at7PM .framer-1opka7q,
+            .framer-at7PM .framer-fw00g9,
+            .framer-at7PM .framer-28210k,
+            .framer-at7PM .framer-177s3zp,
+            .framer-at7PM .framer-1pj71tw,
+            .framer-at7PM .framer-1sxcczy,
+            .framer-at7PM .framer-6144p1,
+            .framer-at7PM .framer-95uk13,
+            .framer-at7PM .framer-v3auf2,
+            .framer-at7PM .framer-1mmua2,
+            .framer-at7PM .framer-1k1zcnb,
+            .framer-at7PM .framer-e7z12f,
+            .framer-at7PM .framer-n2pokl,
+            .framer-at7PM .framer-166vn91,
+            .framer-at7PM .framer-1lvxnfg,
+            .framer-at7PM .framer-1mb7akz,
+            .framer-at7PM .framer-5k9hco,
+            .framer-at7PM .framer-j91vkm,
+            .framer-at7PM .framer-ha6jjl,
+            .framer-at7PM .framer-10n5atq,
+            .framer-at7PM .framer-9vpq2k,
+            .framer-at7PM .framer-ye1utr,
+            .framer-at7PM .framer-nwekjk,
+            .framer-at7PM .framer-l9032b {
+                gap: 0px
+            }
+
+            .framer-at7PM.framer-1jn1gni>*,
+            .framer-at7PM .framer-tg64jj>*,
+            .framer-at7PM .framer-1ikxaf8>*,
+            .framer-at7PM .framer-mm368y>*,
+            .framer-at7PM .framer-fw00g9>*,
+            .framer-at7PM .framer-1pj71tw>*,
+            .framer-at7PM .framer-95uk13>* {
+                margin: 0
+            }
+
+            .framer-at7PM.framer-1jn1gni>:first-child,
+            .framer-at7PM .framer-1w9os6t>:first-child,
+            .framer-at7PM .framer-1awxafe>:first-child,
+            .framer-at7PM .framer-3xwnll>:first-child,
+            .framer-at7PM .framer-17wqfj8>:first-child,
+            .framer-at7PM .framer-1ti3ndq>:first-child,
+            .framer-at7PM .framer-1gwsc3t>:first-child,
+            .framer-at7PM .framer-t3p5a8>:first-child,
+            .framer-at7PM .framer-tg64jj>:first-child,
+            .framer-at7PM .framer-1zrf7a>:first-child,
+            .framer-at7PM .framer-13n0paz>:first-child,
+            .framer-at7PM .framer-1ikxaf8>:first-child,
+            .framer-at7PM .framer-mm368y>:first-child,
+            .framer-at7PM .framer-1opka7q>:first-child,
+            .framer-at7PM .framer-fw00g9>:first-child,
+            .framer-at7PM .framer-28210k>:first-child,
+            .framer-at7PM .framer-177s3zp>:first-child,
+            .framer-at7PM .framer-1pj71tw>:first-child,
+            .framer-at7PM .framer-1sxcczy>:first-child,
+            .framer-at7PM .framer-6144p1>:first-child,
+            .framer-at7PM .framer-95uk13>:first-child,
+            .framer-at7PM .framer-v3auf2>:first-child,
+            .framer-at7PM .framer-1mmua2>:first-child,
+            .framer-at7PM .framer-1k1zcnb>:first-child,
+            .framer-at7PM .framer-1lvxnfg>:first-child,
+            .framer-at7PM .framer-5k9hco>:first-child,
+            .framer-at7PM .framer-j91vkm>:first-child,
+            .framer-at7PM .framer-ha6jjl>:first-child,
+            .framer-at7PM .framer-10n5atq>:first-child,
+            .framer-at7PM .framer-9vpq2k>:first-child,
+            .framer-at7PM .framer-ye1utr>:first-child,
+            .framer-at7PM .framer-nwekjk>:first-child {
+                margin-top: 0
+            }
+
+            .framer-at7PM.framer-1jn1gni>:last-child,
+            .framer-at7PM .framer-1w9os6t>:last-child,
+            .framer-at7PM .framer-1awxafe>:last-child,
+            .framer-at7PM .framer-3xwnll>:last-child,
+            .framer-at7PM .framer-17wqfj8>:last-child,
+            .framer-at7PM .framer-1ti3ndq>:last-child,
+            .framer-at7PM .framer-1gwsc3t>:last-child,
+            .framer-at7PM .framer-t3p5a8>:last-child,
+            .framer-at7PM .framer-tg64jj>:last-child,
+            .framer-at7PM .framer-1zrf7a>:last-child,
+            .framer-at7PM .framer-13n0paz>:last-child,
+            .framer-at7PM .framer-1ikxaf8>:last-child,
+            .framer-at7PM .framer-mm368y>:last-child,
+            .framer-at7PM .framer-1opka7q>:last-child,
+            .framer-at7PM .framer-fw00g9>:last-child,
+            .framer-at7PM .framer-28210k>:last-child,
+            .framer-at7PM .framer-177s3zp>:last-child,
+            .framer-at7PM .framer-1pj71tw>:last-child,
+            .framer-at7PM .framer-1sxcczy>:last-child,
+            .framer-at7PM .framer-6144p1>:last-child,
+            .framer-at7PM .framer-95uk13>:last-child,
+            .framer-at7PM .framer-v3auf2>:last-child,
+            .framer-at7PM .framer-1mmua2>:last-child,
+            .framer-at7PM .framer-1k1zcnb>:last-child,
+            .framer-at7PM .framer-1lvxnfg>:last-child,
+            .framer-at7PM .framer-5k9hco>:last-child,
+            .framer-at7PM .framer-j91vkm>:last-child,
+            .framer-at7PM .framer-ha6jjl>:last-child,
+            .framer-at7PM .framer-10n5atq>:last-child,
+            .framer-at7PM .framer-9vpq2k>:last-child,
+            .framer-at7PM .framer-ye1utr>:last-child,
+            .framer-at7PM .framer-nwekjk>:last-child {
+                margin-bottom: 0
+            }
+
+            .framer-at7PM .framer-1w9os6t>* {
+                margin: 25px 0
+            }
+
+            .framer-at7PM .framer-13dwp82>*,
+            .framer-at7PM .framer-ezkt0b>*,
+            .framer-at7PM .framer-1wrijod>*,
+            .framer-at7PM .framer-l9032b>* {
+                margin: 0 10px
+            }
+
+            .framer-at7PM .framer-13dwp82>:first-child,
+            .framer-at7PM .framer-1srylac>:first-child,
+            .framer-at7PM .framer-ezkt0b>:first-child,
+            .framer-at7PM .framer-ck4rn4>:first-child,
+            .framer-at7PM .framer-15yufjf>:first-child,
+            .framer-at7PM .framer-1pjqqc3>:first-child,
+            .framer-at7PM .framer-1gppdvc>:first-child,
+            .framer-at7PM .framer-1wrijod>:first-child,
+            .framer-at7PM .framer-e7z12f>:first-child,
+            .framer-at7PM .framer-n2pokl>:first-child,
+            .framer-at7PM .framer-166vn91>:first-child,
+            .framer-at7PM .framer-1mb7akz>:first-child,
+            .framer-at7PM .framer-l9032b>:first-child {
+                margin-left: 0
+            }
+
+            .framer-at7PM .framer-13dwp82>:last-child,
+            .framer-at7PM .framer-1srylac>:last-child,
+            .framer-at7PM .framer-ezkt0b>:last-child,
+            .framer-at7PM .framer-ck4rn4>:last-child,
+            .framer-at7PM .framer-15yufjf>:last-child,
+            .framer-at7PM .framer-1pjqqc3>:last-child,
+            .framer-at7PM .framer-1gppdvc>:last-child,
+            .framer-at7PM .framer-1wrijod>:last-child,
+            .framer-at7PM .framer-e7z12f>:last-child,
+            .framer-at7PM .framer-n2pokl>:last-child,
+            .framer-at7PM .framer-166vn91>:last-child,
+            .framer-at7PM .framer-1mb7akz>:last-child,
+            .framer-at7PM .framer-l9032b>:last-child {
+                margin-right: 0
+            }
+
+            .framer-at7PM .framer-1srylac>*,
+            .framer-at7PM .framer-n2pokl>*,
+            .framer-at7PM .framer-166vn91>* {
+                margin: 0 5px
+            }
+
+            .framer-at7PM .framer-1awxafe>*,
+            .framer-at7PM .framer-3xwnll>*,
+            .framer-at7PM .framer-17wqfj8>*,
+            .framer-at7PM .framer-1zrf7a>*,
+            .framer-at7PM .framer-13n0paz>*,
+            .framer-at7PM .framer-1mmua2>*,
+            .framer-at7PM .framer-1k1zcnb>* {
+                margin: 20px 0
+            }
+
+            .framer-at7PM .framer-1ti3ndq>*,
+            .framer-at7PM .framer-1gwsc3t>*,
+            .framer-at7PM .framer-t3p5a8>*,
+            .framer-at7PM .framer-j91vkm>*,
+            .framer-at7PM .framer-10n5atq>*,
+            .framer-at7PM .framer-ye1utr>* {
+                margin: 5px 0
+            }
+
+            .framer-at7PM .framer-ck4rn4>*,
+            .framer-at7PM .framer-1pjqqc3>* {
+                margin: 0
+            }
+
+            .framer-at7PM .framer-15yufjf>*,
+            .framer-at7PM .framer-1mb7akz>* {
+                margin: 0 20px
+            }
+
+            .framer-at7PM .framer-1gppdvc>* {
+                margin: 0 50px
+            }
+
+            .framer-at7PM .framer-1opka7q>*,
+            .framer-at7PM .framer-28210k>*,
+            .framer-at7PM .framer-177s3zp>*,
+            .framer-at7PM .framer-1sxcczy>*,
+            .framer-at7PM .framer-6144p1>*,
+            .framer-at7PM .framer-v3auf2>*,
+            .framer-at7PM .framer-nwekjk>* {
+                margin: 10px 0
+            }
+
+            .framer-at7PM .framer-e7z12f>* {
+                margin: 0 7.5px
+            }
+
+            .framer-at7PM .framer-1lvxnfg>* {
+                margin: 50px 0
+            }
+
+            .framer-at7PM .framer-5k9hco>*,
+            .framer-at7PM .framer-ha6jjl>*,
+            .framer-at7PM .framer-9vpq2k>* {
+                margin: 7.5px 0
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .framer-at7PM .hidden-1jn1gni {
+                display: none !important
+            }
+        }
+
+        @media (min-width: 810px) and (max-width: 1199px) {
+            .framer-at7PM .hidden-oi5lvt {
+                display: none !important
+            }
+
+            .framer-body-Q9Y9bQnlX-framer-at7PM {
+                background: #2F3E46
+            }
+
+            .framer-at7PM.framer-1jn1gni {
+                width: 810px
+            }
+
+            .framer-at7PM .framer-1w9os6t,
+            .framer-at7PM .framer-tg64jj {
+                padding: 50px
+            }
+
+            .framer-at7PM .framer-1awxafe {
+                padding: 80px 40px
+            }
+
+            .framer-at7PM .framer-ck4rn4,
+            .framer-at7PM .framer-1pjqqc3 {
+                gap: unset;
+                justify-content: space-evenly;
+                padding: 50px
+            }
+
+            .framer-at7PM .framer-1qt44j3 {
+                inset: 0 -13px -6px -265px;
+                order: 0
+            }
+
+            .framer-at7PM .framer-15yufjf {
+                flex-direction: column
+            }
+
+            .framer-at7PM .framer-1zrf7a,
+            .framer-at7PM .framer-13n0paz {
+                flex: none;
+                width: 100%
+            }
+
+            .framer-at7PM .framer-1fkgo8g {
+                order: 0
+            }
+
+            .framer-at7PM .framer-15owetp {
+                order: 1
+            }
+
+            .framer-at7PM .framer-qgsoaq {
+                order: 2
+            }
+
+            .framer-at7PM .framer-d0w8x0 {
+                order: 3
+            }
+
+            .framer-at7PM .framer-mm368y {
+                align-content: flex-start;
+                align-items: flex-start;
+                padding: 50px
+            }
+
+            .framer-at7PM .framer-1mmua2 {
+                padding: 100px 50px
+            }
+
+            .framer-at7PM .framer-1lvxnfg {
+                gap: 50px;
+                padding: 50px
+            }
+
+            .framer-at7PM .framer-5k9hco,
+            .framer-at7PM .framer-ha6jjl,
+            .framer-at7PM .framer-9vpq2k {
+                flex: 1 0 0px;
+                width: 1px
+            }
+
+            .framer-at7PM .framer-nwekjk {
+                padding: 50px 0 0
+            }
+
+            @supports (background: -webkit-named-image(i)) and (not (scale:1)) {
+
+                .framer-at7PM .framer-ck4rn4,
+                .framer-at7PM .framer-15yufjf,
+                .framer-at7PM .framer-1pjqqc3,
+                .framer-at7PM .framer-1lvxnfg {
+                    gap: 0px
+                }
+
+                .framer-at7PM .framer-ck4rn4>*,
+                .framer-at7PM .framer-ck4rn4>:first-child,
+                .framer-at7PM .framer-ck4rn4>:last-child,
+                .framer-at7PM .framer-1pjqqc3>*,
+                .framer-at7PM .framer-1pjqqc3>:first-child,
+                .framer-at7PM .framer-1pjqqc3>:last-child {
+                    margin: 0
+                }
+
+                .framer-at7PM .framer-15yufjf>* {
+                    margin: 20px 0
+                }
+
+                .framer-at7PM .framer-15yufjf>:first-child,
+                .framer-at7PM .framer-1lvxnfg>:first-child {
+                    margin-top: 0
+                }
+
+                .framer-at7PM .framer-15yufjf>:last-child,
+                .framer-at7PM .framer-1lvxnfg>:last-child {
+                    margin-bottom: 0
+                }
+
+                .framer-at7PM .framer-1lvxnfg>* {
+                    margin: 25px 0
+                }
+            }
+        }
+
+        @media (max-width: 809px) {
+            .framer-at7PM .hidden-ah9bld {
+                display: none !important
+            }
+
+            .framer-body-Q9Y9bQnlX-framer-at7PM {
+                background: #2F3E46
+            }
+
+            .framer-at7PM.framer-1jn1gni {
+                width: 390px
+            }
+
+            .framer-at7PM .framer-1w9os6t {
+                min-height: 600px;
+                padding: 20px
+            }
+
+            .framer-at7PM .framer-2redwz {
+                order: 0
+            }
+
+            .framer-at7PM .framer-13dwp82 {
+                flex-direction: column;
+                order: 1
+            }
+
+            .framer-at7PM .framer-1srylac {
+                order: 2;
+                width: 100%
+            }
+
+            .framer-at7PM .framer-1awxafe {
+                padding: 60px 20px
+            }
+
+            .framer-at7PM .framer-ezkt0b,
+            .framer-at7PM .framer-15yufjf,
+            .framer-at7PM .framer-1mb7akz {
+                flex-direction: column
+            }
+
+            .framer-at7PM .framer-1ti3ndq,
+            .framer-at7PM .framer-1gwsc3t,
+            .framer-at7PM .framer-t3p5a8,
+            .framer-at7PM .framer-1zrf7a,
+            .framer-at7PM .framer-13n0paz {
+                flex: none;
+                width: 100%
+            }
+
+            .framer-at7PM .framer-ck4rn4 {
+                flex-direction: column;
+                gap: 40px;
+                height: 526px;
+                padding: 60px
+            }
+
+            .framer-at7PM .framer-1qt44j3 {
+                inset: 0 -117px -6px -739px
+            }
+
+            .framer-at7PM .framer-tg64jj {
+                padding: 40px 20px
+            }
+
+            .framer-at7PM .framer-1pjqqc3 {
+                flex-direction: column;
+                gap: 40px;
+                height: min-content;
+                padding: 60px
+            }
+
+            .framer-at7PM .framer-mm368y {
+                padding: 20px
+            }
+
+            .framer-at7PM .framer-1wrijod {
+                flex-direction: column;
+                gap: 10px
+            }
+
+            .framer-at7PM .framer-1opka7q,
+            .framer-at7PM .framer-177s3zp,
+            .framer-at7PM .framer-6144p1 {
+                flex: none;
+                height: 300px;
+                width: 100%
+            }
+
+            .framer-at7PM .framer-1mmua2 {
+                gap: 20px;
+                padding: 60px 20px
+            }
+
+            .framer-at7PM .framer-e7z12f {
+                flex-direction: column;
+                width: 100%
+            }
+
+            .framer-at7PM .framer-n2pokl,
+            .framer-at7PM .framer-166vn91,
+            .framer-at7PM .framer-5k9hco,
+            .framer-at7PM .framer-ha6jjl,
+            .framer-at7PM .framer-9vpq2k {
+                width: 100%
+            }
+
+            .framer-at7PM .framer-1lvxnfg {
+                gap: 40px;
+                padding: 40px 20px
+            }
+
+            .framer-at7PM .framer-nwekjk {
+                padding: 40px 0 0
+            }
+
+            @supports (background: -webkit-named-image(i)) and (not (scale:1)) {
+
+                .framer-at7PM .framer-13dwp82,
+                .framer-at7PM .framer-ezkt0b,
+                .framer-at7PM .framer-ck4rn4,
+                .framer-at7PM .framer-15yufjf,
+                .framer-at7PM .framer-1pjqqc3,
+                .framer-at7PM .framer-1wrijod,
+                .framer-at7PM .framer-1mmua2,
+                .framer-at7PM .framer-e7z12f,
+                .framer-at7PM .framer-1lvxnfg,
+                .framer-at7PM .framer-1mb7akz {
+                    gap: 0px
+                }
+
+                .framer-at7PM .framer-13dwp82>*,
+                .framer-at7PM .framer-ezkt0b>*,
+                .framer-at7PM .framer-1mmua2>* {
+                    margin: 10px 0
+                }
+
+                .framer-at7PM .framer-13dwp82>:first-child,
+                .framer-at7PM .framer-ezkt0b>:first-child,
+                .framer-at7PM .framer-ck4rn4>:first-child,
+                .framer-at7PM .framer-15yufjf>:first-child,
+                .framer-at7PM .framer-1pjqqc3>:first-child,
+                .framer-at7PM .framer-1wrijod>:first-child,
+                .framer-at7PM .framer-1mmua2>:first-child,
+                .framer-at7PM .framer-e7z12f>:first-child,
+                .framer-at7PM .framer-1lvxnfg>:first-child,
+                .framer-at7PM .framer-1mb7akz>:first-child {
+                    margin-top: 0
+                }
+
+                .framer-at7PM .framer-13dwp82>:last-child,
+                .framer-at7PM .framer-ezkt0b>:last-child,
+                .framer-at7PM .framer-ck4rn4>:last-child,
+                .framer-at7PM .framer-15yufjf>:last-child,
+                .framer-at7PM .framer-1pjqqc3>:last-child,
+                .framer-at7PM .framer-1wrijod>:last-child,
+                .framer-at7PM .framer-1mmua2>:last-child,
+                .framer-at7PM .framer-e7z12f>:last-child,
+                .framer-at7PM .framer-1lvxnfg>:last-child,
+                .framer-at7PM .framer-1mb7akz>:last-child {
+                    margin-bottom: 0
+                }
+
+                .framer-at7PM .framer-ck4rn4>*,
+                .framer-at7PM .framer-15yufjf>*,
+                .framer-at7PM .framer-1pjqqc3>*,
+                .framer-at7PM .framer-1lvxnfg>*,
+                .framer-at7PM .framer-1mb7akz>* {
+                    margin: 20px 0
+                }
+
+                .framer-at7PM .framer-1wrijod>* {
+                    margin: 5px 0
+                }
+
+                .framer-at7PM .framer-e7z12f>* {
+                    margin: 7.5px 0
+                }
+            }
+        }
+
+        .framer-at7PM[data-border=true]:after,
+        .framer-at7PM [data-border=true]:after {
+            content: "";
+            border-width: var(--border-top-width, 0) var(--border-right-width, 0) var(--border-bottom-width, 0) var(--border-left-width, 0);
+            border-color: var(--border-color, none);
+            border-style: var(--border-style, none);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            box-sizing: border-box;
+            left: 0;
+            top: 0;
+            border-radius: inherit;
+            pointer-events: none
+        }
+
+        .ssr-variant {
+            display: contents
+        }
+        .flat-button {
+            display: inline-block;
+            margin: 0 5px;
+            border-radius: 6px;
+            font-family: "Lato", sans-serif;
+            font-size: 16.5px;
+            padding: 12px 20px;
+            border: 0;
+            background-color: #84a98c;
+            cursor: pointer;
+            outline: 0;
+        }
+    </style><!-- Start of headEnd -->
+
+    <!-- End of headEnd -->
+    <style type="text/css" data-framer-css="true"></style>
+</head>
+
+<body class="framer-body-Q9Y9bQnlX-framer-at7PM">
+    <script async="" src="https://events.framer.com/script"
+        data-fid="03e81b5f2a5c8ea21843ad50e16bf775ddce93d7d658e533065938f58b19cdfc"></script>
+    <!-- Start of bodyStart -->
+
+    <!-- End of bodyStart -->
+    <div id="main"
+        data-framer-hydrate-v2="{&quot;routeId&quot;:&quot;Q9Y9bQnlX&quot;,&quot;localeId&quot;:&quot;default&quot;,&quot;breakpoints&quot;:[{&quot;hash&quot;:&quot;1jn1gni&quot;,&quot;mediaQuery&quot;:&quot;(min-width: 1200px)&quot;},{&quot;hash&quot;:&quot;oi5lvt&quot;,&quot;mediaQuery&quot;:&quot;(min-width: 810px) and (max-width: 1199px)&quot;},{&quot;hash&quot;:&quot;ah9bld&quot;,&quot;mediaQuery&quot;:&quot;(max-width: 809px)&quot;}]}"
+        data-framer-ssr-released-at="2024-08-12T15:36:12.860Z" data-framer-page-optimized-at="2024-08-13T18:36:46.356Z">
+        <!--$-->
+        <div class="framer-at7PM framer-1jn1gni" style="min-height:100vh;width:auto">
+            <div class="framer-1w9os6t" data-framer-name="Hero" name="Hero"><svg class="framer-2redwz"
+                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                    data-framer-component-type="RichTextContainer" viewBox="0 0 3772 471">
+                    <foreignObject width="100%" height="100%" class="framer-fit-text" transform="scale(1)"
+                        style="overflow:visible;transform-origin:center center">
+                        <h1 style="--font-selector:R0Y7VW5ib3VuZGVkLTcwMA==;--framer-font-family:&quot;Unbounded&quot;, &quot;Unbounded Placeholder&quot;, sans-serif;--framer-font-size:428.448px;--framer-font-weight:700;--framer-line-height:1.1em;--framer-text-alignment:center;--framer-text-color:rgb(53, 79, 82);--framer-text-transform:uppercase"
+                            class="framer-text">Hatchtrack</h1>
+                    </foreignObject>
+                </svg>
+                <div class="framer-13dwp82" data-framer-name="Menu" name="Menu">
+                    <div class="framer-1sf6q7f"
+                        style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                        data-framer-component-type="RichTextContainer">
+                        <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-text-color:rgb(53, 79, 82)"
+                            class="framer-text">Data</p>
+                    </div>
+                    <div class="framer-1vojdp4"
+                        style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                        data-framer-component-type="RichTextContainer">
+                        <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-text-color:rgb(53, 79, 82)"
+                            class="framer-text">Strategy</p>
+                    </div>
+                    <div class="framer-1msapsg"
+                        style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                        data-framer-component-type="RichTextContainer">
+                        <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-text-color:rgb(53, 79, 82)"
+                            class="framer-text">Tracking</p>
+                    </div>
+                </div>
+                <div class="flat-button" data-framer-name="Button" name="Button" type="button">
+                    <div class="framer-1qm6c1g" style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none" data-framer-component-type="RichTextContainer">
+                        <a href="{% url 'login' %}" style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-text-alignment:center; text-decoration:None; color:black;" class="framer-text">Login</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-5">
-                <a href="{% static 'images/screenshots/glucosetracker_dashboard_001.png' %}" class="thumbnail">
-                    <img src="{% static 'images/screenshots/glucosetracker_dashboard_001.png' %}">
-                </a>
-                <div class="addthis_sharing_toolbox text-center"></div>
+            <div class="framer-1awxafe" data-framer-name="Text" name="Text">
+                <div class="framer-3xwnll" data-framer-name="Content" name="Content">
+                    <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                        <div class="framer-9sxok6" data-framer-component-type="RichTextContainer"
+                            style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                            <h2 class="framer-text"
+                                style="--font-selector: R0Y7VW5ib3VuZGVkLTcwMA==; --framer-font-family: &quot;Unbounded&quot;, &quot;Unbounded Placeholder&quot;, sans-serif; --framer-font-size: 48px; --framer-font-weight: 700; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                The Feathered Operation</h2>
+                        </div>
+                    </div>
+                    <div class="framer-17wqfj8" data-framer-name="Paragraphs" name="Paragraphs">
+                        <div class="framer-sq9zdv"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <h3 style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-font-size:20px;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                class="framer-text">Embark on the pecking order of poultry challenge with our platform!
+                                We’ve built a roost for all your chicken management and breeding data needs. Here, each
+                                egg counts and every feather is accounted for!</h3>
+                        </div>
+                        <div class="framer-ezkt0b">
+                            <div class="framer-1ti3ndq" data-framer-name="Card" name="Card">
+                                <div class="framer-mz48tz"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <h2 style="--font-selector:R0Y7VW5ib3VuZGVkLTcwMA==;--framer-font-family:&quot;Unbounded&quot;, &quot;Unbounded Placeholder&quot;, sans-serif;--framer-font-size:32px;--framer-font-weight:700;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">100</h2>
+                                </div>
+                                <div class="framer-158rgu"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">Quantifiable Clucks</p>
+                                </div>
+                            </div>
+                            <div class="framer-1gwsc3t" data-framer-name="Card" name="Card">
+                                <div class="framer-z3to5"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <h2 style="--font-selector:R0Y7VW5ib3VuZGVkLTcwMA==;--framer-font-family:&quot;Unbounded&quot;, &quot;Unbounded Placeholder&quot;, sans-serif;--framer-font-size:32px;--framer-font-weight:700;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">200</h2>
+                                </div>
+                                <div class="framer-mcggfk"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">Edible Eggs</p>
+                                </div>
+                            </div>
+                            <div class="framer-t3p5a8" data-framer-name="Card" name="Card">
+                                <div class="framer-dsf31q"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <h2 style="--font-selector:R0Y7VW5ib3VuZGVkLTcwMA==;--framer-font-family:&quot;Unbounded&quot;, &quot;Unbounded Placeholder&quot;, sans-serif;--framer-font-size:32px;--framer-font-weight:700;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">99</h2>
+                                </div>
+                                <div class="framer-5c8tfi"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">Happy Hens</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="framer-ck4rn4" data-framer-name="Shapes" name="Shapes">
+                <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                    <div class="framer-1qt44j3" data-framer-name="image" name="image">
+                        <div data-framer-background-image-wrapper="true"
+                            style="position: absolute; border-radius: inherit; inset: 0px;"><img decoding="async"
+                                loading="lazy" sizes="100vw"
+                                srcset="https://framerusercontent.com/images/T53Jt9t78OIaWpGmKPUq8SB6k.png?scale-down-to=512 512w,https://framerusercontent.com/images/T53Jt9t78OIaWpGmKPUq8SB6k.png?scale-down-to=1024 1024w,https://framerusercontent.com/images/T53Jt9t78OIaWpGmKPUq8SB6k.png 1480w"
+                                src="https://framerusercontent.com/images/T53Jt9t78OIaWpGmKPUq8SB6k.png" alt=""
+                                style="display: block; width: 100%; height: 100%; border-radius: inherit; object-position: center center; object-fit: cover; image-rendering: auto;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="framer-tg64jj" data-framer-name="Text" name="Text">
+                <div class="framer-15yufjf">
+                    <div class="framer-1zrf7a">
+                        <div class="framer-tbg18r"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <h3 style="--font-selector:R0Y7VW5ib3VuZGVkLTcwMA==;--framer-font-family:&quot;Unbounded&quot;, &quot;Unbounded Placeholder&quot;, sans-serif;--framer-font-size:20px;--framer-font-weight:700;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(202, 210, 197);--framer-text-transform:uppercase"
+                                class="framer-text">The Process</h3>
+                        </div>
+                        <div class="framer-z9rbcb"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <h3 style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-font-size:20px;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                class="framer-text">We’ve simplified the steps to get you to the top of pecking order.
+                                Let’s scratch the surface and dive into the details!</h3>
+                        </div>
+                    </div>
+                    <div class="framer-13n0paz">
+                        <div class="framer-qr55zr"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <h3 style="--font-selector:R0Y7VW5ib3VuZGVkLTcwMA==;--framer-font-family:&quot;Unbounded&quot;, &quot;Unbounded Placeholder&quot;, sans-serif;--framer-font-size:20px;--framer-font-weight:700;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(202, 210, 197);--framer-text-transform:uppercase"
+                                class="framer-text">Our Strategy</h3>
+                        </div>
+                        <div class="framer-1ikxaf8">
+                            <div class="framer-1aoy8aa" data-border="true">
+                                <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                                    <div class="framer-1cq527w" data-framer-component-type="RichTextContainer"
+                                        style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                                        <h3 class="framer-text"
+                                            style="--font-selector: R0Y7TnVuaXRvLXJlZ3VsYXI=; --framer-font-family: &quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif; --framer-font-size: 20px; --framer-letter-spacing: -0.025em; --framer-line-height: 1.5em; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                            Data Collection</h3>
+                                    </div>
+                                </div>
+                                <div class="framer-1lmguh1"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <h3 style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-font-size:20px;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">2022</h3>
+                                </div>
+                            </div>
+                            <div class="framer-1p8vkfj" data-border="true">
+                                <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                                    <div class="framer-uk6ja8" data-framer-component-type="RichTextContainer"
+                                        style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                                        <h3 class="framer-text"
+                                            style="--font-selector: R0Y7TnVuaXRvLXJlZ3VsYXI=; --framer-font-family: &quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif; --framer-font-size: 20px; --framer-letter-spacing: -0.025em; --framer-line-height: 1.5em; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                            Selection Criteria</h3>
+                                    </div>
+                                </div>
+                                <div class="framer-1m84047"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <h3 style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-font-size:20px;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">2023</h3>
+                                </div>
+                            </div>
+                            <div class="framer-1r453xi" data-border="true">
+                                <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                                    <div class="framer-wlozuz" data-framer-component-type="RichTextContainer"
+                                        style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                                        <h3 class="framer-text"
+                                            style="--font-selector: R0Y7TnVuaXRvLXJlZ3VsYXI=; --framer-font-family: &quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif; --framer-font-size: 20px; --framer-letter-spacing: -0.025em; --framer-line-height: 1.5em; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                            Breeding Strategy</h3>
+                                    </div>
+                                </div>
+                                <div class="ssr-variant hidden-ah9bld">
+                                    <div class="framer-1q0dxsi" data-framer-component-type="RichTextContainer"
+                                        style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                                        <h3 class="framer-text"
+                                            style="--font-selector: R0Y7TnVuaXRvLXJlZ3VsYXI=; --framer-font-family: &quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif; --framer-font-size: 20px; --framer-letter-spacing: -0.025em; --framer-line-height: 1.5em; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                            2024</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="framer-10kneak">
+                                <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                                    <div class="framer-mgx7qy" data-framer-component-type="RichTextContainer"
+                                        style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                                        <h3 class="framer-text"
+                                            style="--font-selector: R0Y7TnVuaXRvLXJlZ3VsYXI=; --framer-font-family: &quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif; --framer-font-size: 20px; --framer-letter-spacing: -0.025em; --framer-line-height: 1.5em; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                            Evaluation</h3>
+                                    </div>
+                                </div>
+                                <div class="framer-1alnahh"
+                                    style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                    data-framer-component-type="RichTextContainer">
+                                    <h3 style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-font-size:20px;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                        class="framer-text">2025</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="framer-1pjqqc3" data-framer-name="Shapes" name="Shapes">
+                <div class="framer-1gppdvc">
+                    <div class="framer-1fkgo8g" data-framer-name="ch" name="ch">
+                        <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                            data-framer-background-image-wrapper="true"><img decoding="async" loading="lazy"
+                                sizes="100px"
+                                srcset="https://framerusercontent.com/images/i5a64KWN5e6aSquV2uyRWm7tBE.png 467w"
+                                src="https://framerusercontent.com/images/i5a64KWN5e6aSquV2uyRWm7tBE.png" alt=""
+                                style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto">
+                        </div>
+                    </div>
+                    <div class="framer-15owetp" data-framer-name="ch" name="ch">
+                        <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                            data-framer-background-image-wrapper="true"><img decoding="async" loading="lazy"
+                                sizes="100px"
+                                srcset="https://framerusercontent.com/images/i5a64KWN5e6aSquV2uyRWm7tBE.png 467w"
+                                src="https://framerusercontent.com/images/i5a64KWN5e6aSquV2uyRWm7tBE.png" alt=""
+                                style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto">
+                        </div>
+                    </div>
+                    <div class="framer-qgsoaq" data-framer-name="ch" name="ch">
+                        <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                            data-framer-background-image-wrapper="true"><img decoding="async" loading="lazy"
+                                sizes="100px"
+                                srcset="https://framerusercontent.com/images/i5a64KWN5e6aSquV2uyRWm7tBE.png 467w"
+                                src="https://framerusercontent.com/images/i5a64KWN5e6aSquV2uyRWm7tBE.png" alt=""
+                                style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto">
+                        </div>
+                    </div>
+                    <div class="framer-d0w8x0" data-framer-name="ch" name="ch">
+                        <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                            data-framer-background-image-wrapper="true"><img decoding="async" loading="lazy"
+                                sizes="100px"
+                                srcset="https://framerusercontent.com/images/i5a64KWN5e6aSquV2uyRWm7tBE.png 467w"
+                                src="https://framerusercontent.com/images/i5a64KWN5e6aSquV2uyRWm7tBE.png" alt=""
+                                style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="framer-mm368y" data-framer-name="Testimonials" name="Testimonials">
+                <div class="framer-1wrijod">
+                    <div class="framer-1opka7q" data-framer-name="Card" name="Card">
+                        <div class="framer-fw00g9" data-framer-name="Image" name="Image">
+                            <div class="framer-ni3bno" data-framer-name="image" name="image">
+                                <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                                    data-framer-background-image-wrapper="true"><img decoding="async" loading="lazy"
+                                        sizes="305px"
+                                        srcset="https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png?scale-down-to=512 512w,https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png?scale-down-to=1024 1024w,https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png 1800w"
+                                        src="https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png" alt=""
+                                        style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="framer-28210k" data-framer-name="Copy" name="Copy">
+                            <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                                <div class="framer-qiud65" data-framer-component-type="RichTextContainer"
+                                    style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                                    <h3 class="framer-text"
+                                        style="--font-selector: R0Y7TnVuaXRvLXJlZ3VsYXI=; --framer-font-family: &quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif; --framer-font-size: 20px; --framer-letter-spacing: -0.025em; --framer-line-height: 1.5em; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                        Their system has eggceeded our eggspectations! Our productivity has soared!</h3>
+                                </div>
+                            </div>
+                            <div class="framer-kbltef"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-font-size:14px;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">John Farmer</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="framer-177s3zp" data-framer-name="Card" name="Card">
+                        <div class="framer-1pj71tw" data-framer-name="Image" name="Image">
+                            <div class="framer-ex7mrk" data-framer-name="image" name="image">
+                                <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                                    data-framer-background-image-wrapper="true"><img decoding="async" loading="lazy"
+                                        sizes="316px"
+                                        srcset="https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png?scale-down-to=512 512w,https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png?scale-down-to=1024 1024w,https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png 1800w"
+                                        src="https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png" alt=""
+                                        style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="framer-1sxcczy" data-framer-name="Copy" name="Copy">
+                            <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                                <div class="framer-1qzr11u" data-framer-component-type="RichTextContainer"
+                                    style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                                    <h3 class="framer-text"
+                                        style="--font-selector: R0Y7TnVuaXRvLXJlZ3VsYXI=; --framer-font-family: &quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif; --framer-font-size: 20px; --framer-letter-spacing: -0.025em; --framer-line-height: 1.5em; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                        Better than sliced bread, and that’s no yolk.</h3>
+                                </div>
+                            </div>
+                            <div class="framer-52jpjh"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-font-size:14px;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Jane Poulterer</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="framer-6144p1" data-framer-name="Card" name="Card">
+                        <div class="framer-95uk13" data-framer-name="Image" name="Image">
+                            <div class="framer-1u50di0" data-framer-name="image" name="image">
+                                <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                                    data-framer-background-image-wrapper="true"><img decoding="async" loading="lazy"
+                                        sizes="315px"
+                                        srcset="https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png?scale-down-to=512 512w,https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png?scale-down-to=1024 1024w,https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png 1800w"
+                                        src="https://framerusercontent.com/images/ARPn0gBBUmX4GsaPWHGsUyxoKA.png" alt=""
+                                        style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="framer-v3auf2" data-framer-name="Copy" name="Copy">
+                            <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                                <div class="framer-16i3qq9" data-framer-component-type="RichTextContainer"
+                                    style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                                    <h3 class="framer-text"
+                                        style="--font-selector: R0Y7TnVuaXRvLXJlZ3VsYXI=; --framer-font-family: &quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif; --framer-font-size: 20px; --framer-letter-spacing: -0.025em; --framer-line-height: 1.5em; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                        Eggstatic about the results! Truly a feather in their cap.</h3>
+                                </div>
+                            </div>
+                            <div class="framer-qyviqv"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-font-size:14px;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Pennsylvania poultry</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="framer-1mmua2" data-framer-name="Call to Action" name="Call to Action">
+                <div class="framer-1k1zcnb" data-framer-name="Wrapper" name="Wrapper">
+                    <div class="ssr-variant hidden-ah9bld hidden-oi5lvt">
+                        <div class="framer-1libsuz" data-framer-component-type="RichTextContainer"
+                            style="outline: none; display: flex; flex-direction: column; justify-content: flex-start; flex-shrink: 0; transform: none;">
+                            <h2 class="framer-text"
+                                style="--font-selector: R0Y7VW5ib3VuZGVkLTcwMA==; --framer-font-family: &quot;Unbounded&quot;, &quot;Unbounded Placeholder&quot;, sans-serif; --framer-font-size: 48px; --framer-font-weight: 700; --framer-text-alignment: left; --framer-text-color: rgb(255, 255, 255);">
+                                Ready to shell out for the best? Let’s crack this together!</h2>
+                        </div>
+                    </div>
+                    <div class="framer-e7z12f" data-framer-name="Buttons" name="Buttons">
+                        <div class="framer-n2pokl" data-framer-name="Button" name="Button">
+                            <div class="framer-7trf1h"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-text-alignment:center"
+                                    class="framer-text">Join the Flock</p>
+                            </div>
+                        </div>
+                        <div class="framer-166vn91" data-framer-name="Button" name="Button">
+                            <div class="framer-11ynp14"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-text-alignment:center"
+                                    class="framer-text">Read More</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="framer-1lvxnfg" data-border="true" data-framer-name="Footer" name="Footer">
+                <div class="framer-1mb7akz" data-framer-name="Horizontal" name="Horizontal">
+                    <div class="framer-5k9hco" data-framer-name="Vertical" name="Vertical">
+                        <div class="framer-4y7mzh"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                class="framer-text">About</p>
+                        </div>
+                        <div class="framer-j91vkm">
+                            <div class="framer-57zusu"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Story</p>
+                            </div>
+                            <div class="framer-1ywcxa"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Vision</p>
+                            </div>
+                            <div class="framer-vehpyj"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Team</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="framer-ha6jjl" data-framer-name="Vertical" name="Vertical">
+                        <div class="framer-p1x7e4"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                class="framer-text">Steps</p>
+                        </div>
+                        <div class="framer-10n5atq">
+                            <div class="framer-1s66tb0"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">System</p>
+                            </div>
+                            <div class="framer-flsekw"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Strategy</p>
+                            </div>
+                            <div class="framer-1pii4vx"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Success</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="framer-9vpq2k" data-framer-name="Vertical" name="Vertical">
+                        <div class="framer-7kwz3u"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-letter-spacing:-0.025em;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                class="framer-text">Contact</p>
+                        </div>
+                        <div class="framer-ye1utr">
+                            <div class="framer-z75lvk"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Email</p>
+                            </div>
+                            <div class="framer-g9e1xb"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Address</p>
+                            </div>
+                            <div class="framer-mtqbpq"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Phone</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="framer-nwekjk" data-border="true" data-framer-name="Copyright" name="Copyright">
+                    <div class="framer-l9032b" data-framer-name="Icons" name="Icons">
+                        <div data-framer-component-type="SVG" data-framer-name="Twitter" name="Twitter"
+                            style="image-rendering:pixelated;flex-shrink:0;background-size:100% 100%;background-image:url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M%200%200%20L%2032%200%20L%2032%2032%20L%200%2032%20Z%22%20fill%3D%22transparent%22%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M%2030.713%209.712%20L%2026.938%2013.475%20C%2026.188%2022.212%2018.813%2029%2010%2029%20C%208.188%2029%206.688%2028.712%205.55%2028.15%20C%204.638%2027.687%204.263%2027.2%204.163%2027.05%20C%203.995%2026.795%203.953%2026.478%204.047%2026.189%20C%204.142%2025.899%204.364%2025.668%204.65%2025.562%20C%204.675%2025.55%207.625%2024.425%209.538%2022.262%20C%208.351%2021.418%207.309%2020.388%206.45%2019.212%20C%204.738%2016.887%202.925%2012.85%204.013%206.825%20C%204.082%206.46%204.346%206.163%204.7%206.05%20C%205.055%205.934%205.446%206.025%205.713%206.287%20C%205.75%206.337%209.913%2010.437%2015%2011.762%20L%2015%2011%20C%2015.01%209.399%2015.656%207.867%2016.795%206.742%20C%2017.934%205.617%2019.474%204.99%2021.075%205%20C%2023.192%205.03%2025.137%206.169%2026.2%208%20L%2030%208%20C%2030.404%207.999%2030.769%208.24%2030.925%208.612%20C%2031.072%208.989%2030.989%209.417%2030.713%209.712%20Z%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')"
+                            class="framer-2jv1lu"></div>
+                        <div data-framer-component-type="SVG" data-framer-name="Instagram" name="Instagram"
+                            style="image-rendering:pixelated;flex-shrink:0;background-size:100% 100%;background-image:url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M%200%200%20L%2032%200%20L%2032%2032%20L%200%2032%20Z%22%20fill%3D%22transparent%22%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M%2012%2016%20C%2012%2013.791%2013.791%2012%2016%2012%20C%2018.209%2012%2020%2013.791%2020%2016%20C%2020%2018.209%2018.209%2020%2016%2020%20C%2013.791%2020%2012%2018.209%2012%2016%20Z%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M%2021.5%203.5%20L%2010.5%203.5%20C%206.634%203.5%203.5%206.634%203.5%2010.5%20L%203.5%2021.5%20C%203.5%2025.366%206.634%2028.5%2010.5%2028.5%20L%2021.5%2028.5%20C%2025.366%2028.5%2028.5%2025.366%2028.5%2021.5%20L%2028.5%2010.5%20C%2028.5%206.634%2025.366%203.5%2021.5%203.5%20Z%20M%2016%2022%20C%2012.686%2022%2010%2019.314%2010%2016%20C%2010%2012.686%2012.686%2010%2016%2010%20C%2019.314%2010%2022%2012.686%2022%2016%20C%2022%2019.314%2019.314%2022%2016%2022%20Z%20M%2022.5%2011%20C%2021.672%2011%2021%2010.328%2021%209.5%20C%2021%208.672%2021.672%208%2022.5%208%20C%2023.328%208%2024%208.672%2024%209.5%20C%2024%2010.328%2023.328%2011%2022.5%2011%20Z%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')"
+                            class="framer-1rdamx5"></div>
+                        <div data-framer-component-type="SVG" data-framer-name="Facebook" name="Facebook"
+                            style="image-rendering:pixelated;flex-shrink:0;background-size:100% 100%;background-image:url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M%2029%2016%20C%2028.992%2022.575%2024.083%2028.112%2017.556%2028.907%20C%2017.414%2028.924%2017.272%2028.878%2017.166%2028.783%20C%2017.059%2028.687%2016.999%2028.55%2017%2028.407%20L%2017%2019%20L%2020%2019%20C%2020.277%2019.001%2020.542%2018.886%2020.732%2018.684%20C%2020.921%2018.482%2021.018%2018.21%2021%2017.934%20C%2020.954%2017.4%2020.504%2016.993%2019.969%2017%20L%2017%2017%20L%2017%2014%20C%2017%2012.895%2017.895%2012%2019%2012%20L%2021%2012%20C%2021.277%2012.001%2021.542%2011.886%2021.732%2011.684%20C%2021.921%2011.482%2022.018%2011.21%2022%2010.934%20C%2021.954%2010.399%2021.503%209.991%2020.966%2010%20L%2019%2010%20C%2016.791%2010%2015%2011.791%2015%2014%20L%2015%2017%20L%2012%2017%20C%2011.723%2016.999%2011.458%2017.114%2011.268%2017.316%20C%2011.079%2017.518%2010.982%2017.79%2011%2018.066%20C%2011.046%2018.601%2011.497%2019.009%2012.034%2019%20L%2015%2019%20L%2015%2028.41%20C%2015.001%2028.553%2014.941%2028.689%2014.835%2028.785%20C%2014.729%2028.88%2014.587%2028.926%2014.445%2028.91%20C%207.731%2028.092%202.762%2022.27%203.009%2015.511%20C%203.259%208.761%208.726%203.274%2015.481%203.011%20C%2019.015%202.874%2022.452%204.181%2025.002%206.631%20C%2027.552%209.081%2028.996%2012.464%2029%2016%20Z%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')"
+                            class="framer-1n6qn3a"></div>
+                        <div data-framer-component-type="SVG" data-framer-name="Twitch" name="Twitch"
+                            style="image-rendering:pixelated;flex-shrink:0;background-size:100% 100%;background-image:url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M%2026%204%20L%206%204%20C%204.895%204%204%204.895%204%206%20L%204%2024%20C%204%2025.105%204.895%2026%206%2026%20L%208%2026%20L%208%2030%20C%208%2030.388%208.224%2030.741%208.576%2030.906%20C%208.927%2031.071%209.342%2031.017%209.64%2030.769%20L%2015.363%2026%20L%2020.638%2026%20C%2021.106%2026%2021.559%2025.836%2021.919%2025.536%20L%2027.28%2021.067%20C%2027.737%2020.688%2028.001%2020.125%2028%2019.531%20L%2028%206%20C%2028%204.895%2027.105%204%2026%204%20Z%20M%2016%2017%20C%2016%2017.552%2015.552%2018%2015%2018%20C%2014.448%2018%2014%2017.552%2014%2017%20L%2014%2011%20C%2014%2010.448%2014.448%2010%2015%2010%20C%2015.552%2010%2016%2010.448%2016%2011%20Z%20M%2022%2017%20C%2022%2017.552%2021.552%2018%2021%2018%20C%2020.448%2018%2020%2017.552%2020%2017%20L%2020%2011%20C%2020%2010.448%2020.448%2010%2021%2010%20C%2021.552%2010%2022%2010.448%2022%2011%20Z%22%20fill%3D%22%23FFFFFF%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')"
+                            class="framer-mgnd9e"></div>
+                    </div>
+                    <div class="framer-14mpm2f"
+                        style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                        data-framer-component-type="RichTextContainer">
+                        <p style="--font-selector:R0Y7TnVuaXRvLXJlZ3VsYXI=;--framer-font-family:&quot;Nunito&quot;, &quot;Nunito Placeholder&quot;, sans-serif;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                            class="framer-text">©2024 by Hatchtrack</p>
+                    </div>
+                </div>
+            </footer>
         </div>
-      </div>
+        <div class="framer-at7PM" id="overlay"></div><!--/$-->
+    </div>
+    <script>(() => { function t() { for (let e of document.querySelectorAll("[data-framer-original-sizes]")) { let i = e.getAttribute("data-framer-original-sizes"); i === "" ? e.removeAttribute("sizes") : e.setAttribute("sizes", i), e.removeAttribute("data-framer-original-sizes") } } function s() { window.__framer_onRewriteBreakpoints = t } return s })()()</script>
+    <div id="svg-templates" style="position: absolute; overflow: hidden; top: 0; left: 0; width: 0; height: 0">
     </div>
 
 
-    <!-- Marketing messaging and featurettes
-    ================================================== -->
-    <!-- Wrap the rest of the page in another container to center all the content. -->
+    <div id="__framer-badge-container">
+        <div class="__framer-badge" style="opacity: 1; transform: none;"><a href="https://www.framer.com"
+                title="Framer - Custom website builder for designers, agencies and startups.">
+                <div class="framer-TLVk2 framer-n0ccwk framer-v-n0ccwk" data-framer-name="Light" tabindex="0"
+                    style="--border-bottom-width: 0px; --border-color: rgba(0, 0, 0, 0); --border-left-width: 0px; --border-right-width: 0px; --border-style: solid; --border-top-width: 0px; background-color: rgb(255, 255, 255); border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.26) 0px 0.636953px 1.14652px -1.125px, rgba(0, 0, 0, 0.24) 0px 1.9316px 3.47689px -2.25px, rgba(0, 0, 0, 0.192) 0px 5.10612px 9.19102px -3.375px, rgba(0, 0, 0, 0.03) 0px 16px 28.8px -4.5px; cursor: pointer; opacity: 1;">
+                    <div class="framer-19yaanm" style="transform: translate(-50%, -50%); opacity: 1;">
+                        <div data-framer-component-type="SVG" data-framer-name="madeinframer" class="framer-tmnpxq"
+                            style="image-rendering: pixelated; flex-shrink: 0; background-size: 100% 100%; background-image: url(&quot;data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%2011%2016%22%3E%3Cpath%20d%3D%22M%2011%200%20L%2011%205.333%20L%205.5%205.333%20L%200%200%20Z%20M%200%205.333%20L%205.5%205.333%20L%2011%2010.667%20L%205.5%2010.667%20L%205.5%2016%20L%200%2010.667%20Z%22%20fill%3D%22rgb(34%2C34%2C34)%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E&quot;); opacity: 1;">
+                        </div>
+                        <div data-framer-component-type="SVG" class="framer-1v3cvgh" role="img"
+                            aria-label="Framer - Custom site builder"
+                            aria-description="Made in Framer. The professional custom website design builder for startups, designers and agencies."
+                            style="image-rendering: pixelated; flex-shrink: 0; background-size: 100% 100%; background-image: url(&quot;data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%2092%2011%22%3E%3Cpath%20d%3D%22M%200%200.958%20L%202.393%200.958%20L%204.92%207.255%20L%205.028%207.255%20L%207.555%200.958%20L%209.941%200.958%20L%209.941%2010.331%20L%208.066%2010.331%20L%208.066%204.232%20L%207.988%204.232%20L%205.614%2010.286%20L%204.332%2010.286%20L%201.958%204.209%20L%201.882%204.209%20L%201.882%2010.331%20L%200%2010.331%20Z%20M%2013.279%2010.463%20C%2012.874%2010.472%2012.472%2010.392%2012.1%2010.228%20C%2011.769%2010.08%2011.487%209.837%2011.289%209.529%20C%2011.08%209.181%2010.977%208.777%2010.991%208.369%20C%2010.981%208.028%2011.053%207.69%2011.202%207.384%20C%2011.337%207.125%2011.535%206.905%2011.776%206.744%20C%2012.03%206.576%2012.309%206.452%2012.602%206.378%20C%2012.922%206.293%2013.248%206.236%2013.578%206.206%20C%2013.977%206.163%2014.3%206.121%2014.545%206.083%20C%2014.732%206.065%2014.913%206.006%2015.077%205.911%20C%2015.19%205.836%2015.254%205.704%2015.246%205.567%20L%2015.246%205.54%20C%2015.26%205.286%2015.163%205.039%2014.979%204.867%20C%2014.764%204.696%2014.495%204.611%2014.223%204.629%20C%2013.933%204.614%2013.646%204.695%2013.404%204.86%20C%2013.21%205.001%2013.067%205.205%2013%205.438%20L%2011.235%205.292%20C%2011.317%204.882%2011.499%204.5%2011.765%204.182%20C%2012.038%203.859%2012.385%203.611%2012.776%203.459%20C%2013.239%203.282%2013.73%203.196%2014.225%203.206%20C%2014.599%203.206%2014.971%203.254%2015.333%203.349%20C%2015.668%203.433%2015.984%203.577%2016.268%203.776%20C%2016.54%203.964%2016.763%204.218%2016.917%204.514%20C%2017.083%204.846%2017.165%205.214%2017.156%205.586%20L%2017.156%2010.331%20L%2015.345%2010.331%20L%2015.345%209.357%20L%2015.291%209.357%20C%2015.181%209.577%2015.031%209.773%2014.848%209.935%20C%2014.65%2010.108%2014.421%2010.241%2014.174%2010.324%20C%2013.886%2010.421%2013.583%2010.468%2013.279%2010.463%20Z%20M%2013.827%209.119%20C%2014.085%209.124%2014.34%209.065%2014.57%208.947%20C%2014.776%208.841%2014.951%208.681%2015.076%208.482%20C%2015.199%208.286%2015.263%208.057%2015.261%207.823%20L%2015.261%207.073%20C%2015.184%207.12%2015.102%207.156%2015.017%207.181%20C%2014.914%207.212%2014.798%207.242%2014.669%207.267%20C%2014.541%207.293%2014.412%207.316%2014.284%207.336%20L%2013.935%207.39%20C%2013.733%207.416%2013.535%207.47%2013.347%207.55%20C%2013.194%207.611%2013.06%207.713%2012.958%207.844%20C%2012.862%207.977%2012.814%208.139%2012.819%208.303%20C%2012.806%208.542%2012.913%208.771%2013.102%208.911%20C%2013.317%209.056%2013.57%209.129%2013.827%209.119%20Z%20M%2020.986%2010.446%20C%2020.484%2010.453%2019.991%2010.308%2019.568%2010.031%20C%2019.122%209.733%2018.771%209.308%2018.557%208.809%20C%2018.297%208.183%2018.175%207.505%2018.198%206.825%20C%2018.175%206.134%2018.305%205.447%2018.579%204.815%20C%2018.795%204.322%2019.146%203.904%2019.59%203.61%20C%2020.007%203.345%2020.49%203.207%2020.981%203.211%20C%2021.314%203.199%2021.645%203.267%2021.947%203.409%20C%2022.189%203.526%2022.405%203.695%2022.579%203.903%20C%2022.725%204.079%2022.848%204.274%2022.944%204.483%20L%2023.003%204.483%20L%2023.003%200.958%20L%2024.907%200.958%20L%2024.907%2010.331%20L%2023.02%2010.331%20L%2023.02%209.2%20L%2022.939%209.2%20C%2022.84%209.41%2022.713%209.606%2022.562%209.78%20C%2022.385%209.98%2022.17%2010.141%2021.93%2010.253%20C%2021.633%2010.388%2021.311%2010.454%2020.986%2010.446%20Z%20M%2021.591%208.897%20C%2021.873%208.906%2022.149%208.814%2022.373%208.639%20C%2022.599%208.448%2022.769%208.197%2022.865%207.915%20C%2022.985%207.563%2023.042%207.192%2023.034%206.82%20C%2023.043%206.449%2022.985%206.08%2022.865%205.731%20C%2022.771%205.45%2022.6%205.202%2022.373%205.016%20C%2022.147%204.845%2021.871%204.757%2021.59%204.765%20C%2021.303%204.755%2021.023%204.848%2020.796%205.027%20C%2020.57%205.216%2020.401%205.467%2020.307%205.75%20C%2020.191%206.094%2020.134%206.456%2020.139%206.82%20C%2020.132%207.188%2020.189%207.555%2020.307%207.903%20C%2020.4%208.188%2020.569%208.442%2020.794%208.636%20C%2021.022%208.814%2021.304%208.905%2021.591%208.894%20Z%20M%2029.413%2010.469%20C%2028.777%2010.487%2028.148%2010.334%2027.588%2010.026%20C%2027.082%209.738%2026.671%209.302%2026.409%208.773%20C%2026.121%208.176%2025.979%207.515%2025.996%206.849%20C%2025.981%206.19%2026.123%205.536%2026.409%204.944%20C%2026.669%204.414%2027.073%203.971%2027.571%203.667%20C%2028.107%203.353%2028.717%203.195%2029.334%203.211%20C%2029.767%203.208%2030.197%203.282%2030.604%203.431%20C%2030.99%203.576%2031.342%203.803%2031.636%204.097%20C%2031.941%204.414%2032.176%204.794%2032.323%205.213%20C%2032.496%205.716%2032.579%206.247%2032.569%206.78%20L%2032.569%207.316%20L%2026.761%207.316%20L%2026.761%206.102%20L%2030.776%206.102%20C%2030.781%205.842%2030.719%205.584%2030.596%205.355%20C%2030.48%205.141%2030.31%204.962%2030.102%204.839%20C%2029.878%204.712%2029.625%204.648%2029.369%204.653%20C%2029.1%204.648%2028.834%204.719%2028.601%204.858%20C%2028.383%204.989%2028.202%205.177%2028.079%205.402%20C%2027.952%205.633%2027.885%205.894%2027.885%206.159%20L%2027.885%207.309%20C%2027.877%207.62%2027.942%207.929%2028.075%208.209%20C%2028.195%208.454%2028.383%208.658%2028.616%208.796%20C%2028.87%208.938%2029.156%209.009%2029.445%209%20C%2029.643%209.003%2029.84%208.972%2030.028%208.909%20C%2030.197%208.853%2030.351%208.76%2030.48%208.636%20C%2030.607%208.51%2030.705%208.357%2030.766%208.186%20L%2032.532%208.305%20C%2032.449%208.725%2032.261%209.116%2031.984%209.438%20C%2031.692%209.772%2031.326%2010.03%2030.916%2010.19%20C%2030.437%2010.38%2029.927%2010.474%2029.413%2010.469%20Z%20M%2037.324%202.395%20C%2037.053%202.401%2036.791%202.296%2036.596%202.104%20C%2036.404%201.929%2036.295%201.679%2036.295%201.416%20C%2036.295%201.153%2036.404%200.903%2036.596%200.728%20C%2037.007%200.34%2037.641%200.34%2038.052%200.728%20C%2038.245%200.902%2038.355%201.153%2038.355%201.416%20C%2038.358%201.682%2038.247%201.937%2038.052%202.113%20C%2037.856%202.303%2037.594%202.404%2037.324%202.395%20Z%20M%2036.365%2010.331%20L%2036.365%203.302%20L%2038.274%203.302%20L%2038.274%2010.331%20Z%20M%2041.516%206.274%20L%2041.516%2010.331%20L%2039.609%2010.331%20L%2039.609%203.302%20L%2041.427%203.302%20L%2041.427%204.541%20L%2041.508%204.541%20C%2041.655%204.142%2041.923%203.801%2042.275%203.569%20C%2042.665%203.321%2043.119%203.197%2043.579%203.211%20C%2044.016%203.2%2044.448%203.311%2044.829%203.531%20C%2045.186%203.747%2045.474%204.064%2045.658%204.443%20C%2045.864%204.883%2045.965%205.367%2045.953%205.855%20L%2045.953%2010.329%20L%2044.045%2010.329%20L%2044.045%206.199%20C%2044.068%205.832%2043.952%205.47%2043.722%205.189%20C%2043.487%204.939%2043.158%204.807%2042.82%204.825%20C%2042.585%204.822%2042.353%204.882%2042.146%204.997%20C%2041.949%205.111%2041.79%205.283%2041.688%205.49%20C%2041.572%205.734%2041.513%206.003%2041.516%206.274%20Z%20M%2050.044%2010.331%20L%2050.044%200.958%20L%2056.11%200.958%20L%2056.11%202.592%20L%2051.978%202.592%20L%2051.978%204.829%20L%2055.711%204.829%20L%2055.711%206.462%20L%2051.978%206.462%20L%2051.978%2010.334%20Z%20M%2057.077%2010.331%20L%2057.077%203.302%20L%2058.931%203.302%20L%2058.931%204.528%20L%2059.001%204.528%20C%2059.099%204.136%2059.321%203.788%2059.633%203.538%20C%2059.927%203.311%2060.287%203.19%2060.656%203.194%20C%2060.759%203.195%2060.862%203.201%2060.964%203.213%20C%2061.062%203.223%2061.16%203.24%2061.256%203.263%20L%2061.256%204.999%20C%2061.134%204.965%2061.009%204.941%2060.883%204.927%20C%2060.739%204.906%2060.594%204.895%2060.449%204.894%20C%2060.187%204.889%2059.929%204.953%2059.699%205.08%20C%2059.482%205.2%2059.302%205.379%2059.178%205.596%20C%2059.049%205.827%2058.983%206.089%2058.988%206.355%20L%2058.988%2010.331%20Z%20M%2063.814%2010.463%20C%2063.408%2010.472%2063.006%2010.392%2062.634%2010.228%20C%2062.302%2010.081%2062.019%209.838%2061.82%209.529%20C%2061.611%209.181%2061.507%208.777%2061.522%208.369%20C%2061.512%208.028%2061.584%207.69%2061.733%207.384%20C%2061.868%207.125%2062.066%206.905%2062.307%206.744%20C%2062.561%206.576%2062.84%206.452%2063.133%206.378%20C%2063.453%206.294%2063.779%206.236%2064.108%206.206%20C%2064.508%206.163%2064.831%206.121%2065.076%206.083%20C%2065.263%206.064%2065.445%206.006%2065.61%205.911%20C%2065.722%205.836%2065.787%205.704%2065.778%205.567%20L%2065.778%205.54%20C%2065.794%205.286%2065.696%205.038%2065.512%204.867%20C%2065.298%204.696%2065.03%204.611%2064.759%204.629%20C%2064.468%204.613%2064.18%204.694%2063.938%204.86%20C%2063.744%205.001%2063.601%205.204%2063.534%205.438%20L%2061.77%205.292%20C%2061.851%204.882%2062.032%204.5%2062.297%204.182%20C%2062.574%203.859%2062.925%203.611%2063.318%203.459%20C%2063.781%203.282%2064.273%203.196%2064.767%203.206%20C%2065.138%203.204%2065.508%203.25%2065.868%203.342%20C%2066.202%203.426%2066.519%203.571%2066.804%203.769%20C%2067.075%203.958%2067.297%204.211%2067.452%204.507%20C%2067.617%204.84%2067.698%205.211%2067.687%205.584%20L%2067.687%2010.331%20L%2065.883%2010.331%20L%2065.883%209.357%20L%2065.829%209.357%20C%2065.717%209.578%2065.563%209.774%2065.377%209.935%20C%2065.18%2010.108%2064.951%2010.241%2064.703%2010.324%20C%2064.416%2010.42%2064.116%2010.467%2063.814%2010.463%20Z%20M%2064.366%209.119%20C%2064.624%209.124%2064.879%209.065%2065.109%208.947%20C%2065.316%208.841%2065.49%208.681%2065.615%208.482%20C%2065.736%208.285%2065.799%208.056%2065.795%207.823%20L%2065.795%207.073%20C%2065.719%207.12%2065.637%207.156%2065.551%207.181%20C%2065.446%207.212%2065.332%207.242%2065.204%207.267%20C%2065.076%207.293%2064.946%207.316%2064.818%207.336%20L%2064.467%207.39%20C%2064.266%207.417%2064.069%207.47%2063.881%207.55%20C%2063.728%207.611%2063.594%207.712%2063.492%207.844%20C%2063.396%207.977%2063.347%208.139%2063.352%208.303%20C%2063.339%208.542%2063.446%208.772%2063.637%208.911%20C%2063.852%209.058%2064.108%209.13%2064.366%209.119%20Z%20M%2068.985%2010.331%20L%2068.985%203.302%20L%2070.803%203.302%20L%2070.803%204.541%20L%2070.884%204.541%20C%2071.015%204.147%2071.266%203.805%2071.602%203.567%20C%2072.336%203.091%2073.273%203.091%2074.008%203.567%20C%2074.335%203.801%2074.57%204.145%2074.672%204.54%20L%2074.742%204.54%20C%2074.882%204.138%2075.151%203.797%2075.506%203.572%20C%2075.898%203.323%2076.354%203.197%2076.817%203.209%20C%2077.401%203.186%2077.968%203.412%2078.384%203.832%20C%2078.785%204.25%2078.985%204.84%2078.985%205.602%20L%2078.985%2010.331%20L%2077.081%2010.331%20L%2077.081%205.989%20C%2077.106%205.665%2076.995%205.345%2076.776%205.109%20C%2076.57%204.913%2076.296%204.808%2076.015%204.817%20C%2075.709%204.799%2075.412%204.922%2075.204%205.152%20C%2075.001%205.4%2074.897%205.716%2074.913%206.039%20L%2074.913%2010.331%20L%2073.059%2010.331%20L%2073.059%205.947%20C%2073.075%205.644%2072.971%205.347%2072.771%205.123%20C%2072.571%204.916%2072.295%204.805%2072.011%204.817%20C%2071.81%204.813%2071.612%204.87%2071.442%204.979%20C%2071.269%205.09%2071.13%205.247%2071.039%205.433%20C%2070.935%205.647%2070.884%205.883%2070.891%206.121%20L%2070.891%2010.331%20Z%20M%2083.439%2010.469%20C%2082.802%2010.487%2082.173%2010.334%2081.612%2010.026%20C%2081.106%209.737%2080.695%209.301%2080.433%208.773%20C%2080.146%208.175%2080.005%207.515%2080.021%206.849%20C%2080.007%206.19%2080.148%205.536%2080.433%204.944%20C%2080.693%204.414%2081.097%203.971%2081.595%203.667%20C%2082.131%203.353%2082.742%203.196%2083.359%203.211%20C%2083.792%203.208%2084.222%203.282%2084.63%203.431%20C%2085.016%203.576%2085.368%203.803%2085.661%204.097%20C%2085.967%204.413%2086.201%204.794%2086.347%205.213%20C%2086.521%205.716%2086.605%206.247%2086.595%206.78%20L%2086.595%207.316%20L%2080.786%207.316%20L%2080.786%206.102%20L%2084.802%206.102%20C%2084.806%205.842%2084.744%205.584%2084.621%205.355%20C%2084.506%205.14%2084.334%204.962%2084.126%204.839%20C%2083.902%204.712%2083.649%204.647%2083.393%204.653%20C%2083.124%204.648%2082.859%204.719%2082.626%204.858%20C%2082.408%204.988%2082.227%205.176%2082.104%205.402%20C%2081.977%205.633%2081.91%205.894%2081.91%206.159%20L%2081.91%207.309%20C%2081.903%207.62%2081.968%207.929%2082.101%208.209%20C%2082.22%208.455%2082.409%208.659%2082.642%208.796%20C%2082.895%208.938%2083.181%209.009%2083.471%209%20C%2083.668%209.003%2083.865%208.973%2084.052%208.909%20C%2084.221%208.853%2084.376%208.76%2084.505%208.636%20C%2084.633%208.51%2084.73%208.356%2084.792%208.186%20L%2086.558%208.305%20C%2086.474%208.725%2086.285%209.116%2086.008%209.438%20C%2085.716%209.772%2085.351%2010.029%2084.942%2010.19%20C%2084.463%2010.38%2083.952%2010.474%2083.439%2010.469%20Z%20M%2087.654%2010.331%20L%2087.654%203.302%20L%2089.508%203.302%20L%2089.508%204.528%20L%2089.58%204.528%20C%2089.677%204.136%2089.899%203.787%2090.211%203.538%20C%2090.505%203.311%2090.865%203.19%2091.233%203.194%20C%2091.336%203.195%2091.439%203.201%2091.542%203.213%20C%2091.64%203.223%2091.737%203.24%2091.833%203.263%20L%2091.833%204.999%20C%2091.711%204.965%2091.587%204.941%2091.461%204.927%20C%2091.317%204.906%2091.173%204.895%2091.028%204.894%20C%2090.766%204.889%2090.507%204.953%2090.276%205.08%20C%2090.06%205.201%2089.88%205.379%2089.756%205.596%20C%2089.626%205.827%2089.56%206.089%2089.565%206.355%20L%2089.565%2010.331%20Z%22%20fill%3D%22rgb(35%2C31%2C32)%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E&quot;); opacity: 1;">
+                        </div>
+                    </div>
+                </div>
+            </a></div>
+    </div>
+   
 
-    <div class="container marketing">
 
-      <!-- START THE FEATURETTES -->
+</body>
 
-      <div class="row featurette">
-        <div class="col-md-5">
-            <a href="{% static 'images/screenshots/glucosetracker_charts_001.png' %}" class="thumbnail">
-                <img class="featurette-image img-responsive" src="{% static 'images/screenshots/glucosetracker_charts_001.png' %}">
-            </a>
-        </div>
-        <div class="col-md-7">
-          <h2 class="featurette-heading">Beautiful charts. <span class="text-muted">Visualize your data.</span></h2>
-          <p class="lead">Quickly see how you're doing by looking at the different graphs and charts made available
-          to you. Select values from the last 7, 14, 30, or 90 days.</p>
-        </div>
-      </div>
-
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-7">
-          <h2 class="featurette-heading">Advanced data filtering. <span class="text-muted">Create your own report.</span></h2>
-          <p class="lead">You can filter your data by date, category, glucose range, tags, or even search your notes.
-            When you're done, you can then export the result to a CSV or PDF file, or just simply print it out.
-          </p>
-        </div>
-        <div class="col-md-5">
-            <a href="{% static 'images/screenshots/glucosetracker_filter_001.png' %}" class="thumbnail">
-                <img class="featurette-image img-responsive" src="{% static 'images/screenshots/glucosetracker_filter_001.png' %}">
-            </a>
-        </div>
-      </div>
-
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-5">
-            <a href="{% static 'images/screenshots/glucosetracker_email_001.png' %}" class="thumbnail">
-                <img class="featurette-image img-responsive" src="{% static 'images/screenshots/glucosetracker_email_001.png' %}">
-            </a>
-        </div>
-        <div class="col-md-7">
-          <h2 class="featurette-heading">Email your data. <span class="text-muted">Send your data directly to your doctor.</span></h2>
-          <p class="lead">No more carrying log books when you visit your doctor! Send your data via email instead as a CSV or
-            PDF attachment. Just select the file format, date range, enter the email address, and hit Send.
-          </p>
-        </div>
-      </div>
-
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-7">
-          <h2 class="featurette-heading">Supports CSV Import. <span class="text-muted">Import existing data in CSV format.</span></h2>
-          <p class="lead">Got existing data and too lazy to enter them manually? Most systems support exporting data in CSV
-              (comma-separated values) format.  Save time entering them manually as GlucoseTracker supports importing data from a
-              CSV file!
-          </p>
-        </div>
-        <div class="col-md-5">
-            <a href="{% static 'images/screenshots/glucosetracker_import_from_csv_001.png' %}" class="thumbnail">
-                <img class="featurette-image img-responsive" src="{% static 'images/screenshots/glucosetracker_import_from_csv_001.png' %}">
-            </a>
-        </div>
-      </div>
-
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-5">
-            <a href="{% static 'images/screenshots/glucosetracker_dashboard_mobile_001.png' %}" class="thumbnail">
-                <img class="featurette-image img-responsive" src="{% static 'images/screenshots/glucosetracker_dashboard_mobile_001.png' %}">
-            </a>
-        </div>
-        <div class="col-md-7">
-          <h2 class="featurette-heading">Mobile friendly. <span class="text-muted">Layout adapts to screen size.</span></h2>
-          <p class="lead">Prefer using your tablet or smartphone? No problem! GlucoseTracker was designed with mobile devices
-            in mind. The website will automatically adjust based on the screen size so it will always be easy for you to use.
-          </p>
-        </div>
-      </div>
-
-      <hr class="featurette-divider">
-
-      <!-- /END THE FEATURETTES -->
-
-    </div><!-- /.container -->
-{% endblock %}
-
-{% block extrajs %}
-<script src="{% static 'bootstrap/js/holder.js' %}"></script>
-{% endblock %}
-
-{% block extrajsexternal %}
-    <!-- Go to www.addthis.com/dashboard to customize your tools -->
-    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid={{ addthis_publisher_id }}"></script>
-{% endblock %}
+</html>

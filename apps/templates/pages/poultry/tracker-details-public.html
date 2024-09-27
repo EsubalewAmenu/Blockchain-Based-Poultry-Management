@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link id="pagestyle" href="{% static 'assets/css/argon-dashboard.css' %}" rel="stylesheet" />
+    <title>{{ tracker_type|title }} Tracker Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1, h2, h3 {
+            color: #52796f;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            border-color: #52796f;
+        }
+
+        .card-header {
+            background-color: #edf2f4;
+        }
+
+        .barcode, .qrcode {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .barcode img, .qrcode img {
+            width: 150px; /* Reduce size of barcode and QR code */
+            height: auto;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>{{ tracker_type|title }} Tracker Report</h1>
+
+        <div class="alert alert-light border">
+            <strong>Tracker Code:</strong> {{ tracker.tracker_code|default:"-" }}
+            <span class="badge bg-success float-end">{{ tracker_type|title }} Tracker</span>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="barcode text-center">
+                    {% if tracker.barcode_image %}
+                    <img src="{% url 'tracker_barcode_image' tracker.tracker_code %}" alt="Tracker Barcode" class="img-fluid" style="max-width: 100px; height: auto;">
+                    {% else %}
+                        <p class="text-danger">No Barcode Available</p>
+                    {% endif %}
+                </div>
+            </div>
+        
+            <div class="col-6">
+                <div class="qrcode text-center">
+                    {% if tracker.qr_code_image %}
+                    <img src="{% url 'tracker_qr_code' tracker.tracker_code %}" alt="Tracker QR Code" class="img-fluid" style="max-width: 100px; height: auto;">
+                    {% else %}
+                        <p class="text-danger">No QR Code Available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+
+        <div id="tracker-details">
+            <div class="accordion" id="trackerAccordion">
+
+                <!-- Egg or Chick Information -->
+                {% if tracker_type == 'egg' %}
+                    <div class="card">
+                        <div class="card-header" id="headingEgg">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEgg" aria-expanded="true" aria-controls="collapseEgg">
+                                    Egg Details
+                                </button>
+                            </h2>
+                        </div>
+
+                        <div id="collapseEgg" class="collapse show" aria-labelledby="headingEgg" data-bs-parent="#trackerAccordion">
+                            <div class="card-body">
+                                <p><strong>Egg Batch Number:</strong> {{ egg.batchnumber|default:"Not set" }}</p>
+                                <p><strong>Setting Date:</strong> {% if egg_setting %}{{ egg_setting.created|date:"Y-m-d H:i" }}{% else %}Not set{% endif %}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% elif tracker_type == 'chick' %}
+                    <div class="card">
+                        <div class="card-header" id="headingChick">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseChick" aria-expanded="true" aria-controls="collapseChick">
+                                    Chick Details
+                                </button>
+                            </h2>
+                        </div>
+
+                        <div id="collapseChick" class="collapse show" aria-labelledby="headingChick" data-bs-parent="#trackerAccordion">
+                            <div class="card-body">
+                                <p><strong>Chick Batch Number:</strong> {{ tracker.chick.batchnumber|default:"Not set" }}</p>
+                                <p><strong>Egg Batch Number:</strong> {% if egg %}{{ egg.batchnumber|default:"Not set" }}{% else %}Not available{% endif %}</p>
+                                <p><strong>Setting Date:</strong> {% if egg_setting %}{{ egg_setting.created|date:"Y-m-d H:i" }}{% else %}Not set{% endif %}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Incubation -->
+                <div class="card">
+                    <div class="card-header" id="headingIncubation">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIncubation" aria-expanded="false" aria-controls="collapseIncubation">
+                                Incubation
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="collapseIncubation" class="collapse" aria-labelledby="headingIncubation" data-bs-parent="#trackerAccordion">
+                        <div class="card-body">
+                            <p><strong>Incubation Start:</strong> {% if incubation %}{{ incubation.created|date:"Y-m-d H:i" }}{% else %}Not incubated{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candling -->
+                <div class="card">
+                    <div class="card-header" id="headingCandling">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCandling" aria-expanded="false" aria-controls="collapseCandling">
+                                Candling
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="collapseCandling" class="collapse" aria-labelledby="headingCandling" data-bs-parent="#trackerAccordion">
+                        <div class="card-body">
+                            <p><strong>Candling Date:</strong> {% if candling %}{{ candling.candled_date|date:"Y-m-d H:i" }}{% else %}Not candled{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hatching -->
+                <div class="card">
+                    <div class="card-header" id="headingHatching">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHatching" aria-expanded="false" aria-controls="collapseHatching">
+                                Hatching
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="collapseHatching" class="collapse" aria-labelledby="headingHatching" data-bs-parent="#trackerAccordion">
+                        <div class="card-body">
+                            <p><strong>Hatching Date:</strong> {% if hatching %}{{ hatching.created|date:"Y-m-d H:i" }}{% else %}Not hatched{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="footer">
+            &copy; {{ current_year }} Hatchtrack. All rights reserved.
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="{% static 'assets/js/argon-dashboard.min.js' %}"></script>
+     <!--   Core JS Files   -->
+ <script src="{% static 'assets/js/core/popper.min.js' %}"></script>
+ <script src="{% static 'assets/js/core/bootstrap.min.js' %}"></script>
+ <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
+ <script src="{% static 'assets/js/plugins/smooth-scrollbar.min.js' %}"></script>
+
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+ <!-- Github buttons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-formhelpers/2.3.0/js/bootstrap-formhelpers.min.js"></script>
+
+<script src="{% static 'assets/js/plugins/datatables.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+</body>
+</html>
