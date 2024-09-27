@@ -9,7 +9,7 @@
         {% csrf_token %}
         <p>Deleting glucose <b>{{ glucose.value }} ({{ glucose.category }})</b>. Are you sure?</p>
         <br>
-        <button type="submit" class="btn btn-primary" action="submit">Yes, I'm sure</button>
+        <button type="submit" class="btn btn-success mt-2" action="submit">Yes, I'm sure</button>
         <button type="button" class="btn" onclick="location.href=&quot;{% url 'dashboard' %}&quot;;">Cancel</button>
     </form>
 </div>

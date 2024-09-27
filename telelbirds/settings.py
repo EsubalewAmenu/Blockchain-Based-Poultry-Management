@@ -66,6 +66,8 @@ INSTALLED_APPS = [
     'apps.chicks',
     'apps.customer',
     'apps.hatchery',
+    'apps.inventory',
+    'apps.human_resource',
 
 ]
 
@@ -117,12 +119,12 @@ WSGI_APPLICATION = 'telelbirds.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.getenv('DB_NAME'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
     }
 }
 
@@ -191,3 +193,4 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 LOGIN_URL='/accounts/login/'
+SITE_URL=env('BASE_URL')

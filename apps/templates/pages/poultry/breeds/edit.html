@@ -1,0 +1,123 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block main %}
+<div class="container-fluid py-4">
+  <style>
+    /* Set a fixed height for the images */
+    .swiper-slide img {
+      width: 100%; /* Ensure the image takes the full width of the slide */
+      height: 300px; /* Set a fixed height */
+      object-fit: cover; /* Maintain aspect ratio and cover the area */
+      border-radius: 0.5rem; /* Optional: to match your existing border-radius */
+    }
+  </style>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-lg-6">
+        <h4 class="text-white">Make the changes below</h4>
+        <p class="text-white opacity-8">We're constantly trying to express ourselves and actualize our dreams. If you have the opportunity to play.</p>
+      </div>
+      <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
+        <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save</button>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="font-weight-bolder text-center">Breed Photos</h5>
+            <div class="row">
+              <div class="col-12">
+                <div class="swiper mySwiper">
+                  <div class="swiper-wrapper">
+                    <!-- Front Photo Slide -->
+                    <div class="swiper-slide">
+                      <h6>Front Photo</h6>
+                      {% if breed.front_photo %}
+                        <img class="w-100 border-radius-lg shadow-lg" src="{{ breed.front_photo.url }}" alt="front_photo">
+                      {% else %}
+                        <img class="w-100 border-radius-lg shadow-lg" src="https://via.placeholder.com/150" alt="front_photo">
+                      {% endif %}
+                      <input type="file" class="form-control mt-3" name="front_photo">
+                    </div>
+            
+                    <!-- Side Photo Slide -->
+                    <div class="swiper-slide">
+                      <h6>Side Photo</h6>
+                      {% if breed.side_photo %}
+                        <img class="w-100 border-radius-lg shadow-lg" src="{{ breed.side_photo.url }}" alt="side_photo">
+                      {% else %}
+                        <img class="w-100 border-radius-lg shadow-lg" src="https://via.placeholder.com/150" alt="side_photo">
+                      {% endif %}
+                      <input type="file" class="form-control mt-3" name="side_photo">
+                    </div>
+            
+                    <!-- Back Photo Slide -->
+                    <div class="swiper-slide">
+                      <h6>Back Photo</h6>
+                      {% if breed.back_photo %}
+                        <img class="w-100 border-radius-lg shadow-lg" src="{{ breed.back_photo.url }}" alt="back_photo">
+                      {% else %}
+                        <img class="w-100 border-radius-lg shadow-lg" src="https://via.placeholder.com/150" alt="back_photo">
+                      {% endif %}
+                      <input type="file" class="form-control mt-3" name="back_photo">
+                    </div>
+                  </div>
+                  <hr/>
+                  <br/>
+                  <div class="swiper-pagination"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8 mt-lg-0 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="font-weight-bolder">Breed Information</h5>
+            <div class="row">
+              <div class="col-12 col-sm-6">
+                <label>Code</label>
+                <input class="form-control" type="text" name="code" value="{{ breed.code }}">
+              </div>
+              <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                <label>Poultry Type</label>
+                <input class="form-control" type="text" name="poultry_type" value="{{ breed.poultry_type }}">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-sm-6 mt-3">
+                <label>Breed</label>
+                <input class="form-control" type="text" name="breed" value="{{ breed.breed }}">
+              </div>
+              <div class="col-12 col-sm-6 mt-3">
+                <label>Purpose</label>
+                <input class="form-control" type="text" name="purpose" value="{{ breed.purpose }}">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-sm-6 mt-3">
+                <label>Eggs per Year</label>
+                <input class="form-control" type="number" name="eggs_year" value="{{ breed.eggs_year }}">
+              </div>
+              <div class="col-12 col-sm-6 mt-3">
+                <label>Adult Weight</label>
+                <input class="form-control" type="number" name="adult_weight" value="{{ breed.adult_weight }}">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 mt-3">
+                <label>Description</label>
+                <textarea class="form-control" rows="5" name="description">{{ breed.description }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

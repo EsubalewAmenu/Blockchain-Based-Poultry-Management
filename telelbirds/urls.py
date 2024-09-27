@@ -22,13 +22,22 @@ from django.conf.urls.static import static
 from django.conf import settings
 from apps.breeders import urls as BreederUrls
 from apps.dashboard import urls as DashboardUrls
+from apps.hatchery import urls as HatcheryUrls
+from apps.customer import urls as CustomerUrls
+from apps.chicks import urls as ChicksUrls
+from apps.inventory import urls as InventoryUrls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(BreederUrls)),
-    path('', TemplateView.as_view(template_name='pages/ecommerce/overview.html'), name='home'),
+    path('', include(HatcheryUrls)),
+    path('', include(CustomerUrls)),
+    path('', include(ChicksUrls)),
+    path('', include(InventoryUrls)),
+    path('human_resource/', include('apps.human_resource.urls')),
+    path('', TemplateView.as_view(template_name='home.html'), name='check_email'),
     path('dashboard/', include('apps.dashboard.urls')),
-    # path('', TemplateView.as_view(template_name='core/dashboard.html'), name='dashboard'),
+    path('check-email/', TemplateView.as_view(template_name='pages/authentication/reset/check_email.html'), name='check_email'),
     path('dashboard/', include(DashboardUrls)),
     path('glucose_create', TemplateView.as_view(template_name='glucoses/glucose_create.html'), name='glucose_create'),
     path('glucose_filter', TemplateView.as_view(template_name='base.html'), name='glucose_filter'),

@@ -1,0 +1,114 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block main%}
+<div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+      <div class="card">
+        <div class="card-body">
+          <div class="multisteps-form">
+            <!--progress bar-->
+            <div class="row">
+              <div class="col-12 col-lg-8 mx-auto my-4">
+                <div class="multisteps-form__progress">
+                  <button class="multisteps-form__progress-btn js-active" type="button" title="User Info">
+                    <span>1. Hatchery Info</span>
+                  </button>
+                  <button class="multisteps-form__progress-btn" type="button" title="Contact Info">2. Location</button>
+                  <button class="multisteps-form__progress-btn" type="button" title="Address">3. Finish</button>
+                </div>
+              </div>
+            </div>
+            <!--form panels-->
+            <form class="multisteps-form__form mb-8" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <!--single form panel-->
+              <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+                <h5 class="font-weight-bolder">Hatchery Information</h5>
+                <div class="multisteps-form__content">
+                  <div class="row mt-3">
+                    <div class="col-12 col-sm-6">
+                      <label>Name</label>
+                      <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Afro Chicken" name="name" />
+                    </div>
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                      <label>Photo</label>
+                      <input class="multisteps-form__input form-control" type="file" name="photo" />
+                    </div>
+                  </div>
+                  <div class="row mt-3">
+                    <div class="col-12 col-sm-6">
+                      <label>Email</label>
+                      <input class="multisteps-form__input form-control" type="email" placeholder="e.g., example@example.com" name="email" />
+                    </div>
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                      <label>Phone</label>
+                      <input class="multisteps-form__input form-control" type="tel" placeholder="e.g., 0901234567" name="phone" />
+                    </div>
+                  </div>
+                  <div class="row mt-3">
+                    <div class="col-12">
+                      <label>Address</label>
+                      <input class="multisteps-form__input form-control" type="text" placeholder="e.g., 123, MST" name="address" />
+                    </div>
+                  </div>
+                  <div class="button-row d-flex mt-4">
+                    <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                  </div>
+                </div>
+              </div>
+              <!--single form panel-->
+              <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+                <h5 class="font-weight-bolder">Location Info</h5>
+                <div class="multisteps-form__content">
+                  <div class="row mt-3">
+                    <div class="col-12">
+                      <label>Location</label>
+                      <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Abuja" name="location" />
+                    </div>
+                  </div>
+                  <div class="row mt-3">
+                    <div class="col-12 col-sm-6">
+                      <label>Latitude</label>
+                      <input type="number" class="form-control" name="latitude" />
+                    </div>
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                      <label>Longitude</label>
+                      <input type="number" class="form-control" name="longitude" />
+                    </div>
+                  </div>
+                  <div class="button-row d-flex mt-4">
+                    <button class="btn bg-gradient-secondary mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                    <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                  </div>
+                </div>
+              </div>
+              <!--single form panel-->
+              <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+                <h5 class="font-weight-bolder">Finish</h5>
+                <div class="multisteps-form__content mt-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <label>Total Capacity</label>
+                      <input type="number" class="form-control" name="totalcapacity" />
+                    </div>
+                  </div>
+                  <div class="row mt-4">
+                    <div class="col-12">
+                      <p class="font-weight-bold">Review your information and click "Submit" to create the new hatchery.</p>
+                    </div>
+                  </div>
+                  <div class="button-row d-flex mt-4">
+                    <button class="btn bg-gradient-secondary mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                    <button class="btn bg-gradient-success ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock%}

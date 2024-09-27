@@ -10,8 +10,8 @@ urlpatterns = [
 
     # Uncomment the below lines if using function-based views
     path('breed/', breed_list, name='breed_list'),
-    path('breed/<str:code>/', breed_detail, name='breed_detail'),
     path('breed/create/', breed_create, name='breed_create'),
+    path('breed/<str:code>/', breed_detail, name='breed_detail'),
     path('breed/<str:code>/update/', breed_update, name='breed_edit'),
     path('breed/<str:code>/delete/', breed_delete, name='breed_delete'),
     path('breeders/', breeders_list, name='breeders_list'),

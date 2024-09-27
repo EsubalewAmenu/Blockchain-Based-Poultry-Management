@@ -1,0 +1,96 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <div class="multisteps-form">
+                    <!-- Progress bar -->
+                    <div class="row">
+                        <div class="col-12 col-lg-8 mx-auto my-4">
+                            <div class="multisteps-form__progress">
+                                <button class="multisteps-form__progress-btn js-active" type="button" title="Item Request">
+                                    <span>1. Item Request</span>
+                                </button>
+                                <button class="multisteps-form__progress-btn" type="button" title="Egg Setting">2. Egg Setting</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Form panels -->
+                    <form class="multisteps-form__form mb-8" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!-- Item Request Panel -->
+                        <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+                            <h5 class="font-weight-bolder">Item Request</h5>
+                            <div class="multisteps-form__content">
+                                <div class="row mt-3">
+                                    <div class="col-12 col-sm-6">
+                                        <label class="form-label">Item</label>
+                                        <select class="form-control" name="item_request_item" required>
+                                            <option value="" disabled selected>Select an item</option>
+                                            {% for item in items %}
+                                            <option value="{{ item.pk }}">{{ item.code }} - {{ item.item_type.type_name }} | {{item.created_at}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                        <label class="form-label">Quantity</label>
+                                        <input class="form-control" type="number" placeholder="e.g., 10" name="item_request_quantity" required />
+                                    </div>
+                                </div>
+                                {% if error %}
+                                    <div class="alert alert-danger mt-3">{{ error }}</div>
+                                {% endif %}
+                                <div class="button-row d-flex mt-4">
+                                    <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Egg Setting Panel -->
+                        <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+                            <h5 class="font-weight-bolder">Egg Setting</h5>
+                            <div class="multisteps-form__content">
+                                <div class="row mt-3">
+                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                        <label class="form-label">Incubator</label>
+                                        <select class="form-control" name="incubator" required>
+                                            <option value="" disabled selected>Select an incubator</option>
+                                            {% for incubator in incubators %}
+                                                <option value="{{ incubator.pk }}">{{ incubator.code }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                        <label class="form-label">Breeders</label>
+                                        <select class="form-control" name="breeders" required>
+                                            <option value="" disabled selected>Select breeders</option>
+                                            {% for breeder in breeders %}
+                                                <option value="{{ breeder.pk }}">{{ breeder.batch }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    
+                                    
+                                </div>
+                                <div class="row mt-3">
+                                </div>
+                                {% if error %}
+                                    <div class="alert alert-danger mt-3">{{ error }}</div>
+                                {% endif %}
+                                <div class="button-row d-flex mt-4">
+                                    <button class="btn bg-gradient-secondary mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                                    <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

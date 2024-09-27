@@ -27,7 +27,7 @@ class Breed(models.Model):
     Breed Model
     """
     id = models.AutoField(primary_key=True)
-    code=models.CharField(null=True,blank=True,max_length=50)
+    code=models.CharField(null=True,blank=True,max_length=50, unique=True)
     poultry_type=models.CharField(null=True,blank=True,max_length=50)
     breed=models.CharField(null=True,blank=True,max_length=50)
     purpose=models.CharField(null=True,blank=True,max_length=50)
@@ -55,7 +55,7 @@ class Breeders(models.Model):
     Breeders Model
     """
     id = models.AutoField(primary_key=True)
-    batch=models.CharField(null=True,blank=True,max_length=50)
+    batch=models.CharField(null=True,blank=True,max_length=50, unique=True)
     breed=models.ForeignKey(Breed,
         related_name="breeders_breed", blank=True, null=True,
         on_delete=models.SET_NULL)
@@ -77,7 +77,14 @@ class Breeders(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
-        self.current_number = self.cocks + self.hens - self.butchered - self.sold - self.mortality
+        cocks = int(self.cocks) if self.cocks else 0
+        hens = int(self.hens) if self.hens else 0
+        butchered = int(self.butchered) if self.butchered else 0
+        sold = int(self.sold) if self.sold else 0
+        mortality = float(self.mortality) if self.mortality else 0.0
+
+        # Calculate current_number based on the validated values
+        self.current_number = cocks + hens - butchered - sold - mortality
         super(Breeders, self).save(*args, **kwargs)
     
     def get_absolute_url(self):
