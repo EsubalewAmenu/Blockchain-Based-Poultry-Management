@@ -35,7 +35,6 @@ Hatchtrack is a comprehensive poultry management system designed to streamline t
 ### 6. **Human Resource Management**
 
 - Manage staff details, attendance, and roles within the hatchery and poultry farms.
-- Assign specific tasks related to the hatchery, breeding, and inventory processes.
 
 ### 7. **Interactive Analytics and Dashboard**
 
@@ -45,12 +44,6 @@ Hatchtrack is a comprehensive poultry management system designed to streamline t
 ## Docker Configuration
 
 Hatchtrack is fully containerized using Docker to simplify setup, configuration, and deployment. Docker ensures that the application can run consistently across multiple environments.
-
-### Docker Features:
-
-- **Multi-container support:** Each major component (database, web server, application) runs in its own Docker container.
-- **Environment isolation:** Each environment (development, production) can be replicated using Docker Compose files.
-- **Simplified setup:** Easily spin up and tear down the application using Docker commands for streamlined development.
 
 ### Environment Variables
 
