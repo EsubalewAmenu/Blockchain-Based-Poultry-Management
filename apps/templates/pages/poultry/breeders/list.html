@@ -46,7 +46,7 @@
           </thead>
           <tbody>
               {% for breeder in breeders %}
-              <tr>
+              <tr data-url="{% url 'breeders_detail' breeder.batch %}" class="clickable-row">
                   <td>
                       <div class="d-flex align-items-center">
                           <div class="form-check">

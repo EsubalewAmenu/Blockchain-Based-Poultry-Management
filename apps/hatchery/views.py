@@ -181,7 +181,7 @@ def incubator_list(request):
     
 def incubator_create(request):
     hatcheries = Hatchery.objects.all()
-    items =Item.objects.all()
+    items =Item.objects.filter(item_type__type_name='Incubator')
     if request.method == 'POST':
         hatchery = Hatchery.objects.get(id=request.POST['hatchery'])
         incubatortype = request.POST['incubatortype']
@@ -724,6 +724,7 @@ def hatching_create(request):
         hatching.save()
         item_type = ItemType.objects.get_or_create(type_name="Chicks")
         item = Item(item_type=item_type[0])
+        item.quantity = int(hatching.chicks_hatched)
         item.save()
         from datetime import datetime
         chick = Chicks(item=item, source='hatching', breed=hatching.breeders.breed, age=datetime.now().date(), hatching=hatching, number=hatching.chicks_hatched)

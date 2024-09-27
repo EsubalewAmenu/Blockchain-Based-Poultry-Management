@@ -185,7 +185,7 @@ def eggs_detail(request, batch_number):
 def eggs_create(request):
     customers = Customer.objects.all()
     breeds = Breed.objects.all()
-    items = Item.objects.all()
+    items = Item.objects.filter(item_type__type_name='Egg')
     chicks = Chicks.objects.all()  # Get all chicks for selection
 
     if request.method == 'POST':

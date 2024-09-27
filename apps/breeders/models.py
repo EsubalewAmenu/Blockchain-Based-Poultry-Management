@@ -77,7 +77,14 @@ class Breeders(models.Model):
         managed = True
 
     def save(self, *args, **kwargs):
-        self.current_number = int(self.cocks) + int(self.hens) - int(self.butchered) - int(self.sold) - float(self.mortality)
+        cocks = int(self.cocks) if self.cocks else 0
+        hens = int(self.hens) if self.hens else 0
+        butchered = int(self.butchered) if self.butchered else 0
+        sold = int(self.sold) if self.sold else 0
+        mortality = float(self.mortality) if self.mortality else 0.0
+
+        # Calculate current_number based on the validated values
+        self.current_number = cocks + hens - butchered - sold - mortality
         super(Breeders, self).save(*args, **kwargs)
     
     def get_absolute_url(self):
