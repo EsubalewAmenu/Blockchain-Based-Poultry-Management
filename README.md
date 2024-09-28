@@ -1,3 +1,4 @@
+
 # Hatchtrack
 
 Hatchtrack is a comprehensive poultry management system designed to streamline the operations of hatcheries, breeders, inventory, and human resources. The project also includes interactive analytics and dashboard functionalities to provide real-time insights and manage chicks and egg tracking processes.
@@ -35,7 +36,6 @@ Hatchtrack is a comprehensive poultry management system designed to streamline t
 ### 6. **Human Resource Management**
 
 - Manage staff details, attendance, and roles within the hatchery and poultry farms.
-- Assign specific tasks related to the hatchery, breeding, and inventory processes.
 
 ### 7. **Interactive Analytics and Dashboard**
 
@@ -45,12 +45,6 @@ Hatchtrack is a comprehensive poultry management system designed to streamline t
 ## Docker Configuration
 
 Hatchtrack is fully containerized using Docker to simplify setup, configuration, and deployment. Docker ensures that the application can run consistently across multiple environments.
-
-### Docker Features:
-
-- **Multi-container support:** Each major component (database, web server, application) runs in its own Docker container.
-- **Environment isolation:** Each environment (development, production) can be replicated using Docker Compose files.
-- **Simplified setup:** Easily spin up and tear down the application using Docker commands for streamlined development.
 
 ### Environment Variables
 
@@ -82,6 +76,7 @@ DB_HOST=localhost  # Database host (e.g., localhost or IP address)
 DB_PASSWORD=your_database_password  # Database password
 DB_PORT=5432  # Default PostgreSQL port
 DB_USER=your_database_user  # Database username
+BASE_URL=http://localhost:11000/
 ```
 
 ### Setup
@@ -106,11 +101,23 @@ To get started with Hatchtrack, follow these instructions:
     docker-compose up -d
    ```
 5. **Stop the application**
-```
-docker compose down
-```
 
-6. **Access the application:**
+   ```
+   docker compose down
+   ```
+6. **Create the administrator user**
+
+   ```
+   docker compose exec -it app bash
+
+   and run the folloeing command 
+
+   python manage.py create_user --email MYOUR EMAIL HERE> --first_name <YOUR FIRST NAME> --last_name <YOUR LAST NAME> --primary_phone +251900123456 --role Administrator -
+   -department Admin --is_superuser
+
+   then check your email for credentials
+   ```
+7. **Access the application:**
    The application will be accessible at `http://localhost:11000`.
 
 ## Requirements
