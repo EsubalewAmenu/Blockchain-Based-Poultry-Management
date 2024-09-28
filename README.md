@@ -1,3 +1,4 @@
+
 # Hatchtrack
 
 Hatchtrack is a comprehensive poultry management system designed to streamline the operations of hatcheries, breeders, inventory, and human resources. The project also includes interactive analytics and dashboard functionalities to provide real-time insights and manage chicks and egg tracking processes.
@@ -75,6 +76,7 @@ DB_HOST=localhost  # Database host (e.g., localhost or IP address)
 DB_PASSWORD=your_database_password  # Database password
 DB_PORT=5432  # Default PostgreSQL port
 DB_USER=your_database_user  # Database username
+BASE_URL=http://localhost:11000/
 ```
 
 ### Setup
@@ -99,11 +101,23 @@ To get started with Hatchtrack, follow these instructions:
     docker-compose up -d
    ```
 5. **Stop the application**
+
    ```
    docker compose down
    ```
+6. **Create the administrator user**
 
-6. **Access the application:**
+   ```
+   docker compose exec -it app bash
+
+   and run the folloeing command 
+
+   python manage.py create_user --email MYOUR EMAIL HERE> --first_name <YOUR FIRST NAME> --last_name <YOUR LAST NAME> --primary_phone +251900123456 --role Administrator -
+   -department Admin --is_superuser
+
+   then check your email for credentials
+   ```
+7. **Access the application:**
    The application will be accessible at `http://localhost:11000`.
 
 ## Requirements
