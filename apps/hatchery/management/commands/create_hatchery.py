@@ -32,7 +32,7 @@ class Command(BaseCommand):
         ]
 
         for data in hatchery_data:
-            hatchery = Hatchery(
+            hatchery, created = Hatchery.objects.get_or_create(
                 name=data['name'],
                 email=data['email'],
                 phone=data['phone'],
@@ -41,6 +41,7 @@ class Command(BaseCommand):
                 longitude=data['longitude'],
                 totalcapacity=data['totalcapacity'],
             )
-            hatchery.save()
-
-            self.stdout.write(self.style.SUCCESS(f"Created hatchery: {hatchery.name}"))
+            if created:
+                self.stdout.write(self.style.SUCCESS(f"Created hatchery: {hatchery.name}"))
+            else:
+                self.stdout.write(self.style.WARNING(f"Hatchery with name {hatchery.name} already exists"))
