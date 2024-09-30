@@ -1,5 +1,22 @@
 {% extends 'dashboard.html' %}
 {% block main %}
+<style>
+  .alert-container {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+.alert .close {
+  font-size: 1.5rem;
+  line-height: 1.5;   
+  padding: 0.5rem;  
+}
+
+.alert .close span {
+  display: inline-block;
+  transform: scale(1.2); 
+}
+
+</style>
 <div class="row mb-5">
   <div class="col-12">
     <div class="multisteps-form mb-5">
@@ -25,9 +42,26 @@
           <form class="multisteps-form__form mb-8" method="post">
             {% csrf_token %}
             <!--User Info Panel-->
+            
+
             <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
               <h5 class="font-weight-bolder mb-0">User Info</h5>
               <p class="mb-0 text-sm">Mandatory information</p>
+              <!-- Display the messages here -->
+              {% if messages %}
+              <div class="alert-container">
+                <ul class="list-unstyled">
+                  {% for message in messages %}
+                  <div class="alert alert-{{message.tags}} alert-dismissible fade show text-light" role="alert">
+                    <strong>{{message}}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
               <div class="multisteps-form__content">
                 <div class="row mt-3">
                   <div class="col-12 mt-3 mt-sm-0">
@@ -38,7 +72,7 @@
                 <div class="row mt-3">
                   <div class="col-12 col-sm-6">
                     <label>First Name</label>
-                    <input class="multisteps-form__input form-control" type="text" name="first_name" placeholder="eg. John" />
+                    <input class="multisteps-form__input form-control" type="text" name="first_name" placeholder="eg. John" required/>
                   </div>
                   <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                     <label>Last Name</label>
@@ -58,7 +92,7 @@
                 <div class="row mt-3">
                   <div class="col-12 col-sm-6">
                     <label>Primary Phone</label>
-                    <input class="multisteps-form__input form-control" type="text" name="primary_phone" placeholder="eg. +123456789" />
+                    <input class="multisteps-form__input form-control" type="text" name="primary_phone" placeholder="eg. +123456789" required/>
                   </div>
                   <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                     <label>Secondary Phone</label>
@@ -99,4 +133,31 @@
     </div>
   </div>
 </div>
+<script>
+  // Automatically close the alerts after 5 seconds
+  setTimeout(function() {
+    var alertElements = document.querySelectorAll('.alert');
+    alertElements.forEach(function(alert) {
+      alert.classList.remove('show');  // Hide the alert
+    });
+  }, 5000);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get all the close buttons within alerts
+    var closeButtons = document.querySelectorAll('.alert .close');
+  
+    // Add click event to each close button
+    closeButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        // Find the parent alert (li) and remove it
+        var alert = this.closest('.alert');
+        alert.classList.remove('show'); // Optionally add fade-out animation
+        setTimeout(function() {
+          alert.remove(); // Remove the alert after fading out
+        }, 300);  // Adjust time for fade out duration
+      });
+    });
+  });
+  
+</script>
 {% endblock %}

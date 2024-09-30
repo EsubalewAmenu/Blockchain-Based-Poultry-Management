@@ -91,11 +91,7 @@ class UserSettingsForm(forms.Form):
 
         self. helper.layout = Layout(
             HTML('''
-            {% if messages %}
-            {% for message in messages %}
-            <p {% if message.tags %} class="alert alert-{{ message.tags }}"\
-            {% endif %}>{{ message }}</p>{% endfor %}{% endif %}
-            </p>
+            
             '''),
             Fieldset(
                 'Profile',
