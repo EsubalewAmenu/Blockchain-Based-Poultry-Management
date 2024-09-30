@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
+from apps.accounts.validators import validate_email
 import random
 import string
 
@@ -46,7 +47,7 @@ def create_employee(request):
         # If there are no errors, send the account creation email and redirect
         if not errors:
             _send_account_creation_email(employee.user, request.POST.get('email'), password)
-            messages.success(request, 'Employee created successfully!')
+            messages.success(request, 'Employee created successfully!', extra_tags='success')
             return redirect('employee_list')
 
         # If there are errors, re-render the form with the existing data and errors
@@ -81,6 +82,10 @@ def _validate_and_create_employee(request):
     department_id = request.POST.get('department')
     role_id = request.POST.get('role')
     photo = request.FILES.get('photo')
+    
+    if email:
+        if not validate_email(email):
+            errors['email'] = 'Invalid email address.'
 
     # Validate first name and last name
     if not first_name:
