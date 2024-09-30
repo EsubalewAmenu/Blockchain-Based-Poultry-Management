@@ -22,6 +22,7 @@ from apps.core.utils import to_mg
 from django.urls import reverse_lazy
 from .forms import UserSettingsForm
 from .models import UserSettings, UserWalletAddress
+from .validators import validate_email
 import random
 import string
 
@@ -89,7 +90,6 @@ def signin_with_wallet(request):
 
 @csrf_exempt
 @login_required
-
 def create_user(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -100,14 +100,21 @@ def create_user(request):
         secondary_phone = request.POST.get('secondary_phone', None)
         date_of_birth = request.POST.get('date_of_birth', None)
         address = request.POST.get('address', None)
+        if date_of_birth == '' or date_of_birth == "":
+            date_of_birth = None
+            
+        if email:
+            if not validate_email(email):
+                messages.error(request, "This email address does not exist.", extra_tags="danger")
+                return render(request, 'pages/pages/users/new-user.html')
 
         # Basic validation
         if not email or not first_name or not last_name:
-            messages.error(request, 'All fields are required.')
-            return render(request, 'pages/pages/users/new-user.html')  # Return to the same form with error message
+            messages.error(request, 'All fields are required.', extra_tags='danger')
+            return render(request, 'pages/pages/users/new-user.html')
         elif User.objects.filter(email=email).exists():
-            messages.error(request, 'Email is already registered.')
-            return render(request, 'pages/pages/users/new-user.html')  # Return to the same form with error message
+            messages.error(request, 'Email is already registered.', extra_tags='danger')
+            return render(request, 'pages/pages/users/new-user.html')
         
         # Generate a username and password
         username = email.split('@')[0]
@@ -144,11 +151,11 @@ def create_user(request):
                 [email],
                 fail_silently=False,
             )
-            messages.success(request, 'User Created Successfully! A temporary password has been sent to the user\'s email.')
+            messages.success(request, 'User Created Successfully! A temporary password has been sent to the user\'s email.', extra_tags="success")
             return redirect('users_list')
         except Exception as e:
             logger.error(f"Failed to send email: {e}")
-            messages.error(request, 'User created but failed to send email. Please contact support.')
+            messages.error(request, 'User created but failed to send email. Please contact support.', extra_tags="error")
             return render(request, 'pages/pages/users/new-user.html')  # Return to the same form with error message
 
     return render(request, 'pages/pages/users/new-user.html')
