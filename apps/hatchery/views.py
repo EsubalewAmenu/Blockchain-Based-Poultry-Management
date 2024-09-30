@@ -118,38 +118,31 @@ def hatcher_create(request):
         name = request.POST['name']
         photo = request.FILES['photo']
         email = request.POST['email']
-        phone = request.POST['phone']
+        phone = request.POST.get('phone').replace(' ', '')
         address = request.POST['address']
         latitude_str = request.POST.get('latitude', None)
         longitude_str = request.POST.get('longitude', None)
 
-        # Initialize latitude and longitude
         latitude = None
         longitude = None
 
-        # Validate and convert latitude
         if latitude_str:
             try:
                 latitude = float(latitude_str)
             except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set latitude to None
+                
                 latitude = None
 
-        # Validate and convert longitude
+        
         if longitude_str:
             try:
                 longitude = float(longitude_str)
             except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set longitude to None
                 longitude = None
 
-        # Check if both latitude and longitude are valid before creating the Point
         if latitude is not None and longitude is not None:
-            location = Point(longitude, latitude, srid=4326)  # Correct SRID to 4326
+            location = Point(longitude, latitude, srid=4326)
         else:
-            # Handle the case where location data is incomplete
             location = None
         totalcapacity = request.POST['totalcapacity']
 
