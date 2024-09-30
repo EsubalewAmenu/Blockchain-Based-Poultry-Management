@@ -54,11 +54,8 @@ def login_view(request):
     logout(request)
     if request.method == 'POST':
         email = request.POST.get('email')
-        print(email)
         password = request.POST.get('password')
-        print(password)
         user = authenticate(request, email=email, password=password)
-        print(user)
         if user is not None:
             if user.is_active:
                 login(request, user)
@@ -79,12 +76,12 @@ def signin_with_wallet(request):
                 
                 # Log the user in
                 login(request, user)
-                messages.success(request, 'Successfully signed in with wallet.')
+                messages.success(request, 'Successfully signed in with wallet.', extra_tags='success')
                 return redirect('dashboard')  # Redirect to the user's dashboard or desired page
             except UserWalletAddress.DoesNotExist:
-                messages.error(request, 'Wallet address not found.')
+                messages.error(request, 'Wallet address not found.', extra_tags='danger')
         else:
-            messages.error(request, 'No wallet address provided.')
+            messages.error(request, 'No wallet address provided.', extra_tags='danger')
 
     return redirect('login')
 
