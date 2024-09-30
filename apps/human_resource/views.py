@@ -211,7 +211,7 @@ def employee_detail(request, employee_id):
         return redirect('no_access')
 
     departments = Department.objects.all()
-    roles = Role.objects.all()
+    roles = Role.objects.values('name').distinct()
     
     context = {
         'employee': employee,
@@ -245,7 +245,7 @@ def update_employee_role(request, employee_id):
 
     # If not POST, render the form again (this is for GET requests)
     departments = Department.objects.all()
-    roles = Role.objects.all()
+    roles = Role.objects.values('name').distinct()
     context = {
         'employee': employee,
         'departments': departments,
