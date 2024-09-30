@@ -96,8 +96,8 @@ def create_user(request):
         username = request.POST.get('username')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        primary_phone = request.POST.get('primary_phone')
-        secondary_phone = request.POST.get('secondary_phone', None)
+        primary_phone = request.POST.get('primary_phone').replace(" ", "")
+        secondary_phone = request.POST.get('secondary_phone', None).replace(" ", "")
         date_of_birth = request.POST.get('date_of_birth', None)
         address = request.POST.get('address', None)
         if date_of_birth == '' or date_of_birth == "":
@@ -109,7 +109,7 @@ def create_user(request):
                 return render(request, 'pages/pages/users/new-user.html')
 
         # Basic validation
-        if not email or not first_name or not last_name:
+        if not email or not first_name:
             messages.error(request, 'All fields are required.', extra_tags='danger')
             return render(request, 'pages/pages/users/new-user.html')
         elif User.objects.filter(email=email).exists():
