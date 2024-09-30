@@ -1,6 +1,23 @@
 {% extends "dashboard.html" %}
 
 {% block main %}
+<style>
+    .alert-container {
+      margin-top: 10px;
+      margin-bottom: 20px;
+  }
+  .alert .close {
+    font-size: 1.5rem;
+    line-height: 1.5;   
+    padding: 0.5rem;  
+  }
+  
+  .alert .close span {
+    display: inline-block;
+    transform: scale(1.2); 
+  }
+  
+  </style>
 <div class="d-sm-flex justify-content-between mb-4">
     <h4 class="mb-0 text-light">Employees</h4>
     <a href="{% url 'employee_create' %}" class="btn btn-icon btn-outline-white">
@@ -14,6 +31,20 @@
             <!-- Filter Section -->
             <div class="card-body pb-0">
                 <form method="get" class="mb-4">
+                    {% if messages %}
+                    <div class="alert-container">
+                        <ul class="list-unstyled">
+                        {% for message in messages %}
+                        <div class="alert alert-{{message.tags}} alert-dismissible fade show text-light" role="alert">
+                            <strong>{{message}}</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                     <div class="row">
                         <div class="col-md-4">
                             <input type="text" name="search" class="form-control" placeholder="Search employees..." value="{{ search_query }}">
@@ -167,4 +198,28 @@
         white-space: normal;
     }
 </style>
+<script>
+    setTimeout(function() {
+      var alertElements = document.querySelectorAll('.alert');
+      alertElements.forEach(function(alert) {
+        alert.classList.remove('show');
+      });
+    }, 5000);
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      var closeButtons = document.querySelectorAll('.alert .close');
+    
+      closeButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+         
+          var alert = this.closest('.alert');
+          alert.classList.remove('show');
+          setTimeout(function() {
+            alert.remove();
+          }, 300);
+        });
+      });
+    });
+    
+  </script>
 {% endblock %}
