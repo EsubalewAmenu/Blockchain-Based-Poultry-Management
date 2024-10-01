@@ -110,6 +110,12 @@ def _validate_and_create_employee(request):
     # Validate role if department is not "Admin"
     if department.name != 'Admin' and not role_id:
         errors['role'] = 'Role is required.'
+        
+     # Handle profile photo upload
+    if photo:
+        allowed_image_types = ['image/jpeg', 'image/png'] 
+        if photo.content_type not in allowed_image_types:
+            errors['role'] = "Invalid image format for profile photo. Only JPEG or PNG is allowed."
 
     # If there are errors, return them immediately
     if errors:
@@ -126,8 +132,9 @@ def _validate_and_create_employee(request):
         last_name=last_name,
         password=password
     )
-    user_settings = UserSettings(user)
-    user_settings.primary_phone = phone
+    user_settings = UserSettings(
+        user=user,
+        primary_phone = phone)
     user_settings.save()
     # Assign role if applicable
     if role_id:
@@ -146,11 +153,12 @@ def _validate_and_create_employee(request):
         start_date=timezone.now().date()
     )
 
-    # Handle profile photo upload
-    if photo:
-        fs = FileSystemStorage()
-        employee.photo = fs.save(photo.name, photo)
-        employee.save()
+   
+    
+    fs = FileSystemStorage()
+    employee.photo = fs.save(photo.name, photo)
+    employee.save()
+        
 
     return None, employee, password
 

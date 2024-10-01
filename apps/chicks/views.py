@@ -34,7 +34,13 @@ def chicks_detail(request, batchnumber):
             chick.breed = Breed.objects.get(pk=breed_id)
         chick.age = request.POST.get('age', chick.age)
         chick.description = request.POST.get('description', chick.description)
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
+        if request.FILES.get('chick_photo'):
+            if request.FILES.get('chick_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('chicks_detail', batchnumber=batchnumber)
+            
         if 'chick_photo' in request.FILES:
             chick.chick_photo = request.FILES['chick_photo']
         chick.save()
@@ -110,7 +116,12 @@ def chicks_update(request, batchnumber):
         
         chick.age = request.POST.get('age', chick.age)
         chick.description = request.POST.get('description', chick.description)
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
+        if request.FILES.get('chick_photo'):
+            if request.FILES.get('chick_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('chicks_detail', batchnumber=batchnumber)
         if 'chick_photo' in request.FILES:
             chick.chick_photo = request.FILES['chick_photo']
         elif chick.chick_photo:

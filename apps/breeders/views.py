@@ -29,6 +29,22 @@ def breed_detail(request, code):
         breed.eggs_year = request.POST.get('eggs_year', breed.eggs_year)
         breed.adult_weight = request.POST.get('adult_weight', breed.adult_weight)
         breed.description = request.POST.get('description', breed.description)
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('back_photo'):
+            if request.FILES.get('back_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_detail', code=code)
+            
+        if request.FILES.get('front_photo'):
+            if request.FILES.get('front_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_detail', code=code)
+            
+        if request.FILES.get('side_photo'):
+            if request.FILES.get('side_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_detail', code=code)
         if request.FILES.get('front_photo'):
             breed.front_photo = request.FILES.get('front_photo')
         if request.FILES.get('side_photo'):
@@ -56,6 +72,25 @@ def breed_create(request):
         if Breed.objects.filter(code=code).exists():
             messages.error(request, "Breed with this code already exists", extra_tags='danger')
             return redirect('breed_create')
+        
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if front_photo:
+            if front_photo.content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_create')
+
+        if side_photo:
+            if side_photo.content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for side photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_create')
+
+
+        if back_photo:
+            if back_photo.content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for back photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_create')
+            
         breed = Breed.objects.create(
             code=code,
             poultry_type=poultry_type,
@@ -86,11 +121,29 @@ def breed_update(request, code):
         breed.adult_weight = request.POST.get('adult_weight', breed.adult_weight)
         breed.description = request.POST.get('description', breed.description)
         
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('back_photo'):
+            if request.FILES.get('back_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_update')
+            
+        if request.FILES.get('front_photo'):
+            if request.FILES.get('front_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_update')
+            
+        if request.FILES.get('side_photo'):
+            if request.FILES.get('side_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_update')
+            
         if request.FILES.get('front_photo'):
             breed.front_photo = request.FILES.get('front_photo')
         if request.FILES.get('side_photo'):
             breed.side_photo = request.FILES.get('side_photo')
         if request.FILES.get('back_photo'):
+            
             breed.back_photo = request.FILES.get('back_photo')
         breed.save()
         messages.success(request, 'Breed updated successfully.')

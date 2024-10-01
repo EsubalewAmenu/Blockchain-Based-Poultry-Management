@@ -59,7 +59,12 @@ def hatchery_detail(request, name):
                 # You can log an error or set longitude to None
                 hatchery.longitude = hatchery.longitude
         hatchery.totalcapacity = request.POST.get('totalcapacity', hatchery.totalcapacity)
+        allowed_image_types = ['image/jpeg', 'image/png']
 
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('hatchery_update', name=name)
         # Handle file upload
         if request.FILES.get('photo'):
             hatchery.photo = request.FILES['photo']
@@ -103,7 +108,11 @@ def hatchery_update(request, name):
                 # You can log an error or set longitude to None
                 hatchery.longitude = hatchery.longitude
         hatchery.totalcapacity = request.POST.get('totalcapacity', hatchery.totalcapacity)
-
+        allowed_image_types = ['image/jpeg', 'image/png']
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('hatchery_update', name=name)
         # Handle file upload
         if request.FILES.get('photo'):
             hatchery.photo = request.FILES['photo']
@@ -123,7 +132,11 @@ def hatcher_create(request):
         address = request.POST['address']
         latitude_str = request.POST.get('latitude', None)
         longitude_str = request.POST.get('longitude', None)
-
+        allowed_image_types = ['image/jpeg', 'image/png']
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('hatchery_create')
         latitude = None
         longitude = None
 
