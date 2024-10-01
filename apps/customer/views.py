@@ -112,7 +112,7 @@ def customer_update(request, full_name):
             customer.photo = photo
 
         customer.save()
-
+        messages.success(request, "Customer Updated Successfully", extra_tags="success")
         return redirect('customer_list')
     else:
         return render(request, 'pages/pages/customer/details.html', {'customer': customer})
@@ -127,7 +127,7 @@ def customer_update_notifications(request, full_name):
         customer.followup = 'followup' in request.POST
 
         customer.save() 
-
+        messages.success(request, "Customer Notification Settings Updated Successfully", extra_tags="success")
         return redirect('customer_detail', full_name=customer.full_name)
 
     return render(request, 'customer_detail.html', {'customer': customer})
@@ -237,6 +237,7 @@ def eggs_create(request):
         egg.save()
         item.quantity=received
         item.save()
+        messages.success(request, "Egg Created Successfully", extra_tags="success")
         return redirect('eggs_list')
 
     return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items})
@@ -271,7 +272,8 @@ def eggs_update(request, batch_number):
             egg.photo = request.FILES['photo']
 
         egg.save()
-        return redirect('eggs_detail', batch_number=egg.batchnumber)
+        messages.success(request, "Egg Updated Successfully", extra_tags="success")
+        return redirect('eggs_update', batch_number=egg.batchnumber)
 
     return render(request, 'pages/pages/customer/eggs/details.html', {
         'egg': egg,
@@ -287,6 +289,7 @@ def eggs_delete(request, batch_number):
     if request.method == 'POST':
         egg.delete()
         egg.item.delete()
+        messages.success(request, "Egg Deleted Successfully", extra_tags="success")
         return redirect('eggs_list')  
     return render(request, 'pages/pages/customer/eggs/delete.html', {'egg': egg})
 

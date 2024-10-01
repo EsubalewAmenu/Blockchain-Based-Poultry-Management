@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from apps.breeders.models import Breed
 from apps.customer.models import Eggs, Customer
 from django.http import HttpResponse
-
+from django.contrib import messages
 from apps.hatchery.models import Hatching
 from .models import Chicks
 from apps.inventory.models import Item
@@ -85,7 +85,7 @@ def chicks_create(request):
             number=number
         )
         chick.save()
-        
+        messages.success(request, "Chicks Created Successfully", extra_tags="success")
         
         return redirect('chicks_list') 
 
@@ -119,6 +119,7 @@ def chicks_update(request, batchnumber):
             chick.chick_photo = None  # Set photo to None if no value is provided and no existing photo is present
 
         chick.save()
+        messages.success(request, "Chicks Updated Successfully", extra_tags="success")
         return redirect('chicks_detail', batchnumber=chick.batchnumber)
 
     return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds': breeds})
@@ -129,5 +130,6 @@ def chicks_delete(request, batchnumber):
     if request.method == 'POST':
         chick.delete()
         chick.item.delete()
+        messages.success(request, "Chicks Deleted Successfully", extra_tags="success")
         return redirect('chicks_list')
     return redirect('chicks_list')

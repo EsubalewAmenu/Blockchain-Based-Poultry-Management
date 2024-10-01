@@ -35,7 +35,7 @@
                           <div class="form-check">
                               <input class="form-check-input" type="checkbox" id="customCheck{{ egg.id }}">
                           </div>
-                          <a href="{% url 'eggs_detail' egg.batchnumber %}" class="text-decoration-none">
+                          <a href="{% url 'eggs_update' egg.batchnumber %}" class="text-decoration-none">
                           <p class="text-xs font-weight-bold ms-2 mb-0">{{ egg.batchnumber }}</p>
                           </a>
                       </div>
@@ -76,7 +76,7 @@
                   </td>
                   <td class="text-sm">
                     <div class="d-flex justify-content-left align-items-left">
-                      <a href="{% url 'eggs_detail' egg.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
+                      <a href="{% url 'eggs_update' egg.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                         <i class="fas fa-eye"></i>
                       </a>
                       <a href="{% url 'eggs_update' egg.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Egg">
