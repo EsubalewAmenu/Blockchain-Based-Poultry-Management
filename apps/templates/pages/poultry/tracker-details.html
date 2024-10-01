@@ -52,13 +52,17 @@
                                         <form method="GET" class="mb-3">
                                             <div class="form-group">
                                                 <label for="egg_setting_select">Select Egg Setting:</label>
-                                                <select name="egg_setting_id" id="egg_setting_select" class="form-control" onchange="this.form.submit()">
-                                                    {% for setting in egg_settings %}
-                                                        <option value="{{ setting.id }}" {% if setting.id == egg_setting.id %}selected{% endif %}>
-                                                            Egg Setting {{ setting.created|date:"Y-m-d H:i" }}
-                                                        </option>
-                                                    {% endfor %}
-                                                </select>
+                                                {% if egg_settings %}
+                                                    <select name="egg_setting_id" id="egg_setting_select" class="form-control" onchange="this.form.submit()">
+                                                        {% for setting in egg_settings %}
+                                                            <option value="{{ setting.id }}" {% if setting.id == egg_setting.id %}selected{% endif %}>
+                                                                {{setting.settingcode}} | {{ setting.created|date:"Y-m-d H:i" }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                {% else %}
+                                                    <p class="text-muted">No egg settings available.</p>
+                                                {% endif %}
                                             </div>
                                         </form>
                                         <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">

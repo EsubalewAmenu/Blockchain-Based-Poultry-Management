@@ -10,12 +10,11 @@ from .forms import BreedersForm
 @login_required
 def breed_list(request):
     breeds_list = Breed.objects.all()
-    paginator = Paginator(breeds_list, 10)  # Show 10 breeders per page
+    paginator = Paginator(breeds_list, 10)
     
     page_number = request.GET.get('page')
     breeds = paginator.get_page(page_number)
     
-    messages.success(request, 'Breed list loaded successfully.')
     return render(request, 'pages/poultry/breeds/list.html', {'breeds': breeds})
 
 
@@ -30,6 +29,22 @@ def breed_detail(request, code):
         breed.eggs_year = request.POST.get('eggs_year', breed.eggs_year)
         breed.adult_weight = request.POST.get('adult_weight', breed.adult_weight)
         breed.description = request.POST.get('description', breed.description)
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('back_photo'):
+            if request.FILES.get('back_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_detail', code=code)
+            
+        if request.FILES.get('front_photo'):
+            if request.FILES.get('front_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_detail', code=code)
+            
+        if request.FILES.get('side_photo'):
+            if request.FILES.get('side_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_detail', code=code)
         if request.FILES.get('front_photo'):
             breed.front_photo = request.FILES.get('front_photo')
         if request.FILES.get('side_photo'):
@@ -39,10 +54,9 @@ def breed_detail(request, code):
         breed.save()
         messages.success(request, 'Breed updated successfully.', extra_tags='success')
         return redirect('breed_detail', code=code)
-    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
+    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed, 'breeds': Breed.objects.all()})
 
 @login_required
-@csrf_exempt
 def breed_create(request):
     if request.method == 'POST':
         code = request.POST.get('code')
@@ -55,7 +69,28 @@ def breed_create(request):
         front_photo = request.FILES.get('front_photo')
         side_photo = request.FILES.get('side_photo')
         back_photo = request.FILES.get('back_photo')
+        if Breed.objects.filter(code=code).exists():
+            messages.error(request, "Breed with this code already exists", extra_tags='danger')
+            return redirect('breed_create')
+        
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
+        if front_photo:
+            if front_photo.content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_create')
+
+        if side_photo:
+            if side_photo.content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for side photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_create')
+
+
+        if back_photo:
+            if back_photo.content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for back photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_create')
+            
         breed = Breed.objects.create(
             code=code,
             poultry_type=poultry_type,
@@ -85,11 +120,30 @@ def breed_update(request, code):
         breed.eggs_year = request.POST.get('eggs_year', breed.eggs_year)
         breed.adult_weight = request.POST.get('adult_weight', breed.adult_weight)
         breed.description = request.POST.get('description', breed.description)
+        
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('back_photo'):
+            if request.FILES.get('back_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_update')
+            
+        if request.FILES.get('front_photo'):
+            if request.FILES.get('front_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_update')
+            
+        if request.FILES.get('side_photo'):
+            if request.FILES.get('side_photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('breed_update')
+            
         if request.FILES.get('front_photo'):
             breed.front_photo = request.FILES.get('front_photo')
         if request.FILES.get('side_photo'):
             breed.side_photo = request.FILES.get('side_photo')
         if request.FILES.get('back_photo'):
+            
             breed.back_photo = request.FILES.get('back_photo')
         breed.save()
         messages.success(request, 'Breed updated successfully.')
@@ -149,7 +203,7 @@ def breeders_detail(request, batch):
         breeder.save()
         return redirect('breeders_list')
 
-    return render(request, 'pages/poultry/breeders/details.html', {'breeder': breeder})
+    return render(request, 'pages/poultry/breeders/details.html', {'breeder': breeder,  'breeds':Breed.objects.all()})
 
 # Create View
 @login_required
@@ -165,6 +219,10 @@ def breeders_create(request):
         mortality = request.POST.get('mortality')
         butchered = request.POST.get('butchered')
         sold = request.POST.get('sold')
+        if sold in ['', "", None]:
+            sold=0
+        if butchered in ['', "", None]:
+            butchered=0
         hens_photo = request.FILES.get('hens_photo')
         cocks_photo = request.FILES.get('cocks_photo')
 
@@ -207,6 +265,12 @@ def breeders_update(request, batch):
         breeder.mortality = request.POST.get('mortality', breeder.mortality)
         breeder.butchered = request.POST.get('butchered', breeder.butchered)
         breeder.sold = request.POST.get('sold', breeder.sold)
+        if breeder.sold in ["",'',]:
+            breeder.sold=0
+        
+        if breeder.butchered == None:
+            breeder.butchered=0
+            
         breeder.current_number = request.POST.get('current_number', breeder.current_number)
 
         # Handle file uploads
@@ -217,11 +281,14 @@ def breeders_update(request, batch):
 
         # Save the updated breeder instance
         breeder.save()
-        return redirect('breeders_list')  # Redirect to the breeder detail page after saving
+        messages.success(request, "Breeder Updated Successfully.", extra_tags='success')        
+        return redirect('breeders_update', batch=batch)  # Redirect to the breeder detail page after saving
 
     # Render the template with the breeder instance
     return render(request, 'pages/poultry/breeders/details.html', {
-        'breeder': breeder  # Pass the breeder instance for additional context
+        'breeder': breeder,
+        'breeds':Breed.objects.all()
+         # Pass the breeder instance for additional context
     })
 
 # Delete View

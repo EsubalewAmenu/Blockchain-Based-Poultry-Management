@@ -41,34 +41,15 @@ def customer_create(request):
             if not validate_email(email):
                 messages.error(request, "This email address does not exist.", extra_tags="danger")
                 return redirect('customer_create')
-        # Validate and convert latitude
-        if latitude_str:
-            try:
-                latitude = float(latitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set latitude to None
-                latitude = None
-
-        # Validate and convert longitude
-        if longitude_str:
-            try:
-                longitude = float(longitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set longitude to None
-                longitude = None
-
-        # Check if both latitude and longitude are valid before creating the Point
-        if latitude is not None and longitude is not None:
-            location = Point(longitude, latitude, srid=4326)  # Correct SRID to 4326
-        else:
-            # Handle the case where location data is incomplete
-            location = None
         notification_sms = request.POST.get('notification_sms') == 'on'
         delivery = request.POST.get('delivery') == 'on'
         followup = request.POST.get('followup') == 'on'
-        
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('customer_create')
         photo = request.FILES.get('photo')
 
         customer = Customer(
@@ -98,7 +79,7 @@ def customer_update(request, full_name):
         customer.first_name = request.POST.get('first_name')
         customer.last_name = request.POST.get('last_name')
         customer.email = request.POST.get('email')
-        customer.phone = request.POST.get('phone')
+        customer.phone = request.POST.get('phone').replace(' ', '')
         customer.address = request.POST.get('address')
         customer.latitude = request.POST.get('latitude')
         customer.longitude = request.POST.get('longitude')
@@ -180,13 +161,18 @@ def eggs_detail(request, batch_number):
 
         egg.brought = request.POST.get('brought', egg.brought)
         egg.returned = request.POST.get('returned', egg.returned)
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('eggs_detail', batch_number=batch_number)
         # Handle photo upload
         if 'photo' in request.FILES:
             egg.photo = request.FILES['photo']
 
         egg.save()
-        return redirect('eggs_detail', batch_number=egg.batchnumber)
+        return redirect('eggs_update', batch_number=egg.batchnumber)
 
     return render(request, 'pages/pages/customer/eggs/details.html', {
         'egg': egg,
@@ -213,7 +199,12 @@ def eggs_create(request):
         returned = request.POST.get('returned')
         item = Item.objects.get(pk=item_id)
         received = int(brought) - int(returned)
-        
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('eggs_create')
         customer = None
         if customer_id:
             customer = get_object_or_404(Customer, id=customer_id)
@@ -255,7 +246,12 @@ def eggs_update(request, batch_number):
         customer_id = request.POST.get('customer')
         breed_id = request.POST.get('breed')
         chick_id = request.POST.get('chick')  # Get selected chick ID
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('eggs_update', batch_number=batch_number)
         # Update foreign keys only if they are provided
         if customer_id:
             egg.customer_id = customer_id

@@ -29,11 +29,15 @@ class Command(BaseCommand):
             return
 
         eggs_data = [
-            {'source': 'customer', 'brought': 100, 'returned': 5, 'received': 95},
+            {'batchnumber': 'EG-001', 'source': 'customer', 'brought': 100, 'returned': 5, 'received': 95},
         ]
 
         for data in eggs_data:
+            if Eggs.objects.filter(batchnumber=data['batchnumber']).exists():
+                self.stdout.write(self.style.WARNING(f"Egg batch with batch number {data['batchnumber']} already exists."))
+                continue
             egg = Eggs(
+                batchnumber=data['batchnumber'],
                 source=data['source'],
                 customer=customer if data['source'] == 'customer' else None,
                 breed=breed,
@@ -42,16 +46,9 @@ class Command(BaseCommand):
                 returned=data['returned'],
                 received=data['received'],
             )
-            egg.batchnumber = self.generate_unique_batchnumber()
+            egg.save()
             item.quantity = data['received']
             item.save()
-            egg.save()
-
             self.stdout.write(self.style.SUCCESS(f"Created egg batch: {egg.batchnumber}"))
+                
 
-    def generate_unique_batchnumber(self):
-        while True:
-            random_suffix = ''.join(random.choices(string.digits, k=4))
-            unique_code = f'EG-{random_suffix}'
-            if not Eggs.objects.filter(batchnumber=unique_code).exists():
-                return unique_code
