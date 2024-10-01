@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="{%static 'assets/img/apple-icon.png' %}">
   <link rel="icon" type="image/png" href="{% static 'assets/img/egg-logo.png' %}">
   <title>
-    Hatchtrack
+    PoultryTrack
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -45,6 +45,22 @@
     }
   }
 
+    .alert-container {
+      margin-top: 0px;
+      margin-bottom: 0px;
+  }
+  .alert .close {
+    font-size: 1.5rem;
+    line-height: 1.5;   
+    padding: 0.5rem;  
+  }
+  
+  .alert .close span {
+    display: inline-block;
+    transform: scale(1.2); 
+  }
+  
+
 </style>
 <body class="g-sidenav-show bg-gray-100">
     <div class="min-height-300 bg-success position-absolute w-100"></div>
@@ -53,6 +69,22 @@
      <main class="main-content position-relative border-radius-lg ">
       {% include 'navbar.html' %}
       <div class="container-fluid py-4">
+        <div class="container">
+        {% if messages %}
+              <div class="alert-container">
+                <ul class="list-unstyled">
+                  {% for message in messages %}
+                  <div class="alert alert-{{message.tags}} alert-dismissible fade show text-light" role="alert">
+                    <strong>{{message}}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
         {% block main %}
 
         {% endblock%}
@@ -100,14 +132,31 @@
   });
 </script>
 <script>
+  // Automatically close the alerts after 5 seconds
+  setTimeout(function() {
+    var alertElements = document.querySelectorAll('.alert');
+    alertElements.forEach(function(alert) {
+      alert.classList.remove('show');  // Hide the alert
+    });
+  }, 5000);
+
   document.addEventListener('DOMContentLoaded', function() {
-    var alerts = document.querySelectorAll('.alert');
-    alerts.forEach(function(alert) {
-      setTimeout(function() {
-        alert.classList.add('d-none');
-      }, 5000); // 5000 milliseconds = 5 seconds
+    // Get all the close buttons within alerts
+    var closeButtons = document.querySelectorAll('.alert .close');
+  
+    // Add click event to each close button
+    closeButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        // Find the parent alert (li) and remove it
+        var alert = this.closest('.alert');
+        alert.classList.remove('show'); // Optionally add fade-out animation
+        setTimeout(function() {
+          alert.remove(); // Remove the alert after fading out
+        }, 300);  // Adjust time for fade out duration
+      });
     });
   });
+  
 </script>
 <script>
   var swiper = new Swiper(".mySwiper", {
@@ -665,6 +714,15 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
   </script>
+  <script>
+    function validateForm(form) {
+        if (!form.checkValidity()) {
+            alert('Please fill out all required fields before submitting.');
+            return false;
+        }
+        return true;
+    }
+</script>
 </body>
 
 </html>

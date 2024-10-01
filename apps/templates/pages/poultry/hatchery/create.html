@@ -46,12 +46,7 @@
                       <input class="multisteps-form__input form-control" type="tel" placeholder="e.g., 0901234567" name="phone" />
                     </div>
                   </div>
-                  <div class="row mt-3">
-                    <div class="col-12">
-                      <label>Address</label>
-                      <input class="multisteps-form__input form-control" type="text" placeholder="e.g., 123, MST" name="address" />
-                    </div>
-                  </div>
+                  
                   <div class="button-row d-flex mt-4">
                     <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
                   </div>
@@ -61,21 +56,27 @@
               <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
                 <h5 class="font-weight-bolder">Location Info</h5>
                 <div class="multisteps-form__content">
-                  <div class="row mt-3">
+                  {% comment %} <div class="row mt-3">
                     <div class="col-12">
                       <label>Location</label>
                       <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Abuja" name="location" />
                     </div>
+                  </div> {% endcomment %}
+                  <div class="row mt-3">
+                    <div class="col-12">
+                      <label>Address</label>
+                      <input class="multisteps-form__input form-control" type="text" placeholder="e.g., 123, MST" name="address" />
+                    </div>
                   </div>
                   <div class="row mt-3">
-                    <div class="col-12 col-sm-6">
+                    {% comment %} <div class="col-12 col-sm-6">
                       <label>Latitude</label>
                       <input type="number" class="form-control" name="latitude" />
-                    </div>
-                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                    </div> {% endcomment %}
+                    {% comment %} <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                       <label>Longitude</label>
                       <input type="number" class="form-control" name="longitude" />
-                    </div>
+                    </div> {% endcomment %}
                   </div>
                   <div class="button-row d-flex mt-4">
                     <button class="btn bg-gradient-secondary mb-0 js-btn-prev" type="button" title="Prev">Prev</button>

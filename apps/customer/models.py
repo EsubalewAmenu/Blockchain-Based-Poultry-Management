@@ -63,6 +63,8 @@ class Customer(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_name = self.first_name + " " + self.last_name
+        if Customer.objects.filter(full_name=self.full_name).exists():
+            self.full_name = self.first_name + "_" + self.last_name + "_" + str(random.randint(0, 1000))
         super(Customer, self).save(*args, **kwargs)
 
     def __str__(self):

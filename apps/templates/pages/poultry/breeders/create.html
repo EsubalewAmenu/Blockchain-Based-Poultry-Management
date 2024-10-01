@@ -29,7 +29,7 @@
                             <!--form panels-->
                             <div class="row">
                                 <div class="col-12 col-lg-8 m-auto">
-                                    <form class="multisteps-form__form mb-8" method="POST">
+                                    <form class="multisteps-form__form mb-8" method="POST" enctype="multipart/form-data">
                                       {% csrf_token %}
                                         <!--single form panel-->
                                         <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
@@ -87,11 +87,11 @@
                                                 <div class="row mt-3">
                                                     <div class="col-12 col-sm-6">
                                                         <label>Hens Photo</label>
-                                                        <input type="file" class="form-control" name='hens_photo'/>
+                                                        <input type="file" class="form-control" name='hens_photo' accept=".jpg,.jpeg,.png" required/>
                                                     </div>
                                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                                         <label>Cocks Photo</label>
-                                                        <input type="file" class="form-control" name='cocks_photo'/>
+                                                        <input type="file" class="form-control" name='cocks_photo' accept=".jpg,.jpeg,.png" required/>
                                                     </div>
                                                 </div>
                                                 <div class="button-row d-flex mt-4">

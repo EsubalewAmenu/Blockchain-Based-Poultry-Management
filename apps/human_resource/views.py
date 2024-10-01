@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
+from apps.accounts.models import UserSettings
 from apps.human_resource.models import Employee, Department, Role
 from django.contrib.auth.models import User, Group
 from django.core.files.storage import FileSystemStorage
@@ -79,6 +80,7 @@ def _validate_and_create_employee(request):
     first_name = request.POST.get('first_name')
     last_name = request.POST.get('last_name')
     email = request.POST.get('email')
+    phone = request.POST.get('phone').replace(' ', '')
     department_id = request.POST.get('department')
     role_id = request.POST.get('role')
     photo = request.FILES.get('photo')
@@ -124,7 +126,9 @@ def _validate_and_create_employee(request):
         last_name=last_name,
         password=password
     )
-
+    user_settings = UserSettings(user)
+    user_settings.primary_phone = phone
+    user_settings.save()
     # Assign role if applicable
     if role_id:
         role = Role.objects.get(id=role_id)

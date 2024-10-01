@@ -21,9 +21,9 @@
           <p class="text-white opacity-8">We're constantly trying to express ourselves and actualize our dreams. If you have the opportunity to play.</p>
         </div>
         <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
-          {% if request.resolver_match.url_name == 'breeders_update' %}
+          {% comment %} {% if request.resolver_match.url_name == 'breeders_update' %} {% endcomment %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
-          {% endif %}
+          {% comment %} {% endif %} {% endcomment %}
           {% if request.resolver_match.url_name == 'breeders_delete' %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Confirm Delete</button>
           {% endif %}
@@ -41,9 +41,9 @@
                   <div class="swiper-slide">
                     <h6>Hens Photo</h6>
                     {% if breeder.hens_photo %}
-                      <img src="{{ breeder.hens_photo.url }}" alt="{{ breeder.batch }} Hens Photo">
+                    <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{{ breeder.hens_photo.url }}" alt="{{ breeder.batch }} Hens Photo">
                     {% else %}
-                      <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                      <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
                     <input type="file" class="form-control mt-3" name="hens_photo">
                   </div>
@@ -52,9 +52,9 @@
                   <div class="swiper-slide">
                     <h6>Cocks Photo</h6>
                     {% if breeder.cocks_photo %}
-                      <img src="{{ breeder.cocks_photo.url }}" alt="{{ breeder.batch }} Cocks Photo">
+                    <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{{ breeder.cocks_photo.url }}" alt="{{ breeder.batch }} Cocks Photo">
                     {% else %}
-                      <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                      <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
                     <input type="file" class="form-control mt-3" name="cocks_photo">
                   </div>

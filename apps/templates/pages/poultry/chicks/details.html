@@ -85,7 +85,19 @@
                   <label>Hatching Code</label>
                   <input class="form-control" type="text" name="hatching" value="{{ chick.hatching.hatchingcode}}" disabled>
                 </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Customer</label>
+                  {% comment %} <input class="form-control" type="text" name="customer" value="{{ chick.customer.full_name}}" disabled> {% endcomment %}
+                  <select class="multisteps-form__input form-control" name="customer">
+                    <option value="">{{chick.customer.full_name}}</option>
+                    {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.full_name }}</option>
+                    {% endfor %}
+                </select>
+                </div>
               </div>
+              
+            </div>
               <div class="row">
                 <div class="col-12 mt-3">
                   <label>Description</label>

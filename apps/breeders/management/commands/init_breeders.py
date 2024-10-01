@@ -31,6 +31,8 @@ class Command(BaseCommand):
             )
             if created:
                 self.stdout.write(self.style.SUCCESS(f"Created breed: {breed.id}"))
+            else:
+                self.stdout.write(self.style.WARNING(f"Breed with id {data['id']} already exists"))
 
     def create_breeders(self):
         breeders_data = [
@@ -55,5 +57,7 @@ class Command(BaseCommand):
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(f"Created breeder: {breeder.batch}"))
+                else:
+                    self.stdout.write(self.style.WARNING(f"Breeder with batch {breeder.batch} already exists."))
             except Breed.DoesNotExist:
                 self.stdout.write(self.style.ERROR(f"Breed with id {data['breed_id']} does not exist"))

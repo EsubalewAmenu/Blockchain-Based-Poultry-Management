@@ -1,6 +1,7 @@
 {% extends 'dashboard.html' %}
 
 {% block main %}
+<style>
 .alert-container {
     margin-top: 10px;
     margin-bottom: 20px;
@@ -15,6 +16,7 @@
   display: inline-block;
   transform: scale(1.2); 
 }
+</style>
 <div class="d-sm-flex justify-content-between">
   <div>
     <a href="{% url 'create_user' %}" class="btn btn-icon btn-outline-white">
@@ -28,20 +30,7 @@
     <div class="card">
       <div class="table-responsive">
         <table class="table table-flush" id="datatable-search">
-            {% if messages %}
-              <div class="alert-container">
-                <ul class="list-unstyled">
-                  {% for message in messages %}
-                  <div class="alert alert-{{message.tags}} alert-dismissible fade show text-light" role="alert">
-                    <strong>{{message}}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endif %}
+            
           <thead class="thead-light">
               <tr>
                   <th scope="col">Username</th>

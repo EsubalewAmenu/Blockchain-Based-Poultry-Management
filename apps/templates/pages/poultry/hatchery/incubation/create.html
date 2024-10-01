@@ -31,11 +31,20 @@
                                         <select class="form-control" name="eggsetting" required>
                                             <option value="" disabled selected>Select an egg setting</option>
                                             {% for setting in egg_settings %}
-                                                <option value="{{ setting.pk }}">{{ setting.settingcode }}</option>
+                                                <option value="{{ setting.pk }}">{{ setting.settingcode }} | {{setting.created}}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                    <div class="col-12 col-sm-6">
+                                        <label class="form-label">Breeders</label>
+                                        <select class="form-control" name="breeders" required>
+                                            <option value="" disabled selected>Select breeders</option>
+                                            {% for breeder in breeders %}
+                                            <option value="{{ breeder.id }}">{{ breeder.batch }} | {{breeder.breed.breed}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% comment %} <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Customer</label>
                                         <select class="form-control" name="customer" required>
                                             <option value="" disabled selected>Select a customer</option>
@@ -43,18 +52,10 @@
                                                 <option value="{{ customer.pk }}">{{ customer.first_name }} {{ customer.last_name }}</option>
                                             {% endfor %}
                                         </select>
-                                    </div>
+                                    </div> {% endcomment %}
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-12 col-sm-6">
-                                        <label class="form-label">Breeders</label>
-                                        <select class="form-control" name="breeders" required>
-                                            <option value="" disabled selected>Select breeders</option>
-                                            {% for breeder in breeders %}
-                                                <option value="{{ breeder.pk }}">{{ breeder.batch }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
+                                    
                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Number of Eggs</label>
                                         <input class="form-control" type="number" placeholder="e.g., 100" name="eggs" required />

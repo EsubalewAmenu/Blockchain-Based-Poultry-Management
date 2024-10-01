@@ -7,26 +7,7 @@
       New Breeder
     </a>
   </div>
-  <div class="d-flex">
-    <div class="dropdown d-inline">
-      <a href="javascript:;" class="btn btn-outline-white dropdown-toggle " data-bs-toggle="dropdown" id="navbarDropdownMenuLink2">
-        Filters
-      </a>
-      <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3" aria-labelledby="navbarDropdownMenuLink2" data-popper-placement="left-start">
-        <li><a class="dropdown-item border-radius-md" href="javascript:;">Status: Paid</a></li>
-        <li><a class="dropdown-item border-radius-md" href="javascript:;">Status: Refunded</a></li>
-        <li><a class="dropdown-item border-radius-md" href="javascript:;">Status: Canceled</a></li>
-        <li>
-          <hr class="horizontal dark my-2">
-        </li>
-        <li><a class="dropdown-item border-radius-md text-danger" href="javascript:;">Remove Filter</a></li>
-      </ul>
-    </div>
-    <button class="btn btn-icon btn-outline-white ms-2 export" data-type="csv" type="button">
-      <span class="btn-inner--icon"><i class="ni ni-archive-2"></i></span>
-      <span class="btn-inner--text">Export CSV</span>
-    </button>
-  </div>
+  
 </div>
 <div class="row">
   <div class="col-12">
@@ -46,7 +27,7 @@
           </thead>
           <tbody>
               {% for breeder in breeders %}
-              <tr data-url="{% url 'breeders_detail' breeder.batch %}" class="clickable-row">
+              <tr data-url="{% url 'breeders_update' breeder.batch %}" class="clickable-row">
                   <td>
                       <div class="d-flex align-items-center">
                           <div class="form-check">
@@ -82,7 +63,7 @@
                   </td>
                   <td class="text-sm text-center">
                     <div class="d-flex justify-content-center align-items-center">
-                      <a href="{% url 'breeders_detail' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
+                      <a href="{% url 'breeders_update' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                         <i class="fas fa-eye"></i>
                       </a>
                       <a href="{% url 'breeders_update' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit breed">
@@ -177,10 +158,10 @@
 <script>
   var deleteModal = document.getElementById('deleteModal');
   deleteModal.addEventListener('show.bs.modal', function (event) {
-    var button = event.relatedTarget; // Button that triggered the modal
-    var url = button.getAttribute('data-url'); // Extract info from data-* attributes
+    var button = event.relatedTarget;
+    var url = button.getAttribute('data-url');
     var form = deleteModal.querySelector('#deleteForm');
-    form.action = url; // Update the form action to the delete URL
+    form.action = url;
   });
 </script>
 {%endblock%}

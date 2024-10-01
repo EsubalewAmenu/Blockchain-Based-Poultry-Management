@@ -23,12 +23,14 @@ class Command(BaseCommand):
 
         incubator_data = [
             {
+                'code':'INC-001',
                 'incubatortype': 'Single Stage',
                 'manufacturer': 'PoultryTech',
                 'model': 'PT-100',
                 'year': '2022',
             },
             {
+                'code':'INC-002',
                 'incubatortype': 'Multi Stage',
                 'manufacturer': 'EggMax',
                 'model': 'EM-500',
@@ -37,7 +39,7 @@ class Command(BaseCommand):
         ]
 
         for data in incubator_data:
-            incubator = Incubators(
+            incubator, created = Incubators.objects.get_or_create(
                 hatchery=hatchery,
                 item=item,
                 incubatortype=data['incubatortype'],
@@ -45,10 +47,10 @@ class Command(BaseCommand):
                 model=data['model'],
                 year=data['year'],
             )
-            
-            incubator.save()
+            if created:        
+                self.stdout.write(self.style.SUCCESS(f"Created incubator: {incubator.code}"))
+                item.quantity = 2
+                item.save()
+            else:
+                self.stdout.write(self.style.WARNING(f"Incubator with code {incubator.code} already exists."))
         
-
-            self.stdout.write(self.style.SUCCESS(f"Created incubator: {incubator.code}"))
-        item.quantity = 2
-        item.save()
