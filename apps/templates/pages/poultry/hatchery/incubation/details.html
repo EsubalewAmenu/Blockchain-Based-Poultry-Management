@@ -38,33 +38,25 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 col-sm-6 mt-3">
-                                <label>Customer</label>
-                                <select class="form-control" name="customer" required>
-                                    <option value="{{ incubation.customer.id }}">{{ incubation.customer.first_name }} {{ incubation.customer.last_name }}</option>
-                                    {% for customer in customers %}
-                                        {% if customer.id != incubation.customer.id %}
-                                            <option value="{{ customer.id }}">{{ customer.first_name }} {{ customer.last_name }}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                                </select>
-                            </div>
+                            
                             <div class="col-12 col-sm-6 mt-3">
                                 <label>Breeders</label>
                                 <select class="form-control" name="breeders" required>
                                     {% for breeder in breeders %}
                                         <option value="{{ breeder.id }}" {% if breeder.id == incubation.breeders.id %}selected{% endif %}>
-                                            {{ breeder.batch }}
+                                            {{ breeder.batch }} | {{breeder.breed.breed}}
                                         </option>
                                     {% endfor %}
                                 </select>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-12 col-sm-6 mt-3">
                                 <label>Number of Eggs</label>
                                 <input class="form-control" type="number" name="eggs" value="{{ incubation.eggs }}" required>
                             </div>
+                        </div>
+                        
+                        <div class="row">
+                            
                             <div class="col-12 col-sm-6 mt-3">
                                 <label>Created On</label>
                                 <input class="form-control" type="text" value="{{ incubation.created|date:'Y-m-d H:i' }}" readonly>

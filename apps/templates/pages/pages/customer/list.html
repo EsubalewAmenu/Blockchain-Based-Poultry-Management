@@ -1,6 +1,23 @@
 {% extends 'dashboard.html' %}
 
 {% block main %}
+<style>
+  .alert-container {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+.alert .close {
+  font-size: 1.5rem;
+  line-height: 1.5;   
+  padding: 0.5rem;  
+}
+
+.alert .close span {
+  display: inline-block;
+  transform: scale(1.2); 
+}
+
+</style>
 <div class="d-sm-flex justify-content-between">
   <div>
     <a href="{% url 'customer_create' %}" class="btn btn-icon btn-outline-white">
@@ -11,6 +28,7 @@
 <div class="row">
   <div class="col-12">
     <div class="card">
+      
       <div class="table-responsive">
         <table class="table table-flush" id="datatable-search">
           <thead class="thead-light">
@@ -153,5 +171,32 @@
       var form = deleteModal.querySelector('#deleteForm');
       form.action = url;
     });
+  </script>
+  <script>
+    // Automatically close the alerts after 5 seconds
+    setTimeout(function() {
+      var alertElements = document.querySelectorAll('.alert');
+      alertElements.forEach(function(alert) {
+        alert.classList.remove('show');  // Hide the alert
+      });
+    }, 5000);
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get all the close buttons within alerts
+      var closeButtons = document.querySelectorAll('.alert .close');
+    
+      // Add click event to each close button
+      closeButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+          // Find the parent alert (li) and remove it
+          var alert = this.closest('.alert');
+          alert.classList.remove('show'); // Optionally add fade-out animation
+          setTimeout(function() {
+            alert.remove(); // Remove the alert after fading out
+          }, 300);  // Adjust time for fade out duration
+        });
+      });
+    });
+    
   </script>
 {% endblock %}

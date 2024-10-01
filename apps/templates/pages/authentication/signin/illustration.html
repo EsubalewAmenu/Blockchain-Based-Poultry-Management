@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="{% static 'assets/img/apple-icon.png'%}">
   <link rel="icon" type="image/png" href="{% static 'assets/img/egg-logo.png'%}">
   <title>
-    Hatchtrack
+    PoultryTrack
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -81,9 +81,9 @@
                     <div class="mb-3">
                         <input type="email" class="form-control form-control-lg" placeholder="Email" aria-label="Email" name="email">
                     </div>
-                    <div class="mb-3">
-                        <input type="password" class="form-control form-control-lg" placeholder="Password" aria-label="Password" name="password">
-                    </div>
+                    <div class="mb-3 position-relative">
+                      <input type="password" class="form-control form-control-lg" placeholder="Password" aria-label="Password" name="password" id="passwordInput">
+                      <i class="fa fa-eye-slash position-absolute" id="togglePassword" style="cursor: pointer; right: 15px; top: 50%; transform: translateY(-50%);"></i>                  </div>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="rememberMe">
                         <label class="form-check-label" for="rememberMe">Remember me</label>
@@ -117,13 +117,15 @@
                 window.addEventListener('load', async () => {
                     const namiWallet = window.cardano?.nami;
             
-                    // Enable the Connect Wallet button only if Nami is available
                     if (namiWallet) {
                         document.getElementById('connectWalletButton').style.display = 'inline-block';
                     } else {
-                        console.log('Nami wallet is not installed');
-                        document.getElementById('connectWalletButton').style.display = 'none';
-                    }
+                      document.getElementById('connectWalletButton').style.display = 'block';
+                      document.getElementById('connectWalletButton').onclick = function() {
+                          console.log('Nami wallet is not installed, redirecting...');
+                          window.location.href = 'https://chromewebstore.google.com/detail/nami/lpfcbjknijpeeillifnkikgncikgfhdo?hl=en-US&utm_source=ext_sidebar';
+                      };
+                  }
             
                     async function connectWallet() {
                         try {
@@ -176,6 +178,22 @@
 <script src="{% static 'assets/js/plugins/dragula/dragula.min.js'%}"></script>
 <script src="{% static 'assets/js/plugins/jkanban/jkanban.js'%}"></script>
 <script>
+  document.getElementById('togglePassword').addEventListener('click', function () {
+    const passwordInput = document.getElementById('passwordInput');
+    const icon = this;
+
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    } else {
+        passwordInput.type = 'password';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    }
+});
+
+
   var win = navigator.platform.indexOf('Win') > -1;
   if (win && document.querySelector('#sidenav-scrollbar')) {
     var options = {

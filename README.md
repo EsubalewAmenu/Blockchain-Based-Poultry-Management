@@ -1,7 +1,6 @@
+# PoultryTrack
 
-# Hatchtrack
-
-Hatchtrack is a comprehensive poultry management system designed to streamline the operations of hatcheries, breeders, inventory, and human resources. The project also includes interactive analytics and dashboard functionalities to provide real-time insights and manage chicks and egg tracking processes.
+PoultryTrack is a comprehensive poultry management system designed to streamline the operations of hatcheries, breeders, inventory, and human resources. The project also includes interactive analytics and dashboard functionalities to provide real-time insights and manage chicks and egg tracking processes.
 
 ## Features
 
@@ -44,7 +43,7 @@ Hatchtrack is a comprehensive poultry management system designed to streamline t
 
 ## Docker Configuration
 
-Hatchtrack is fully containerized using Docker to simplify setup, configuration, and deployment. Docker ensures that the application can run consistently across multiple environments.
+PoultryTrack is fully containerized using Docker to simplify setup, configuration, and deployment. Docker ensures that the application can run consistently across multiple environments.
 
 ### Environment Variables
 
@@ -72,16 +71,16 @@ POSTGRES_PASSWORD=your_database_password  # PostgreSQL password
 
 ```env
 DB_NAME=your_database_name  # Name of your database
-DB_HOST=localhost  # Database host (e.g., localhost or IP address)
+DB_HOST=db
 DB_PASSWORD=your_database_password  # Database password
 DB_PORT=5432  # Default PostgreSQL port
 DB_USER=your_database_user  # Database username
-BASE_URL=http://localhost:11000/
+BASE_URL=http://localhost:11000
 ```
 
 ### Setup
 
-To get started with Hatchtrack, follow these instructions:
+To get started with PoultryTrack, follow these instructions:
 
 1. **Clone the repository:**
 

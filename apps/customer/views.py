@@ -1,11 +1,15 @@
 # views.py
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.gis.geos import Point
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import EggsForm
 from apps.chicks.models import Chicks
+from apps.accounts.validators import validate_email
 
+@login_required
 def customer_list(request):
     customers = Customer.objects.all()
     paginator = Paginator(customers, 10)
@@ -14,16 +18,18 @@ def customer_list(request):
     customers = paginator.get_page(page_number)
     return render(request, 'pages/pages/customer/list.html', {'customers': customers})
 
+@login_required
 def customer_detail(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
     return render(request, 'pages/pages/customer/details.html', {'customer': customer})
 
+@login_required
 def customer_create(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
-        phone = request.POST.get('phone')
+        phone = request.POST.get('phone').replace(' ', '')
         address = request.POST.get('address')
         latitude_str = request.POST.get('latitude', None)
         longitude_str = request.POST.get('longitude', None)
@@ -31,7 +37,10 @@ def customer_create(request):
         # Initialize latitude and longitude
         latitude = None
         longitude = None
-
+        if email:
+            if not validate_email(email):
+                messages.error(request, "This email address does not exist.", extra_tags="danger")
+                return redirect('customer_create')
         # Validate and convert latitude
         if latitude_str:
             try:
@@ -76,11 +85,12 @@ def customer_create(request):
             photo=photo
         )
         customer.save()
-
+        messages.success(request, "Customer created successfully", extra_tags="success")
         return redirect('customer_list') 
     else:
         return render(request, 'pages/pages/customer/create.html')
 
+@login_required
 def customer_update(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
     if request.method == 'POST':
@@ -106,7 +116,8 @@ def customer_update(request, full_name):
         return redirect('customer_list')
     else:
         return render(request, 'pages/pages/customer/details.html', {'customer': customer})
-    
+ 
+@login_required    
 def customer_update_notifications(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
 
@@ -121,6 +132,7 @@ def customer_update_notifications(request, full_name):
 
     return render(request, 'customer_detail.html', {'customer': customer})
 
+@login_required
 def customer_delete(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
     if request.method == 'POST':
@@ -133,6 +145,7 @@ def customer_delete(request, full_name):
 
 # List all eggs
 # List all eggs
+@login_required
 def eggs_list(request):
     eggs = Eggs.objects.all()
     items = Item.objects.all()
@@ -143,6 +156,7 @@ def eggs_list(request):
     return render(request, 'pages/pages/customer/eggs/list.html', {'eggs': eggs, 'items':items})
 
 # Detail view for a specific egg
+@login_required
 def eggs_detail(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
@@ -182,6 +196,7 @@ def eggs_detail(request, batch_number):
     })
 
 # Create a new egg
+@login_required
 def eggs_create(request):
     customers = Customer.objects.all()
     breeds = Breed.objects.all()
@@ -227,6 +242,7 @@ def eggs_create(request):
     return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items})
 
 # Update an existing egg
+@login_required
 def eggs_update(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
     customers = Customer.objects.all()
@@ -265,6 +281,7 @@ def eggs_update(request, batch_number):
     })
 
 # Delete an egg
+@login_required
 def eggs_delete(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
     if request.method == 'POST':
@@ -274,7 +291,7 @@ def eggs_delete(request, batch_number):
     return render(request, 'pages/pages/customer/eggs/delete.html', {'egg': egg})
 
 # Customer Request
-
+@login_required
 def customer_request_list(request):
     customer_requests = CustomerRequest.objects.all()
     paginator = Paginator(customer_requests, 10)  # Paginate the requests

@@ -16,7 +16,7 @@ from apps.dashboard.models import Tracker
 from .models import *
 
 # Create your views here.
-
+@login_required
 def hatchery_list(request):
     hatcheries = Hatchery.objects.all()
     paginator = Paginator(hatcheries, 10)  # Show 10 hatcheries per page
@@ -25,7 +25,7 @@ def hatchery_list(request):
     hatcheries = paginator.get_page(page_number)
     return render(request, 'pages/poultry/hatchery/list.html', {'hatcheries': hatcheries})
 
-
+@login_required
 def hatchery_detail(request, name):
     hatchery = Hatchery.objects.get(name=name)
     if request.method == 'POST':
@@ -69,7 +69,7 @@ def hatchery_detail(request, name):
         return redirect('hatchery_list')
     return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery})
 
-
+@login_required
 def hatchery_update(request, name):
     hatchery = Hatchery.objects.get(name=name)
     if request.method == 'POST':
@@ -113,6 +113,7 @@ def hatchery_update(request, name):
         return redirect('hatchery_list')
     return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery})
 
+@login_required
 def hatcher_create(request):
     if request.method == 'POST':
         name = request.POST['name']
@@ -163,7 +164,8 @@ def hatchery_delete(request, name):
     
     messages.error(request, 'Invalid request method.')
     return redirect('hatchery_list')
-    
+  
+@login_required  
 def incubator_list(request):
     incubators = Incubators.objects.all().select_related('hatchery') 
     paginator = Paginator(incubators, 10)
@@ -172,6 +174,7 @@ def incubator_list(request):
     incubators = paginator.get_page(page_number)
     return render(request, 'pages/poultry/incubators/list.html', {'incubators': incubators})
     
+@login_required
 def incubator_create(request):
     hatcheries = Hatchery.objects.all()
     items =Item.objects.filter(item_type__type_name='Incubator')
@@ -200,6 +203,7 @@ def incubator_create(request):
     
     return render(request, 'pages/poultry/incubators/create.html', {'hatcheries': hatcheries, 'items':items})
 
+@login_required
 def incubator_detail(request, code):
     incubator = get_object_or_404(Incubators, code=code)
     if request.method == 'POST':
@@ -219,6 +223,7 @@ def incubator_detail(request, code):
     
     return render(request, 'pages/poultry/incubators/details.html', {'incubator': incubator})
 
+@login_required
 def incubator_update(request, code):
     incubator = get_object_or_404(Incubators, code=code)
     
@@ -240,6 +245,7 @@ def incubator_update(request, code):
     # Render the template with the incubator instance
     return render(request, 'pages/poultry/incubators/details.html', {'incubator': incubator})
 
+@login_required
 def incubator_delete(request, code):
     incubator = get_object_or_404(Incubators, code=code)
     
@@ -251,6 +257,7 @@ def incubator_delete(request, code):
     
     return redirect('incubator_list')
 
+@login_required
 def incubator_capacity_list(request):
     capacity_list = IncubatorCapacity.objects.all()
     paginator = Paginator(capacity_list, 10)  # Show 10 breeders per page
@@ -259,6 +266,7 @@ def incubator_capacity_list(request):
     capacity_list = paginator.get_page(page_number)
     return render(request, 'pages/poultry/incubators/incubator_capacity/list.html', {'capacity_list': capacity_list})
 
+@login_required
 @csrf_exempt
 def incubator_capacity_create(request):
     incubators = Incubators.objects.all()
@@ -286,6 +294,7 @@ def incubator_capacity_create(request):
     
     return render(request, 'pages/poultry/incubators/incubator_capacity/create.html', {'incubators': incubators})
 
+@login_required
 def incubator_capacity_details(request, id):
     capacity = get_object_or_404(IncubatorCapacity, id=id)
     incubators = Incubators.objects.all()
@@ -310,6 +319,7 @@ def incubator_capacity_details(request, id):
         'incubators': incubators
     })
     
+@login_required
 def incubator_capacity_update(request, id):
     capacity = get_object_or_404(IncubatorCapacity, id=id)
     incubators = Incubators.objects.all()
@@ -333,6 +343,8 @@ def incubator_capacity_update(request, id):
         'capacity': capacity,
         'incubators': incubators
     })
+    
+@login_required
 def incubator_capacity_delete(request, id):
     incubator_capacity = get_object_or_404(IncubatorCapacity, id=id)
     
@@ -344,6 +356,7 @@ def incubator_capacity_delete(request, id):
     return redirect('incubator_capacity_list')
 
 #Egg Settings
+@login_required
 def egg_setting_list(request):
     egg_settings = EggSetting.objects.all()
     egg= Eggs.objects.all()
@@ -353,6 +366,7 @@ def egg_setting_list(request):
     egg_settings = paginator.get_page(page_number)
     return render(request, 'pages/poultry/hatchery/egg_setting/list.html', {'egg_settings': egg_settings, 'egg':egg})
 
+@login_required
 def egg_setting_detail(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
 
@@ -375,6 +389,7 @@ def egg_setting_detail(request, settingcode):
         'breeders': breeders
     })
 
+@login_required
 def egg_setting_create(request):
     
     if request.method == 'POST':
@@ -387,9 +402,9 @@ def egg_setting_create(request):
         
         item_request = ItemRequest(item=item_request_item, quantity=item_request_quantity, requested_by=request.user)
         item_request.save()
-        egg = Eggs.objects.get(item=item_request_item)
+        egg = Eggs.objects.filter(item=item_request_item).first()
         if int(item_request_quantity)>egg.received:
-            messages.error(request, 'Not enough eggs available in the selected egg type.')
+            messages.error(request, 'Not enough eggs available in the selected egg type.', extra_tags='danger')
             return redirect('egg_setting_create')
 
         incubator = get_object_or_404(Incubators, pk=incubator_id)
@@ -405,6 +420,7 @@ def egg_setting_create(request):
             eggs = item_request_quantity,
         )
         egg_setting.save()
+        messages.success(request, 'Egg Setting set successfully.', extra_tags='success')
         return redirect('egg_setting_list')
 
     incubators = Incubators.objects.all()
@@ -425,6 +441,7 @@ def egg_setting_create(request):
         'items': items,
     })
 
+@login_required
 def egg_setting_update(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
 
@@ -447,6 +464,7 @@ def egg_setting_update(request, settingcode):
         'breeders': breeders
     })
 
+@login_required
 def egg_setting_delete(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
     if request.method == 'POST':
@@ -777,10 +795,12 @@ def tracker_list_view(request):
 def tracker_details_view(request, tracker_code):
     tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
     tracker_type = 'egg' if tracker.egg else 'chick'
+    egg_setting_id = request.GET.get('egg_setting_id')  # Capture the egg setting ID from the query param
 
     if tracker_type == 'egg':
         egg = tracker.egg
-        egg_setting = EggSetting.objects.filter(egg=egg).first()
+        egg_settings = EggSetting.objects.filter(egg=egg)  # Get all egg settings for this egg
+        egg_setting = egg_settings.filter(id=egg_setting_id).first() if egg_setting_id else egg_settings.first()
         incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
@@ -791,6 +811,7 @@ def tracker_details_view(request, tracker_code):
             'egg': egg,
             'tracker': tracker,
             'egg_setting': egg_setting,
+            'egg_settings': egg_settings,  # Pass all egg settings for dropdown in the template
             'incubation': incubation,
             'candling': candling,
             'hatching': hatching,
@@ -800,7 +821,8 @@ def tracker_details_view(request, tracker_code):
     elif tracker_type == 'chick':
         chick = tracker.chick
         egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
-        egg_setting = EggSetting.objects.filter(egg=egg).first()
+        egg_settings = EggSetting.objects.filter(egg=egg)
+        egg_setting = egg_settings.filter(id=egg_setting_id).first() if egg_setting_id else egg_settings.first()
         incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
@@ -812,11 +834,13 @@ def tracker_details_view(request, tracker_code):
             'tracker': tracker,
             'egg': egg,
             'egg_setting': egg_setting,
+            'egg_settings': egg_settings,
             'incubation': incubation,
             'candling': candling,
             'hatching': hatching,
             'chicks': chicks,
         })
+
         
 def tracker_public_view(request, tracker_code):
     tracker = get_object_or_404(Tracker, tracker_code=tracker_code)

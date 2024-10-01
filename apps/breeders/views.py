@@ -37,8 +37,8 @@ def breed_detail(request, code):
         if request.FILES.get('back_photo'):
             breed.back_photo = request.FILES.get('back_photo')
         breed.save()
-        messages.success(request, 'Breed updated successfully.')
-        return redirect('breed_update')
+        messages.success(request, 'Breed updated successfully.', extra_tags='success')
+        return redirect('breed_detail', code=code)
     return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
 
 @login_required
@@ -69,7 +69,7 @@ def breed_create(request):
             back_photo=back_photo
         )
         breed.save()
-        messages.success(request, "Breed has been created successfully")
+        messages.success(request, "Breed has been created successfully", extra_tags='success')
         return redirect('breed_list')
     
     return render(request, 'pages/poultry/breeds/create.html')
@@ -155,14 +155,37 @@ def breeders_detail(request, batch):
 @login_required
 def breeders_create(request):
     breeds = Breed.objects.all()
+
     if request.method == 'POST':
-        form = BreedersForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('breeders_list')
-    else:
-        form = BreedersForm()
-    return render(request, 'pages/poultry/breeders/create.html', {'form': form, 'breeds':breeds})
+        batch = request.POST.get('batch')
+        breed_id = request.POST.get('breed')  # Use the ID of the breed from the form
+        breed = Breed.objects.get(id=breed_id) if breed_id else None  # Retrieve the Breed object
+        hens = request.POST.get('hens')
+        cocks = request.POST.get('cocks')
+        mortality = request.POST.get('mortality')
+        butchered = request.POST.get('butchered')
+        sold = request.POST.get('sold')
+        hens_photo = request.FILES.get('hens_photo')
+        cocks_photo = request.FILES.get('cocks_photo')
+
+        # Create a new Breeders instance
+        breeder = Breeders.objects.create(
+            batch=batch,
+            breed=breed,
+            hens=hens,
+            cocks=cocks,
+            mortality=mortality,
+            butchered=butchered,
+            sold=sold,
+            hens_photo=hens_photo,
+            cocks_photo=cocks_photo
+        )
+        
+        breeder.save()  # Save the breeder instance
+        return redirect('breeders_list')
+
+    return render(request, 'pages/poultry/breeders/create.html', {'breeds': breeds})
+
 
 # Update View
 @login_required

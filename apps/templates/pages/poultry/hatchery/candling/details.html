@@ -55,7 +55,7 @@
                                     <option value="{{ candling.breeders.id }}">{{ candling.breeders.batch }}</option>
                                     {% for breeder in breeders %}
                                         {% if breeder.id != candling.breeders.id %}
-                                            <option value="{{ breeder.id }}">{{ breeder.batch }}</option>
+                                            <option value="{{ breeder.id }}">{{ breeder.batch }} | {{breeder.breed.breed}}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
