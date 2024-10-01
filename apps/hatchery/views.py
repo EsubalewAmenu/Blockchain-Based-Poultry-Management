@@ -32,7 +32,7 @@ def hatchery_detail(request, name):
         # Update hatchery instance with the new data from the request
         hatchery.name = request.POST.get('name', hatchery.name)
         hatchery.email = request.POST.get('email', hatchery.email)
-        hatchery.phone = request.POST.get('phone', hatchery.phone)
+        hatchery.phone = request.POST.get('phone', hatchery.phone).replace(' ', '')
         hatchery.address = request.POST.get('address', hatchery.address)
         latitude_str = request.POST.get('latitude')
         longitude_str = request.POST.get('longitude')
@@ -66,7 +66,7 @@ def hatchery_detail(request, name):
 
         # Save the updated hatchery instance
         hatchery.save()
-        return redirect('hatchery_list')
+        return redirect('hatchery_update', name=name)
     return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery})
 
 @login_required
@@ -76,7 +76,7 @@ def hatchery_update(request, name):
         # Update hatchery instance with the new data from the request
         hatchery.name = request.POST.get('name', hatchery.name)
         hatchery.email = request.POST.get('email', hatchery.email)
-        hatchery.phone = request.POST.get('phone', hatchery.phone)
+        hatchery.phone = request.POST.get('phone', hatchery.phone).replace(' ', '')
         hatchery.address = request.POST.get('address', hatchery.address)
         latitude_str = request.POST.get('latitude')
         longitude_str = request.POST.get('longitude')
@@ -397,11 +397,8 @@ def egg_setting_create(request):
         breeders_id = request.POST.get('breeders')
         item_request_item_id = request.POST.get('item_request_item')
         item_request_quantity = request.POST.get('item_request_quantity')
-        
         item_request_item = get_object_or_404(Item, id=item_request_item_id)
         
-        item_request = ItemRequest(item=item_request_item, quantity=item_request_quantity, requested_by=request.user)
-        item_request.save()
         egg = Eggs.objects.filter(item=item_request_item).first()
         if int(item_request_quantity)>egg.received:
             messages.error(request, 'Not enough eggs available in the selected egg type.', extra_tags='danger')
@@ -410,7 +407,8 @@ def egg_setting_create(request):
         incubator = get_object_or_404(Incubators, pk=incubator_id)
         breeders = get_object_or_404(Breeders, pk=breeders_id)
         
-        
+        item_request = ItemRequest(item=item_request_item, quantity=item_request_quantity, requested_by=request.user)
+        item_request.save()
 
         egg_setting = EggSetting(
             incubator=incubator,
@@ -446,12 +444,21 @@ def egg_setting_update(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
 
     if request.method == 'POST':
+        if egg_setting.approved:
+            messages.error(request, "Egg setting is approved can't be updated.", extra_tags="danger")
+            return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
+        
         egg_setting.settingcode = request.POST.get('settingcode', egg_setting.settingcode)
         egg_setting.incubator = get_object_or_404(Incubators, id=request.POST.get('incubator'))
         egg_setting.customer = get_object_or_404(Customer, id=request.POST.get('customer'))
         egg_setting.breeders = get_object_or_404(Breeders, id=request.POST.get('breeders'))
         egg_setting.eggs = request.POST.get('eggs', egg_setting.eggs)
+        
+        if egg_setting.eggs > egg_setting.item_request.quantity:
+            egg_setting.item_request.quantity = egg_setting.eggs
+            egg_setting.item_request.save()
         egg_setting.save()
+        messages.success(request, "Egg setting updated successfully", extra_tags="success")
         return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
 
     incubators = Incubators.objects.all()

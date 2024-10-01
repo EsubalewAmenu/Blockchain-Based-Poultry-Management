@@ -41,30 +41,6 @@ def customer_create(request):
             if not validate_email(email):
                 messages.error(request, "This email address does not exist.", extra_tags="danger")
                 return redirect('customer_create')
-        # Validate and convert latitude
-        if latitude_str:
-            try:
-                latitude = float(latitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set latitude to None
-                latitude = None
-
-        # Validate and convert longitude
-        if longitude_str:
-            try:
-                longitude = float(longitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set longitude to None
-                longitude = None
-
-        # Check if both latitude and longitude are valid before creating the Point
-        if latitude is not None and longitude is not None:
-            location = Point(longitude, latitude, srid=4326)  # Correct SRID to 4326
-        else:
-            # Handle the case where location data is incomplete
-            location = None
         notification_sms = request.POST.get('notification_sms') == 'on'
         delivery = request.POST.get('delivery') == 'on'
         followup = request.POST.get('followup') == 'on'
@@ -98,7 +74,7 @@ def customer_update(request, full_name):
         customer.first_name = request.POST.get('first_name')
         customer.last_name = request.POST.get('last_name')
         customer.email = request.POST.get('email')
-        customer.phone = request.POST.get('phone')
+        customer.phone = request.POST.get('phone').replace(' ', '')
         customer.address = request.POST.get('address')
         customer.latitude = request.POST.get('latitude')
         customer.longitude = request.POST.get('longitude')
