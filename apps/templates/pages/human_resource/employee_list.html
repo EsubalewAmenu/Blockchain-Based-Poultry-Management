@@ -31,20 +31,6 @@
             <!-- Filter Section -->
             <div class="card-body pb-0">
                 <form method="get" class="mb-4">
-                    {% if messages %}
-                    <div class="alert-container">
-                        <ul class="list-unstyled">
-                        {% for message in messages %}
-                        <div class="alert alert-{{message.tags}} alert-dismissible fade show text-light" role="alert">
-                            <strong>{{message}}</strong>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
                     <div class="row">
                         <div class="col-md-4">
                             <input type="text" name="search" class="form-control" placeholder="Search employees..." value="{{ search_query }}">
