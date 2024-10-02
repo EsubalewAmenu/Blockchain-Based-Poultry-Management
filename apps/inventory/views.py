@@ -259,7 +259,8 @@ def item_request_list(request):
 def item_request_approve(request, code):
     item_request = get_object_or_404(ItemRequest, code=code)
     item_request.approve()
-    egg_setting = EggSetting.objects.get(item_request=item_request)
+    egg_setting = EggSetting.objects.filter(item_request=item_request).first()
+        
     if egg_setting:
         egg_setting.is_approved = True
         egg_setting.save()
