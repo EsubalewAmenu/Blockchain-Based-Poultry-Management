@@ -254,11 +254,31 @@ def item_request_list(request):
     }
     return render(request, 'pages/inventory/item/item_request/list.html', context)
 
+@login_required
+def item_request_delete(request, code):
+    """
+    Delete an Item record.
+    """
+    item_request = get_object_or_404(ItemRequest, code=code)
+    item = get_object_or_404(Item, code=item_request.item.code)
 
+    if request.method == 'POST':
+        item_request.delete()
+        item.quantity += item_request.quantity
+        item.save()
+        return redirect('item_request_list')
+
+    context = {
+        'item': item,
+        'item_request': item_request,
+    }
+    return render(request, 'pages/inventory/item/delete.html', context)
 @login_required
 def item_request_approve(request, code):
     item_request = get_object_or_404(ItemRequest, code=code)
     item_request.approve()
+    item_request.item.quantity -= item_request.quantity
+    item_request.item.save()
     egg_setting = EggSetting.objects.filter(item_request=item_request).first()
         
     if egg_setting:

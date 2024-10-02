@@ -11,6 +11,7 @@ from .views import (
     item_request,
     item_request_list,
     item_request_approve,
+    item_request_delete
 )
 
 urlpatterns = [
@@ -28,6 +29,7 @@ urlpatterns = [
     
     
     path('item/request/list/', item_request_list, name='item_request_list'),
+    path('item/request/<str:code>/delete/', item_request_delete, name='item_request_delete'),
     path('item/request/', item_request, name='item_request'),
     path('item/request/<str:code>/approve/', item_request_approve, name='item_request_approve'),
 ]
