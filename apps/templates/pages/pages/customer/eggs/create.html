@@ -32,7 +32,10 @@
                       <div class="col-12 col-sm-6">
                           <label>Item</label>
                           <select class="multisteps-form__input form-control" name="item" required>
-                              <option value="">Select an Item</option>
+                              {% comment %} <option value="">Select an Item</option> {% endcomment %}
+                              {% if item_data %}
+                                  <option value="{{ item_data.id }}" selected>{{ item_data.code }} - {{ item_data.item_type }} | {{ item_data.created_at }}</option>
+                              {% endif %}
                               {% for item in items %}
                                   <option value="{{ item.pk }}">{{ item.code }} - {{ item.item_type.type_name }} | {{item.created_at}}</option>
                               {% endfor %}

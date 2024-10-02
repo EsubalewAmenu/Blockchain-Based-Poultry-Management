@@ -192,14 +192,21 @@
         })
         .then(response => {
             if (response.ok) {
-                location.reload();
+                return response.json();
             } else {
-                alert('Error creating item. Please try again.');
+                throw new Error('Error creating item. Please try again.');
+            }
+        })
+        .then(data => {
+            if (data.redirect_url) {
+                window.location.href = data.redirect_url;
             }
         })
         .catch(error => {
+            alert(error.message);
             console.error('Error:', error);
         });
     });
+    
 </script>
 {% endblock %}

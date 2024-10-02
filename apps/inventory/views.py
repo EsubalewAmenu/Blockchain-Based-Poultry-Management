@@ -1,9 +1,11 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.apps import apps
 from django.contrib import messages
+from django.urls import reverse
 from apps.customer.models import Eggs
 from apps.chicks.models import Chicks
 from apps.hatchery.models import Incubators
@@ -142,15 +144,37 @@ def item_create(request):
     if request.method == 'POST':
         item_type_id = request.POST.get('item_type')
         item_type = get_object_or_404(ItemType, id=item_type_id)
-        quantity=request.POST.get('amount', None)
+        quantity = request.POST.get('amount', None)
         if quantity == '':
-            quantity=None
+            quantity = None
+            
         # Create and save the Item
         item = Item(
             item_type=item_type,
             quantity=quantity,
         )
         item.save()
+        
+        redirect_url = ''
+        if item.item_type.type_name == 'Egg':
+            redirect_url = reverse('eggs_create')
+        elif item.item_type.type_name in ['Chicks', 'Chick']:
+            redirect_url = reverse('chicks_create')
+        elif item.item_type.type_name == 'Incubator':
+            redirect_url = reverse('incubator_create')
+        else:
+            redirect_url = reverse('item_list')
+            
+        request.session['item_data'] = {
+                'id': item.id,
+                'code': item.code,
+                'item_type': item.item_type.type_name,
+                'quantity': item.quantity,
+                'created_at': item.created_at.isoformat(),
+            }
+
+        return JsonResponse({'redirect_url': redirect_url})
+
     context = {
         'item_types': ItemType.objects.all(),
     }

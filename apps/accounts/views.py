@@ -152,7 +152,7 @@ def create_user(request):
             return redirect('users_list')
         except Exception as e:
             logger.error(f"Failed to send email: {e}")
-            messages.error(request, 'User created but failed to send email. Please contact support.', extra_tags="error")
+            messages.error(request, 'User created but failed to send email. Please contact support.', extra_tags="danger")
             return render(request, 'pages/pages/users/new-user.html')  # Return to the same form with error message
 
     return render(request, 'pages/pages/users/new-user.html')
@@ -170,7 +170,7 @@ def update_user(request):
         user.settings.address = request.POST.get('address')
         user.save()
         user.settings.save()
-        messages.success(request, 'User profile updated successfully.')
+        messages.success(request, 'User profile updated successfully.', extra_tags='danger')
         return redirect('usersettings')
     return render(request, 'pages/pages/account/settings.html', {'user': user})
 
@@ -186,11 +186,11 @@ def change_password(request):
         confirm_password = request.POST.get('confirm_password')
 
         if not request.user.check_password(current_password):
-            messages.error(request, 'Current password is incorrect.')
+            messages.error(request, 'Current password is incorrect.', extra_tags='danger')
             return redirect('update_user')
 
         if new_password != confirm_password:
-            messages.error(request, 'New passwords do not match.')
+            messages.error(request, 'New passwords do not match.', extra_tags='danger')
             return redirect('update_user')
 
         user = request.user
@@ -199,7 +199,7 @@ def change_password(request):
 
         # Update session to keep the user logged in
         update_session_auth_hash(request, user)
-        messages.success(request, 'Your password has been updated successfully.')
+        messages.success(request, 'Your password has been updated successfully.', extra_tags='success')
         return redirect('update_user')
 
     return redirect('update_user')
@@ -218,9 +218,9 @@ def update_wallet_address(request):
             wallet_address.address = address
             wallet_address.provider = provider
             wallet_address.save()
-            messages.success(request, 'Wallet address updated successfully.')
+            messages.success(request, 'Wallet address updated successfully.', extra_tags='success')
         else:
-            messages.error(request, 'Please provide both a wallet address and provider.')
+            messages.error(request, 'Please provide both a wallet address and provider.', extra_tags='danger')
 
         return redirect('usersettings')
 
@@ -322,17 +322,15 @@ def set_password(request):
                 if token_generator.check_token(user, token):
                     return render(request, 'pages/authentication/set/set_password.html', {'uidb64': uidb64, 'token': token})
             except (ValueError, OverflowError, User.DoesNotExist):
-                messages.error(request, 'Invalid token or user.')
+                messages.error(request, 'Invalid token or user.', extra_tags='danger')
         return redirect('login')  # Redirect if no valid uidb64 and token
 
     new_password = request.POST.get('password')
     confirm_password = request.POST.get('confirm_password')
     
-    print(new_password)
-    print(confirm_password)
 
     if not uidb64 or not token:
-        messages.error(request, 'Invalid request.')
+        messages.error(request, 'Invalid request.', extra_tags='danger')
         return redirect('login')
 
     token_generator = PasswordResetTokenGenerator()
@@ -340,20 +338,20 @@ def set_password(request):
         uid = urlsafe_base64_decode(uidb64).decode('utf-8')
         user = User.objects.get(id=uid)
     except (ValueError, OverflowError, User.DoesNotExist):
-        messages.error(request, 'Invalid user.')
+        messages.error(request, 'Invalid user.', extra_tags='danger')
         return redirect('login')
 
     if user and token_generator.check_token(user, token):
         if not new_password or not confirm_password:
-            messages.error(request, 'Both password fields are required.')
+            messages.error(request, 'Both password fields are required.', extra_tags='danger')
             return render(request, 'pages/authentication/set/set_password.html', {'uidb64': uidb64, 'token': token})
         if new_password != confirm_password:
-            messages.error(request, 'Passwords do not match.')
+            messages.error(request, 'Passwords do not match.', extra_tags='danger')
             return render(request, 'pages/authentication/set/set_password.html', {'uidb64': uidb64, 'token': token})
 
         user.set_password(new_password)
         user.save()
-        messages.success(request, 'Password changed successfully. You can now log in.')
+        messages.success(request, 'Password changed successfully. You can now log in.', extra_tags='success')
         return redirect('login')
 
     messages.error(request, 'Invalid token.')
@@ -378,7 +376,8 @@ def reset_password(request):
                 [email],
                 fail_silently=False,
             )
+            messages.success(request, 'An email has been sent to your registered email address. Please follow the instructions in the email to reset your password.', extra_tags='success')
             return redirect('check_email')
         except User.DoesNotExist:
-           messages.error(request, 'No user found with this email address.') 
+           messages.error(request, 'No user found with this email address.', extra_tags='danger') 
     return render(request, 'pages/authentication/reset/illustration.html')

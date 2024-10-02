@@ -55,6 +55,9 @@ def chicks_create(request):
     items = Item.objects.filter(item_type__type_name="Chicks")
     customers = Customer.objects.all()
     hatchings = Hatching.objects.all()
+    item_data = None
+    if 'item_data' in request.session:
+        item_data = request.session['item_data']
     if request.method == 'POST':
         item_id = request.POST.get('item')
         source = request.POST.get('source')
@@ -71,7 +74,9 @@ def chicks_create(request):
         hatching = None
         if hatching_code:
             hatching = get_object_or_404(Hatching, hatchingcode=hatching_code)
-        
+        item_data = None    
+        if 'item_data' in request.session:
+            item_data = request.session['item_data']
         item = Item.objects.filter(pk=item_id).first()
         item.quantity=int(number)
         item.save()
@@ -95,7 +100,7 @@ def chicks_create(request):
         
         return redirect('chicks_list') 
 
-    return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items, 'customers':customers, 'hatchings': hatchings})
+    return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items, 'item_data':item_data, 'customers':customers, 'hatchings': hatchings})
 
 @login_required
 def chicks_update(request, batchnumber):
