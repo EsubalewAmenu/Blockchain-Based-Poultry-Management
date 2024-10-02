@@ -188,7 +188,10 @@ def eggs_create(request):
     breeds = Breed.objects.all()
     items = Item.objects.filter(item_type__type_name='Egg')
     chicks = Chicks.objects.all()  # Get all chicks for selection
-
+    item_data = None
+    if 'item_data' in request.session:
+        item_data = request.session['item_data']
+    
     if request.method == 'POST':
         item_id = request.POST.get('item')
         customer_id = request.POST.get('customer')
@@ -212,7 +215,10 @@ def eggs_create(request):
         if chicks_batch:
             chicks = get_object_or_404(Chicks, batchnumber=chicks_batch)
             batch = chicks.batchnumber
-        
+            
+           
+        if 'item_data' in request.session:
+            item_data = request.session['item_data']
         
         # Create and save the egg
         egg = Eggs(
@@ -231,7 +237,7 @@ def eggs_create(request):
         messages.success(request, "Egg Created Successfully", extra_tags="success")
         return redirect('eggs_list')
 
-    return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items})
+    return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items, 'item_data':item_data})
 
 # Update an existing egg
 @login_required
