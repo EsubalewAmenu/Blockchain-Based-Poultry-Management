@@ -266,6 +266,7 @@ def item_request_delete(request, code):
         item_request.delete()
         item.quantity += item_request.quantity
         item.save()
+        messages.success(request, 'Item request deleted successfully', extra_tags='success')
         return redirect('item_request_list')
 
     context = {
@@ -285,6 +286,6 @@ def item_request_approve(request, code):
         egg_setting.is_approved = True
         egg_setting.save()
     
-
+    messages.success(request, 'Item request approved successfully', extra_tags='success')
     return redirect('item_request_list')
 
