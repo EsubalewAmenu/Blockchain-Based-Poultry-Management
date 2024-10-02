@@ -34,7 +34,10 @@ class Command(BaseCommand):
         ]
 
         for data in chicks_data:
-            chick, created = Chicks.objects.get_or_create(
+            if Chicks.objects.filter(batchnumber=data['batchnumber']).exists():
+                self.stdout.write(self.style.WARNING(f"Chick batch with batch number {data['batchnumber']} already exists."))
+                continue
+            chick= Chicks(
                 batchnumber=data['batchnumber'],
                 source='customer',
                 customer=customer,
@@ -44,10 +47,7 @@ class Command(BaseCommand):
                 description=data['description'],
                 age=data['age'],
             )
-            if created:
-                item.quantity = data['number']
-                item.save()
-                chick.save()
-                self.stdout.write(self.style.SUCCESS(f"Created chick batch: {chick.batchnumber}"))
-            else:
-                self.stdout.write(self.style.WARNING(f"Chick batch with batch number {chick.batchnumber} already exists."))
+            item.quantity = data['number']
+            item.save()
+            chick.save()
+            self.stdout.write(self.style.SUCCESS(f"Created chick batch: {chick.batchnumber}"))
