@@ -26,7 +26,8 @@ urlpatterns = [
     path('item/<str:code>/update/', item_detail, name='item_update'),
     path('item/<str:code>/delete/', item_delete, name='item_delete'),
     
-    path('item/request/', item_request, name='item_request'),
+    
     path('item/request/list/', item_request_list, name='item_request_list'),
+    path('item/request/', item_request, name='item_request'),
     path('item/request/<str:code>/approve/', item_request_approve, name='item_request_approve'),
 ]
