@@ -70,6 +70,8 @@
       {% include 'navbar.html' %}
       <div class="container-fluid py-4">
         <div class="container">
+          <div class="row">
+            <div class="col-8 mx-auto">
         {% if messages %}
               <div class="alert-container">
                 <ul class="list-unstyled">
@@ -84,6 +86,20 @@
                 </ul>
               </div>
             {% endif %}
+          </div>
+        </div>
+          </div>
+
+          <div class="container">
+            <div class="row">
+              <div class="col-8 mx-auto">
+            <div class="alert alert-danger overall-error-message" style="color: white; display: none; opacity: 0.8; border: none;">
+              <button type="button" class="close" aria-label="Close" style="float: right; background: none; border: none; color: white; cursor: pointer;">
+                  &times;
+              </button>
+            </div> 
+          </div>  
+        </div>   
           </div>
         {% block main %}
 
@@ -156,6 +172,98 @@
       });
     });
   });
+
+
+  document.querySelector('.js-btn-next').addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent default action immediately
+
+    var form = document.querySelector('.multisteps-form__form');
+    var fields = form.querySelectorAll('input, select, textarea'); // Get all form inputs, selects, and textareas
+    var isValid = true;
+
+    // Clear previous error styles
+    clearErrors();
+
+    // Clear overall error message
+    var overallErrorMessage = document.querySelector('.overall-error-message');
+    overallErrorMessage.style.display = 'none';
+    overallErrorMessage.textContent = '';
+
+    // Loop through all fields and check for 'required' attribute
+    fields.forEach(function (field) {
+      if (field.hasAttribute('required') && !field.value.trim()) { // Check for empty values
+        showError(field, "* This field is required.");
+        isValid = false;
+      }
+    });
+
+    // Only move to the next step if validation is successful
+    if (isValid) {
+      moveToNextStep(); // Move to the next step only if all validations pass
+    } else {
+      overallErrorMessage.textContent = "Please fill in all required fields."; // Set overall error message
+      overallErrorMessage.style.display = 'block'; // Display overall error message
+    }
+  });
+
+  // Function to show an error message next to the field
+  function showError(field, message) {
+    field.classList.add('field-error');
+    var popup = field.nextElementSibling;
+
+    if (!popup || !popup.classList.contains('popup-message')) {
+      // If there's no popup element, create one
+      popup = document.createElement('span');
+      popup.className = 'popup-message';
+      field.parentNode.appendChild(popup);
+    }
+
+    popup.textContent = message;
+    popup.style.color = 'red';
+    popup.style.display = 'block';
+  }
+
+  // Function to clear previous error styles and messages
+  function clearErrors() {
+    var fields = document.querySelectorAll('.field-error');
+
+    fields.forEach(function (field) {
+      field.classList.remove('field-error');
+
+      var popup = field.nextElementSibling;
+      if (popup && popup.classList.contains('popup-message')) {
+        popup.style.display = 'none';
+        popup.textContent = ''; // Clear the message text as well
+      }
+    });
+  }
+
+  // Function to move to the next step in the form
+  function moveToNextStep() {
+    var currentPanel = document.querySelector('.js-active');
+    var nextPanel = currentPanel.nextElementSibling;
+
+    if (nextPanel) {
+      currentPanel.classList.remove('js-active');
+      nextPanel.classList.add('js-active');
+      
+      // Update progress buttons as needed here...
+      updateProgressButtons();
+    }
+  }
+
+  // Function to update progress buttons based on active panel
+  function updateProgressButtons() {
+    const progressButtons = document.querySelectorAll('.multisteps-form__progress-btn');
+    
+    progressButtons.forEach((btn, index) => {
+      btn.classList.remove('js-active');
+      
+      if (index === Array.from(progressButtons).indexOf(document.querySelector('.js-active'))) {
+        btn.classList.add('js-active');
+      }
+    });
+  }
   
 </script>
 <script>
@@ -284,7 +392,7 @@
     };
     reader.readAsDataURL(input.files[0]);
   };
-</script>
+</scrip>
 <script>
   var win = navigator.platform.indexOf('Win') > -1;
   if (win && document.querySelector('#sidenav-scrollbar')) {

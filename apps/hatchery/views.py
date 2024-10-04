@@ -9,6 +9,7 @@ from django.contrib.gis.geos import Point
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from apps.accounts.validators import validate_email
 from apps.breeders.models import *
 from apps.chicks.models import Chicks
 from apps.inventory.models import ItemType, Item
@@ -133,6 +134,15 @@ def hatcher_create(request):
         latitude_str = request.POST.get('latitude', None)
         longitude_str = request.POST.get('longitude', None)
         allowed_image_types = ['image/jpeg', 'image/png']
+        if Hatchery.objects.filter(email=email).exists():
+            messages.error(request, "This email address is already registered.", extra_tags="danger")
+            return redirect('hatchery_create')
+        if email:
+            if not validate_email(email):
+                messages.error(request, "This email address does not exist.", extra_tags="danger")
+                return redirect('hatchery_create')
+        
+            
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
                 messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
@@ -216,6 +226,8 @@ def incubator_create(request):
         incubator.save()
         item.quantity = 1
         item.save()
+        messages.success(request, "Incubator created successfully", extra_tags='success')
+        request.session.pop('item_data')
         return redirect('incubator_list')
     
     return render(request, 'pages/poultry/incubators/create.html', {'hatcheries': hatcheries, 'items':items, 'item_data':item_data})
@@ -650,13 +662,16 @@ def candling_create(request):
     
     if request.method == 'POST':
         incubation=Incubation.objects.get(id=request.POST.get('incubation'))
+        candled_date=request.POST.get('candled_date')
+        if candled_date in ['', ""]:
+            candled_date = datetime.datetime.now().date()
         candling = Candling(
             incubation=incubation,
             customer=incubation.customer,
             breeders=incubation.breeders,
             eggs=incubation.eggs,
             candled=request.POST.get('candled') == 'on',  # Convert checkbox to boolean
-            candled_date=request.POST.get('candled_date'),
+            candled_date=candled_date,
             spoilt_eggs=int(request.POST.get('spoilt_eggs')),
         )
         # Automatically calculate fertile eggs before saving

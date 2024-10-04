@@ -8,6 +8,7 @@ from django.contrib import messages
 from apps.hatchery.models import Hatching
 from .models import Chicks
 from apps.inventory.models import Item
+import datetime
 
 @login_required
 def chicks_list(request):
@@ -68,6 +69,9 @@ def chicks_create(request):
         customer_id = request.POST.get('customer')
         hatching_code = request.POST.get('hatching')
         customer = None
+        
+        if age in ['', ""]:
+            age = datetime.datetime.now().date()
         if customer_id:
             customer = get_object_or_404(Customer, id=customer_id)
             
@@ -81,7 +85,6 @@ def chicks_create(request):
         item.quantity=int(number)
         item.save()
         
-        print(["Item: ", item])    
         chick_photo = request.FILES.get('chick_photo')
 
         chick = Chicks(
@@ -97,7 +100,7 @@ def chicks_create(request):
         )
         chick.save()
         messages.success(request, "Chicks Created Successfully", extra_tags="success")
-        
+        request.session.pop('item_data')
         return redirect('chicks_list') 
 
     return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items, 'item_data':item_data, 'customers':customers, 'hatchings': hatchings})
