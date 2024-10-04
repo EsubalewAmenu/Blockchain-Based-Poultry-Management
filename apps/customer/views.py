@@ -37,6 +37,9 @@ def customer_create(request):
         # Initialize latitude and longitude
         latitude = None
         longitude = None
+        if Customer.objects.filter(email=email).exists():
+            messages.error(request, "This email address is already registered.", extra_tags="danger")
+            return redirect('customer_create')
         if email:
             if not validate_email(email):
                 messages.error(request, "This email address does not exist.", extra_tags="danger")
@@ -235,6 +238,7 @@ def eggs_create(request):
         item.quantity=received
         item.save()
         messages.success(request, "Egg Created Successfully", extra_tags="success")
+        request.session.pop('item_data')
         return redirect('eggs_list')
 
     return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items, 'item_data':item_data})
