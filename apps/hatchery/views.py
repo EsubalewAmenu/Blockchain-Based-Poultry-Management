@@ -127,7 +127,7 @@ def hatchery_update(request, name):
 def hatcher_create(request):
     if request.method == 'POST':
         name = request.POST['name']
-        photo = request.FILES['photo']
+        photo = request.FILES.get('photo', None)
         email = request.POST['email']
         phone = request.POST.get('phone').replace(' ', '')
         address = request.POST['address']
@@ -172,6 +172,7 @@ def hatcher_create(request):
 
         hatchery = Hatchery(name=name, photo=photo, email=email, phone=phone, address=address, location=location, latitude=latitude, longitude=longitude, totalcapacity=totalcapacity)
         hatchery.save()
+        messages.success(request, "Hatchery Created Successfully", extra_tags='success')
         return redirect('hatchery_list')
     else:
         return render(request, 'pages/poultry/hatchery/create.html')
