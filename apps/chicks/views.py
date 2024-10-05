@@ -100,7 +100,8 @@ def chicks_create(request):
         )
         chick.save()
         messages.success(request, "Chicks Created Successfully", extra_tags="success")
-        request.session.pop('item_data')
+        if 'item_data' in request.session:
+            request.session.pop('item_data')
         return redirect('chicks_list') 
 
     return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items, 'item_data':item_data, 'customers':customers, 'hatchings': hatchings})

@@ -154,10 +154,10 @@ def _validate_and_create_employee(request):
     )
 
    
-    
-    fs = FileSystemStorage()
-    employee.photo = fs.save(photo.name, photo)
-    employee.save()
+    if photo:
+        fs = FileSystemStorage()
+        employee.photo = fs.save(photo.name, photo)
+        employee.save()
         
 
     return None, employee, password

@@ -51,7 +51,14 @@
                             </div> {% endcomment %}
                             <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                 <label>Egg</label>
-                                <input class="form-control" type="text" name="egg" value="{{ egg_setting.egg.batchnumber }}">
+                                <select class="form-control" name="egg" required>
+                                    <option value="{{ egg_setting.egg.pk }}">{{ egg_setting.egg.batchnumber }} | {{egg_setting.egg.created}}</option>
+                                    {% for egg in eggs %}
+                                        {% if egg.id != egg_setting.egg.id %}
+                                        <option value="{{ egg.id }}">{{ egg.batchnumber }} | {{egg.created}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
                             </div>
                             <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                 <label>Breeders</label>
