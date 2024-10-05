@@ -25,51 +25,59 @@
               </tr>
           </thead>
           <tbody>
-              {% for breeder in breeders %}
-              <tr>
-                  <td>
-                      <div class="d-flex align-items-center">
-                          <div class="form-check">
-                              <input class="form-check-input" type="checkbox" id="customCheck{{ breeder.id }}">
-                          </div>
-                          <a href="{% url 'breeders_detail' breeder.batch %}" class="text-decoration-none">
-                          <p class="text-xs font-weight-bold ms-2 mb-0">#{{ breeder.batch}}</p>
-                      </div>
-                  </td>
-                  <td class="font-weight-bold">
-                      <span class="my-2 text-xs">{{ breeder.created|date:"d M, h:i A" }}</span>
-                  </td>
-                  
-                  <td class="text-xs font-weight-bold">
-                      <div class="d-flex align-items-center">
-                              <span>{{ breeder.breed.breed |default:"N/A" }}</span>
-                      </div>
-                  </td>
-                  <td class="text-xs font-weight-bold">
-                      <span class="my-2 text-xs">
-                          {{ breeder.mortality|default:"N/A" }} %
-                      </span>
-                  </td>
-                  <td class="text-xs font-weight-bold">
-                      <span class="my-2 text-xs">{{ breeder.current_number |default:"0" }}</span>
-                  </td>
-                  <td class="my-2 text-xs">
-                    <div class="d-flex justify-content-center align-items-center">
-                      <a href="{% url 'breeders_detail' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
-                        <i class="fas fa-eye"></i>
-                      </a>
-                      <a href="{% url 'breeders_update' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit breed">
-                        <i class="fas fa-user-edit"></i>
-                      </a>
-                      <a href="#" type="button" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'breeders_delete' breeder.batch %}">
-                        <i class="fas fa-trash"></i>
-                      </a>
+            {% for breeder in breeders %}
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="customCheck{{ breeder.id }}">
+                        </div>
+                        {% if breeder.batch %}
+                            <a href="{% url 'breeders_detail' breeder.batch %}" class="text-decoration-none">
+                                <p class="text-xs font-weight-bold ms-2 mb-0">#{{ breeder.batch }}</p>
+                            </a>
+                        {% else %}
+                            <p class="text-xs font-weight-bold ms-2 mb-0">No Batch Assigned</p>
+                        {% endif %}
                     </div>
-                  </td>
-              </tr>
-              
-              {% endfor %}
-          </tbody>
+                </td>
+                <td class="font-weight-bold">
+                    <span class="my-2 text-xs">{{ breeder.created|date:"d M, h:i A" }}</span>
+                </td>
+                
+                <td class="text-xs font-weight-bold">
+                    <div class="d-flex align-items-center">
+                        <span>{{ breeder.breed.breed |default:"N/A" }}</span>
+                    </div>
+                </td>
+                <td class="text-xs font-weight-bold">
+                    <span class="my-2 text-xs">
+                        {{ breeder.mortality|default:"N/A" }} %
+                    </span>
+                </td>
+                <td class="text-xs font-weight-bold">
+                    <span class="my-2 text-xs">{{ breeder.current_number |default:"0" }}</span>
+                </td>
+                <td class="my-2 text-xs">
+                    <div class="d-flex justify-content-center align-items-center">
+                        {% if breeder.batch %}
+                            <a href="{% url 'breeders_detail' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'breeders_update' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit breed">
+                                <i class="fas fa-user-edit"></i>
+                            </a>
+                            <a href="#" type="button" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'breeders_delete' breeder.batch %}">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        {% else %}
+                            <p class="text-muted">No Actions Available</p>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
       </table>
       
       <!-- Pagination Section -->
