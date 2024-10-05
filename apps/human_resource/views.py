@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
+from apps.accounts.models import UserSettings
 from apps.human_resource.models import Employee, Department, Role
 from django.contrib.auth.models import User, Group
 from django.core.files.storage import FileSystemStorage
@@ -9,6 +10,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
+from apps.accounts.validators import validate_email
 import random
 import string
 
@@ -46,7 +48,7 @@ def create_employee(request):
         # If there are no errors, send the account creation email and redirect
         if not errors:
             _send_account_creation_email(employee.user, request.POST.get('email'), password)
-            messages.success(request, 'Employee created successfully!')
+            messages.success(request, 'Employee created successfully!', extra_tags='success')
             return redirect('employee_list')
 
         # If there are errors, re-render the form with the existing data and errors
@@ -78,9 +80,14 @@ def _validate_and_create_employee(request):
     first_name = request.POST.get('first_name')
     last_name = request.POST.get('last_name')
     email = request.POST.get('email')
+    phone = request.POST.get('phone').replace(' ', '')
     department_id = request.POST.get('department')
     role_id = request.POST.get('role')
     photo = request.FILES.get('photo')
+    
+    if email:
+        if not validate_email(email):
+            errors['email'] = 'Invalid email address.'
 
     # Validate first name and last name
     if not first_name:
@@ -103,6 +110,12 @@ def _validate_and_create_employee(request):
     # Validate role if department is not "Admin"
     if department.name != 'Admin' and not role_id:
         errors['role'] = 'Role is required.'
+        
+     # Handle profile photo upload
+    if photo:
+        allowed_image_types = ['image/jpeg', 'image/png'] 
+        if photo.content_type not in allowed_image_types:
+            errors['role'] = "Invalid image format for profile photo. Only JPEG or PNG is allowed."
 
     # If there are errors, return them immediately
     if errors:
@@ -119,7 +132,10 @@ def _validate_and_create_employee(request):
         last_name=last_name,
         password=password
     )
-
+    user_settings = UserSettings(
+        user=user,
+        primary_phone = phone)
+    user_settings.save()
     # Assign role if applicable
     if role_id:
         role = Role.objects.get(id=role_id)
@@ -137,11 +153,12 @@ def _validate_and_create_employee(request):
         start_date=timezone.now().date()
     )
 
-    # Handle profile photo upload
+   
     if photo:
         fs = FileSystemStorage()
         employee.photo = fs.save(photo.name, photo)
         employee.save()
+        
 
     return None, employee, password
 
@@ -211,7 +228,7 @@ def employee_detail(request, employee_id):
         return redirect('no_access')
 
     departments = Department.objects.all()
-    roles = Role.objects.all()
+    roles = Role.objects.values('name').distinct()
     
     context = {
         'employee': employee,
@@ -245,7 +262,7 @@ def update_employee_role(request, employee_id):
 
     # If not POST, render the form again (this is for GET requests)
     departments = Department.objects.all()
-    roles = Role.objects.all()
+    roles = Role.objects.values('name').distinct()
     context = {
         'employee': employee,
         'departments': departments,

@@ -31,7 +31,7 @@
                                         <select class="form-control" name="incubation" required>
                                             <option value="" disabled selected>Select an incubation</option>
                                             {% for incubation in incubations %}
-                                                <option value="{{ incubation.pk }}">{{ incubation.incubationcode }}</option>
+                                                <option value="{{ incubation.pk }}">{{ incubation.incubationcode }} | {{incubation.created}}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -65,13 +65,13 @@
                                     </div>
                                 </div> {% endcomment %}
                                 <div class="row mt-3">
-                                    <div class="col-12 col-sm-6">
+                                    {% comment %} <div class="col-12 col-sm-6">
                                         <label class="form-label">Candled</label>
                                         <div class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" id="candled" name="candled">
                                             <label class="form-check-label" for="candled">Candled</label>
                                         </div>
-                                    </div>
+                                    </div> {% endcomment %}
                                     <div class="col-12 col-sm-6">
                                         <label class="form-label">Spoilt Eggs</label>
                                         <input class="form-control" type="number" placeholder="e.g., 10" name="spoilt_eggs" required />

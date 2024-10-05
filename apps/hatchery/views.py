@@ -9,6 +9,7 @@ from django.contrib.gis.geos import Point
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from apps.accounts.validators import validate_email
 from apps.breeders.models import *
 from apps.chicks.models import Chicks
 from apps.inventory.models import ItemType, Item
@@ -16,7 +17,7 @@ from apps.dashboard.models import Tracker
 from .models import *
 
 # Create your views here.
-
+@login_required
 def hatchery_list(request):
     hatcheries = Hatchery.objects.all()
     paginator = Paginator(hatcheries, 10)  # Show 10 hatcheries per page
@@ -25,14 +26,14 @@ def hatchery_list(request):
     hatcheries = paginator.get_page(page_number)
     return render(request, 'pages/poultry/hatchery/list.html', {'hatcheries': hatcheries})
 
-
+@login_required
 def hatchery_detail(request, name):
     hatchery = Hatchery.objects.get(name=name)
     if request.method == 'POST':
         # Update hatchery instance with the new data from the request
         hatchery.name = request.POST.get('name', hatchery.name)
         hatchery.email = request.POST.get('email', hatchery.email)
-        hatchery.phone = request.POST.get('phone', hatchery.phone)
+        hatchery.phone = request.POST.get('phone', hatchery.phone).replace(' ', '')
         hatchery.address = request.POST.get('address', hatchery.address)
         latitude_str = request.POST.get('latitude')
         longitude_str = request.POST.get('longitude')
@@ -59,24 +60,29 @@ def hatchery_detail(request, name):
                 # You can log an error or set longitude to None
                 hatchery.longitude = hatchery.longitude
         hatchery.totalcapacity = request.POST.get('totalcapacity', hatchery.totalcapacity)
+        allowed_image_types = ['image/jpeg', 'image/png']
 
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('hatchery_update', name=name)
         # Handle file upload
         if request.FILES.get('photo'):
             hatchery.photo = request.FILES['photo']
 
         # Save the updated hatchery instance
         hatchery.save()
-        return redirect('hatchery_list')
+        return redirect('hatchery_update', name=name)
     return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery})
 
-
+@login_required
 def hatchery_update(request, name):
     hatchery = Hatchery.objects.get(name=name)
     if request.method == 'POST':
         # Update hatchery instance with the new data from the request
         hatchery.name = request.POST.get('name', hatchery.name)
         hatchery.email = request.POST.get('email', hatchery.email)
-        hatchery.phone = request.POST.get('phone', hatchery.phone)
+        hatchery.phone = request.POST.get('phone', hatchery.phone).replace(' ', '')
         hatchery.address = request.POST.get('address', hatchery.address)
         latitude_str = request.POST.get('latitude')
         longitude_str = request.POST.get('longitude')
@@ -103,7 +109,11 @@ def hatchery_update(request, name):
                 # You can log an error or set longitude to None
                 hatchery.longitude = hatchery.longitude
         hatchery.totalcapacity = request.POST.get('totalcapacity', hatchery.totalcapacity)
-
+        allowed_image_types = ['image/jpeg', 'image/png']
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('hatchery_update', name=name)
         # Handle file upload
         if request.FILES.get('photo'):
             hatchery.photo = request.FILES['photo']
@@ -113,48 +123,61 @@ def hatchery_update(request, name):
         return redirect('hatchery_list')
     return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery})
 
+@login_required
 def hatcher_create(request):
     if request.method == 'POST':
         name = request.POST['name']
-        photo = request.FILES['photo']
+        photo = request.FILES.get('photo', None)
         email = request.POST['email']
-        phone = request.POST['phone']
+        phone = request.POST.get('phone').replace(' ', '')
         address = request.POST['address']
         latitude_str = request.POST.get('latitude', None)
         longitude_str = request.POST.get('longitude', None)
-
-        # Initialize latitude and longitude
+        allowed_image_types = ['image/jpeg', 'image/png']
+        
+        if Hatchery.objects.filter(name=name).exists():
+            messages.error(request, "Hatchery with this name is already registered.", extra_tags="danger")
+            return redirect('hatchery_create')
+        
+        if Hatchery.objects.filter(email=email).exists():
+            messages.error(request, "This email address is already registered.", extra_tags="danger")
+            return redirect('hatchery_create')
+        if email:
+            if not validate_email(email):
+                messages.error(request, "This email address does not exist.", extra_tags="danger")
+                return redirect('hatchery_create')
+        
+            
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('hatchery_create')
         latitude = None
         longitude = None
 
-        # Validate and convert latitude
         if latitude_str:
             try:
                 latitude = float(latitude_str)
             except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set latitude to None
+                
                 latitude = None
 
-        # Validate and convert longitude
+        
         if longitude_str:
             try:
                 longitude = float(longitude_str)
             except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set longitude to None
                 longitude = None
 
-        # Check if both latitude and longitude are valid before creating the Point
         if latitude is not None and longitude is not None:
-            location = Point(longitude, latitude, srid=4326)  # Correct SRID to 4326
+            location = Point(longitude, latitude, srid=4326)
         else:
-            # Handle the case where location data is incomplete
             location = None
         totalcapacity = request.POST['totalcapacity']
 
         hatchery = Hatchery(name=name, photo=photo, email=email, phone=phone, address=address, location=location, latitude=latitude, longitude=longitude, totalcapacity=totalcapacity)
         hatchery.save()
+        messages.success(request, "Hatchery Created Successfully", extra_tags='success')
         return redirect('hatchery_list')
     else:
         return render(request, 'pages/poultry/hatchery/create.html')
@@ -170,7 +193,8 @@ def hatchery_delete(request, name):
     
     messages.error(request, 'Invalid request method.')
     return redirect('hatchery_list')
-    
+  
+@login_required  
 def incubator_list(request):
     incubators = Incubators.objects.all().select_related('hatchery') 
     paginator = Paginator(incubators, 10)
@@ -179,9 +203,13 @@ def incubator_list(request):
     incubators = paginator.get_page(page_number)
     return render(request, 'pages/poultry/incubators/list.html', {'incubators': incubators})
     
+@login_required
 def incubator_create(request):
     hatcheries = Hatchery.objects.all()
     items =Item.objects.filter(item_type__type_name='Incubator')
+    item_data = None
+    if 'item_data' in request.session:
+        item_data = request.session['item_data']
     if request.method == 'POST':
         hatchery = Hatchery.objects.get(id=request.POST['hatchery'])
         incubatortype = request.POST['incubatortype']
@@ -191,7 +219,8 @@ def incubator_create(request):
         item_id = request.POST['item']
         
         item = Item.objects.get(pk=item_id)
-        
+        if 'item_data' in request.session:
+            item_data = request.session['item_data']
         incubator = Incubators(
             hatchery=hatchery,
             incubatortype=incubatortype,
@@ -203,10 +232,14 @@ def incubator_create(request):
         incubator.save()
         item.quantity = 1
         item.save()
+        messages.success(request, "Incubator created successfully", extra_tags='success')
+        if 'item_data' in request.session:
+            request.session.pop('item_data')
         return redirect('incubator_list')
     
-    return render(request, 'pages/poultry/incubators/create.html', {'hatcheries': hatcheries, 'items':items})
+    return render(request, 'pages/poultry/incubators/create.html', {'hatcheries': hatcheries, 'items':items, 'item_data':item_data})
 
+@login_required
 def incubator_detail(request, code):
     incubator = get_object_or_404(Incubators, code=code)
     if request.method == 'POST':
@@ -226,6 +259,7 @@ def incubator_detail(request, code):
     
     return render(request, 'pages/poultry/incubators/details.html', {'incubator': incubator})
 
+@login_required
 def incubator_update(request, code):
     incubator = get_object_or_404(Incubators, code=code)
     
@@ -247,6 +281,7 @@ def incubator_update(request, code):
     # Render the template with the incubator instance
     return render(request, 'pages/poultry/incubators/details.html', {'incubator': incubator})
 
+@login_required
 def incubator_delete(request, code):
     incubator = get_object_or_404(Incubators, code=code)
     
@@ -258,6 +293,7 @@ def incubator_delete(request, code):
     
     return redirect('incubator_list')
 
+@login_required
 def incubator_capacity_list(request):
     capacity_list = IncubatorCapacity.objects.all()
     paginator = Paginator(capacity_list, 10)  # Show 10 breeders per page
@@ -266,6 +302,7 @@ def incubator_capacity_list(request):
     capacity_list = paginator.get_page(page_number)
     return render(request, 'pages/poultry/incubators/incubator_capacity/list.html', {'capacity_list': capacity_list})
 
+@login_required
 @csrf_exempt
 def incubator_capacity_create(request):
     incubators = Incubators.objects.all()
@@ -293,6 +330,7 @@ def incubator_capacity_create(request):
     
     return render(request, 'pages/poultry/incubators/incubator_capacity/create.html', {'incubators': incubators})
 
+@login_required
 def incubator_capacity_details(request, id):
     capacity = get_object_or_404(IncubatorCapacity, id=id)
     incubators = Incubators.objects.all()
@@ -317,6 +355,7 @@ def incubator_capacity_details(request, id):
         'incubators': incubators
     })
     
+@login_required
 def incubator_capacity_update(request, id):
     capacity = get_object_or_404(IncubatorCapacity, id=id)
     incubators = Incubators.objects.all()
@@ -340,6 +379,8 @@ def incubator_capacity_update(request, id):
         'capacity': capacity,
         'incubators': incubators
     })
+    
+@login_required
 def incubator_capacity_delete(request, id):
     incubator_capacity = get_object_or_404(IncubatorCapacity, id=id)
     
@@ -351,6 +392,7 @@ def incubator_capacity_delete(request, id):
     return redirect('incubator_capacity_list')
 
 #Egg Settings
+@login_required
 def egg_setting_list(request):
     egg_settings = EggSetting.objects.all()
     egg= Eggs.objects.all()
@@ -360,15 +402,28 @@ def egg_setting_list(request):
     egg_settings = paginator.get_page(page_number)
     return render(request, 'pages/poultry/hatchery/egg_setting/list.html', {'egg_settings': egg_settings, 'egg':egg})
 
+@login_required
 def egg_setting_detail(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
 
     if request.method == 'POST':
+        if egg_setting.is_approved:
+            messages.success(request, "Egg Setting request is already approved ", extra_tags='danger')
+            return redirect('egg_setting_list')
         egg_setting.settingcode = request.POST.get('settingcode', egg_setting.settingcode)
         egg_setting.incubator = get_object_or_404(Incubators, id=request.POST.get('incubator'))
-        egg_setting.customer = get_object_or_404(Customer, id=request.POST.get('customer'))
         egg_setting.breeders = get_object_or_404(Breeders, id=request.POST.get('breeders'))
-        egg_setting.eggs = request.POST.get('eggs', egg_setting.eggs)
+        if request.POST.get('eggs'):
+            if egg_setting.eggs == int(request.POST.get('eggs')):
+                pass
+            elif egg_setting.item_request.item.quantity < int(request.POST.get('eggs')):
+                messages.error(request, 'Not enough eggs available in the selected egg type.', extra_tags='danger')
+                return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
+            egg_setting.eggs = int(request.POST.get('eggs'))
+            egg_setting.item_request.quantity = int(request.POST.get('eggs'))
+            egg_setting.item_request.save()
+        else:
+            egg_setting.eggs = egg_setting.eggs
         egg_setting.save()
         return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
 
@@ -382,6 +437,7 @@ def egg_setting_detail(request, settingcode):
         'breeders': breeders
     })
 
+@login_required
 def egg_setting_create(request):
     
     if request.method == 'POST':
@@ -389,20 +445,18 @@ def egg_setting_create(request):
         breeders_id = request.POST.get('breeders')
         item_request_item_id = request.POST.get('item_request_item')
         item_request_quantity = request.POST.get('item_request_quantity')
-        
         item_request_item = get_object_or_404(Item, id=item_request_item_id)
         
-        item_request = ItemRequest(item=item_request_item, quantity=item_request_quantity, requested_by=request.user)
-        item_request.save()
-        egg = Eggs.objects.get(item=item_request_item)
+        egg = Eggs.objects.filter(item=item_request_item).first()
         if int(item_request_quantity)>egg.received:
-            messages.error(request, 'Not enough eggs available in the selected egg type.')
+            messages.error(request, 'Not enough eggs available in the selected egg type.', extra_tags='danger')
             return redirect('egg_setting_create')
 
         incubator = get_object_or_404(Incubators, pk=incubator_id)
         breeders = get_object_or_404(Breeders, pk=breeders_id)
         
-        
+        item_request = ItemRequest(item=item_request_item, quantity=item_request_quantity, requested_by=request.user)
+        item_request.save()
 
         egg_setting = EggSetting(
             incubator=incubator,
@@ -412,6 +466,7 @@ def egg_setting_create(request):
             eggs = item_request_quantity,
         )
         egg_setting.save()
+        messages.success(request, 'Egg Setting set successfully.', extra_tags='success')
         return redirect('egg_setting_list')
 
     incubators = Incubators.objects.all()
@@ -432,16 +487,26 @@ def egg_setting_create(request):
         'items': items,
     })
 
+@login_required
 def egg_setting_update(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
 
     if request.method == 'POST':
+        if egg_setting.approved:
+            messages.error(request, "Egg setting is approved can't be updated.", extra_tags="danger")
+            return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
+        
         egg_setting.settingcode = request.POST.get('settingcode', egg_setting.settingcode)
         egg_setting.incubator = get_object_or_404(Incubators, id=request.POST.get('incubator'))
         egg_setting.customer = get_object_or_404(Customer, id=request.POST.get('customer'))
         egg_setting.breeders = get_object_or_404(Breeders, id=request.POST.get('breeders'))
         egg_setting.eggs = request.POST.get('eggs', egg_setting.eggs)
+        
+        if egg_setting.eggs > egg_setting.item_request.quantity:
+            egg_setting.item_request.quantity = egg_setting.eggs
+            egg_setting.item_request.save()
         egg_setting.save()
+        messages.success(request, "Egg setting updated successfully", extra_tags="success")
         return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
 
     incubators = Incubators.objects.all()
@@ -454,6 +519,7 @@ def egg_setting_update(request, settingcode):
         'breeders': breeders
     })
 
+@login_required
 def egg_setting_delete(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
     if request.method == 'POST':
@@ -482,7 +548,7 @@ def incubation_detail(request, incubationcode):
     if request.method == 'POST':
         # Update the incubation instance with new data
         incubation.eggsetting = EggSetting.objects.get(id=request.POST.get('eggsetting'))
-        incubation.customer = Customer.objects.get(id=request.POST.get('customer'))
+        # incubation.customer = Customer.objects.get(id=request.POST.get('customer'))
         incubation.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
         incubation.eggs = request.POST.get('eggs')
         incubation.save()  # Save the updated instance
@@ -501,20 +567,21 @@ def incubation_detail(request, incubationcode):
 def incubation_create(request):
     if request.method == 'POST':
         eggsetting_id = request.POST.get('eggsetting')
-        customer_id = request.POST.get('customer')
-        breeders_id = request.POST.get('breeders')
         eggs = request.POST.get('eggs')
-
+        eggsetting=EggSetting.objects.get(id=eggsetting_id)
         incubation = Incubation(
-            eggsetting=EggSetting.objects.get(id=eggsetting_id),
-            customer=Customer.objects.get(id=customer_id),
-            breeders=Breeders.objects.get(id=breeders_id),
+            eggsetting=eggsetting,
+            breeders=eggsetting.breeders,
             eggs=eggs
         )
+        
+        if int(eggs) > int(eggsetting.eggs):
+            messages.error(request, 'Not enough eggs available in the selected egg setting.', extra_tags='danger')
+            return redirect('incubation_create')
         incubation.save()
         return redirect('incubation_list')
 
-    egg_settings = EggSetting.objects.all()
+    egg_settings = EggSetting.objects.filter(is_approved=True)
     customers = Customer.objects.all()
     breeders = Breeders.objects.all()
 
@@ -614,13 +681,16 @@ def candling_create(request):
     
     if request.method == 'POST':
         incubation=Incubation.objects.get(id=request.POST.get('incubation'))
+        candled_date=request.POST.get('candled_date')
+        if candled_date in ['', ""]:
+            candled_date = datetime.datetime.now().date()
         candling = Candling(
             incubation=incubation,
             customer=incubation.customer,
             breeders=incubation.breeders,
             eggs=incubation.eggs,
             candled=request.POST.get('candled') == 'on',  # Convert checkbox to boolean
-            candled_date=request.POST.get('candled_date'),
+            candled_date=candled_date,
             spoilt_eggs=int(request.POST.get('spoilt_eggs')),
         )
         # Automatically calculate fertile eggs before saving
@@ -784,11 +854,15 @@ def tracker_list_view(request):
 def tracker_details_view(request, tracker_code):
     tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
     tracker_type = 'egg' if tracker.egg else 'chick'
+    egg_setting_id = request.GET.get('egg_setting_id')  # Capture the egg setting ID from the query param
+    incubation_id = request.GET.get('incubation_id')  # Capture the incubation ID from the query param
 
     if tracker_type == 'egg':
         egg = tracker.egg
-        egg_setting = EggSetting.objects.filter(egg=egg).first()
-        incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+        egg_settings = EggSetting.objects.filter(egg=egg)  # Get all egg settings for this egg
+        egg_setting = egg_settings.filter(id=egg_setting_id).first() if egg_setting_id else egg_settings.first()
+        incubations = Incubation.objects.filter(eggsetting=egg_setting) if egg_setting else None
+        incubation = incubations.filter(id=incubation_id).first() if incubation_id else incubations.first() if incubations else None
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
         chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
@@ -798,6 +872,8 @@ def tracker_details_view(request, tracker_code):
             'egg': egg,
             'tracker': tracker,
             'egg_setting': egg_setting,
+            'egg_settings': egg_settings,  # Pass all egg settings for dropdown in the template
+            'incubations': incubations,  # Pass all incubations for dropdown in the template
             'incubation': incubation,
             'candling': candling,
             'hatching': hatching,
@@ -806,9 +882,11 @@ def tracker_details_view(request, tracker_code):
 
     elif tracker_type == 'chick':
         chick = tracker.chick
-        egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
-        egg_setting = EggSetting.objects.filter(egg=egg).first()
-        incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+        egg = Eggs.objects.filter(chicks=chick.batchnumber).first()  # Get the associated egg for the chick
+        egg_settings = EggSetting.objects.filter(egg=egg)  # Get all egg settings for the associated egg
+        egg_setting = egg_settings.filter(id=egg_setting_id).first() if egg_setting_id else egg_settings.first()
+        incubations = Incubation.objects.filter(eggsetting=egg_setting) if egg_setting else None
+        incubation = incubations.filter(id=incubation_id).first() if incubation_id else incubations.first() if incubations else None
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
         chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
@@ -819,44 +897,69 @@ def tracker_details_view(request, tracker_code):
             'tracker': tracker,
             'egg': egg,
             'egg_setting': egg_setting,
+            'egg_settings': egg_settings,  # Pass all egg settings for dropdown in the template
+            'incubations': incubations,  # Pass all incubations for dropdown in the template
             'incubation': incubation,
             'candling': candling,
             'hatching': hatching,
             'chicks': chicks,
         })
+
+
         
 def tracker_public_view(request, tracker_code):
     tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
+    tracker_type = 'egg' if tracker.egg else 'chick'
+    egg_setting_id = request.GET.get('egg_setting_id')  # Capture the egg setting ID from the query param
+    incubation_id = request.GET.get('incubation_id')  # Capture the incubation ID from the query param
 
-    if tracker.egg:
+    if tracker_type == 'egg':
         egg = tracker.egg
-        egg_setting = EggSetting.objects.filter(egg=egg).first()
-        incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+        egg_settings = EggSetting.objects.filter(egg=egg)  # Get all egg settings for this egg
+        egg_setting = egg_settings.filter(id=egg_setting_id).first() if egg_setting_id else egg_settings.first()
+        incubations = Incubation.objects.filter(eggsetting=egg_setting) if egg_setting else None
+        incubation = incubations.filter(id=incubation_id).first() if incubation_id else incubations.first() if incubations else None
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
         chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
-        tracker_type = 'egg'
-    else:
+
+        return render(request, 'pages/poultry/tracker-details-public.html', {
+            'tracker_type': 'egg',
+            'egg': egg,
+            'tracker': tracker,
+            'egg_setting': egg_setting,
+            'egg_settings': egg_settings,
+            'incubations': incubations, 
+            'incubation': incubation,
+            'candling': candling,
+            'hatching': hatching,
+            'chicks': chicks,
+        })
+
+    elif tracker_type == 'chick':
         chick = tracker.chick
         egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
-        egg_setting = EggSetting.objects.filter(egg=egg).first()
-        incubation = Incubation.objects.filter(eggsetting=egg_setting).first() if egg_setting else None
+        egg_settings = EggSetting.objects.filter(egg=egg) 
+        egg_setting = egg_settings.filter(id=egg_setting_id).first() if egg_setting_id else egg_settings.first()
+        incubations = Incubation.objects.filter(eggsetting=egg_setting) if egg_setting else None
+        incubation = incubations.filter(id=incubation_id).first() if incubation_id else incubations.first() if incubations else None
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
-        tracker_type = 'chick'
+        chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
 
-
-    context = {
-        'tracker': tracker,
-        'tracker_type': tracker_type,
-        'egg': egg,
-        'egg_setting': egg_setting,
-        'incubation': incubation,
-        'candling': candling,
-        'hatching': hatching
-        }
-
-    return render(request, 'pages/poultry/tracker-details-public.html', context)
+        return render(request, 'pages/poultry/tracker-details-public.html', {
+            'tracker_type': 'chick',
+            'chick': chick,
+            'tracker': tracker,
+            'egg': egg,
+            'egg_setting': egg_setting,
+            'egg_settings': egg_settings,
+            'incubations': incubations,
+            'incubation': incubation,
+            'candling': candling,
+            'hatching': hatching,
+            'chicks': chicks,
+        })
 
 
 def tracker_barcode_image_view(request, tracker_code):

@@ -66,13 +66,24 @@
                 </div>
                 <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                   <label>Customer</label>
-                  <input class="form-control" type="text" name="customer" value="{{ egg.customer.first_name }} {{ egg.customer.last_name }}">
+                  <select class="multisteps-form__input form-control" name="customer">
+                    <option value="">{{egg.customer.full_name}}</option>
+                    {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.full_name }}</option>
+                    {% endfor %}
+                </select>
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Breed</label>
                   <input class="form-control" type="text" name="breed" value="{{ egg.breed.breed }}">
+                  <select class="multisteps-form__input form-control" name="breed">
+                    <option value="">{{egg.breed.breed}}</option>
+                    {% for breed in breeds %}
+                        <option value="{{ breed.id }}">{{ breed.breed }}</option>
+                    {% endfor %}
+                </select>
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Item Code</label>

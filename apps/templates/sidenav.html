@@ -7,7 +7,7 @@
 
         <a class="navbar-brand m-0" href="{% url 'dashboard' %}">
             <img src="{% static 'assets/img/egg-logo.png' %}" class="navbar-brand-img h-100" alt="main_logo">
-            <span class="ms-1 font-weight-bold">Hatchtrack</span>
+            <span class="ms-1 font-weight-bold">PoultryTrack</span>
         </a>
     </div>
 
@@ -45,7 +45,7 @@
                   </div>
                   <span class="nav-link-text ms-1">Human Resource</span>
               </a>
-              <div class="collapse" id="hrPages">
+              <div class="collapse collapsible-sidenav" id="hrPages">
                   <ul class="nav ms-4">
                       <!-- Employees Link -->
                       <li class="nav-item">
@@ -72,7 +72,7 @@
                   </div>
                   <span class="nav-link-text ms-1">Poultry</span>
               </a>
-              <div class="collapse" id="poultryPages">
+              <div class="collapse collapsible-sidenav" id="poultryPages">
                   <ul class="nav ms-4">
                       <li class="nav-item">
                           <a class="nav-link" href="{% url 'breed_list' %}">
@@ -97,7 +97,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Hatchery</span>
                 </a>
-                <div class="collapse" id="hatcheryPages">
+                <div class="collapse collapsible-sidenav" id="hatcheryPages">
                     <ul class="nav ms-4">
                         <li class="nav-item ">
                             <a class="nav-link " href="{% url 'hatchery_list' %}">
@@ -140,7 +140,7 @@
                   </div>
                   <span class="nav-link-text ms-1">Inventory</span>
               </a>
-              <div class="collapse" id="inventoryPages">
+              <div class="collapse collapsible-sidenav" id="inventoryPages">
                   <ul class="nav ms-4">
                       <li class="nav-item">
                           <a class="nav-link" href="{% url 'item_list' %}">
@@ -208,7 +208,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Human Resource</span>
                 </a>
-                <div class="collapse" id="hrPages">
+                <div class="collapse collapsible-sidenav" id="hrPages">
                     <ul class="nav ms-4">
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'employee_list' %}">
@@ -227,7 +227,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Hatchery</span>
                 </a>
-                <div class="collapse" id="hatcheryPages">
+                <div class="collapse collapsible-sidenav" id="hatcheryPages">
                     <ul class="nav ms-4">
                         <li class="nav-item ">
                             <a class="nav-link " href="{% url 'hatchery_list' %}">
@@ -280,7 +280,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Hatchery</span>
                 </a>
-                <div class="collapse" id="hatcheryPages">
+                <div class="collapse collapsible-sidenav" id="hatcheryPages">
                     <ul class="nav ms-4">
                         <li class="nav-item ">
                             <a class="nav-link " href="{% url 'hatchery_list' %}">
@@ -328,7 +328,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Human Resource</span>
                 </a>
-                <div class="collapse" id="hrPages">
+                <div class="collapse collapsible-sidenav" id="hrPages">
                     <ul class="nav ms-4">
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'employee_list' %}">
@@ -347,7 +347,7 @@
                 </div>
                 <span class="nav-link-text ms-1">Poultry</span>
             </a>
-            <div class="collapse" id="poultryPages">
+            <div class="collapse collapsible-sidenav" id="poultryPages">
                 <ul class="nav ms-4">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'breed_list' %}">
@@ -382,7 +382,7 @@
                 </div>
                 <span class="nav-link-text ms-1">Poultry</span>
             </a>
-            <div class="collapse" id="poultryPages">
+            <div class="collapse collapsible-sidenav" id="poultryPages">
                 <ul class="nav ms-4">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'breed_list' %}">
@@ -412,7 +412,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Human Resource</span>
                 </a>
-                <div class="collapse" id="hrPages">
+                <div class="collapse collapsible-sidenav" id="hrPages">
                     <ul class="nav ms-4">
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'employee_list' %}">
@@ -431,7 +431,7 @@
                   </div>
                   <span class="nav-link-text ms-1">Inventory</span>
               </a>
-              <div class="collapse" id="inventoryPages">
+              <div class="collapse collapsible-sidenav" id="inventoryPages">
                   <ul class="nav ms-4">
                       <li class="nav-item">
                           <a class="nav-link" href="{% url 'item_list' %}">
@@ -496,7 +496,7 @@
                   </div>
                   <span class="nav-link-text ms-1">Inventory</span>
               </a>
-              <div class="collapse" id="inventoryPages">
+              <div class="collapse collapsible-sidenav" id="inventoryPages">
                   <ul class="nav ms-4">
                       <li class="nav-item">
                           <a class="nav-link" href="{% url 'item_list' %}">
@@ -548,5 +548,27 @@
 
         </ul>
     </div>
-          
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidenavs = document.querySelectorAll('.collapsible-sidenav');
+            
+            sidenavs.forEach(function (sidenav) {
+                const collapseKey = `${sidenav.id}_collapseState`; 
+    
+                if (localStorage.getItem(collapseKey) === 'open') {
+                    sidenav.classList.add('show');
+                }
+    
+                sidenav.addEventListener('shown.bs.collapse', function () {
+                    localStorage.setItem(collapseKey, 'open');
+                });
+    
+                sidenav.addEventListener('hidden.bs.collapse', function () {
+                    localStorage.setItem(collapseKey, 'closed');
+                });
+            });
+        });
+    </script>
+    
+    
 </aside>

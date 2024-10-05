@@ -1,11 +1,15 @@
 # views.py
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.gis.geos import Point
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import EggsForm
 from apps.chicks.models import Chicks
+from apps.accounts.validators import validate_email
 
+@login_required
 def customer_list(request):
     customers = Customer.objects.all()
     paginator = Paginator(customers, 10)
@@ -14,16 +18,18 @@ def customer_list(request):
     customers = paginator.get_page(page_number)
     return render(request, 'pages/pages/customer/list.html', {'customers': customers})
 
+@login_required
 def customer_detail(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
     return render(request, 'pages/pages/customer/details.html', {'customer': customer})
 
+@login_required
 def customer_create(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
-        phone = request.POST.get('phone')
+        phone = request.POST.get('phone').replace(' ', '')
         address = request.POST.get('address')
         latitude_str = request.POST.get('latitude', None)
         longitude_str = request.POST.get('longitude', None)
@@ -31,36 +37,23 @@ def customer_create(request):
         # Initialize latitude and longitude
         latitude = None
         longitude = None
-
-        # Validate and convert latitude
-        if latitude_str:
-            try:
-                latitude = float(latitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set latitude to None
-                latitude = None
-
-        # Validate and convert longitude
-        if longitude_str:
-            try:
-                longitude = float(longitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set longitude to None
-                longitude = None
-
-        # Check if both latitude and longitude are valid before creating the Point
-        if latitude is not None and longitude is not None:
-            location = Point(longitude, latitude, srid=4326)  # Correct SRID to 4326
-        else:
-            # Handle the case where location data is incomplete
-            location = None
+        if Customer.objects.filter(email=email).exists():
+            messages.error(request, "This email address is already registered.", extra_tags="danger")
+            return redirect('customer_create')
+        if email:
+            if not validate_email(email):
+                messages.error(request, "This email address does not exist.", extra_tags="danger")
+                return redirect('customer_create')
         notification_sms = request.POST.get('notification_sms') == 'on'
         delivery = request.POST.get('delivery') == 'on'
         followup = request.POST.get('followup') == 'on'
-        
-        photo = request.FILES.get('photo')
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('customer_create')
+        photo = request.FILES.get('photo', None)
 
         customer = Customer(
             first_name=first_name,
@@ -76,11 +69,12 @@ def customer_create(request):
             photo=photo
         )
         customer.save()
-
+        messages.success(request, "Customer created successfully", extra_tags="success")
         return redirect('customer_list') 
     else:
         return render(request, 'pages/pages/customer/create.html')
 
+@login_required
 def customer_update(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
     if request.method == 'POST':
@@ -88,7 +82,7 @@ def customer_update(request, full_name):
         customer.first_name = request.POST.get('first_name')
         customer.last_name = request.POST.get('last_name')
         customer.email = request.POST.get('email')
-        customer.phone = request.POST.get('phone')
+        customer.phone = request.POST.get('phone').replace(' ', '')
         customer.address = request.POST.get('address')
         customer.latitude = request.POST.get('latitude')
         customer.longitude = request.POST.get('longitude')
@@ -102,11 +96,12 @@ def customer_update(request, full_name):
             customer.photo = photo
 
         customer.save()
-
+        messages.success(request, "Customer Updated Successfully", extra_tags="success")
         return redirect('customer_list')
     else:
         return render(request, 'pages/pages/customer/details.html', {'customer': customer})
-    
+ 
+@login_required    
 def customer_update_notifications(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
 
@@ -116,11 +111,12 @@ def customer_update_notifications(request, full_name):
         customer.followup = 'followup' in request.POST
 
         customer.save() 
-
+        messages.success(request, "Customer Notification Settings Updated Successfully", extra_tags="success")
         return redirect('customer_detail', full_name=customer.full_name)
 
     return render(request, 'customer_detail.html', {'customer': customer})
 
+@login_required
 def customer_delete(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
     if request.method == 'POST':
@@ -133,6 +129,7 @@ def customer_delete(request, full_name):
 
 # List all eggs
 # List all eggs
+@login_required
 def eggs_list(request):
     eggs = Eggs.objects.all()
     items = Item.objects.all()
@@ -143,6 +140,7 @@ def eggs_list(request):
     return render(request, 'pages/pages/customer/eggs/list.html', {'eggs': eggs, 'items':items})
 
 # Detail view for a specific egg
+@login_required
 def eggs_detail(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
@@ -166,13 +164,18 @@ def eggs_detail(request, batch_number):
 
         egg.brought = request.POST.get('brought', egg.brought)
         egg.returned = request.POST.get('returned', egg.returned)
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('eggs_detail', batch_number=batch_number)
         # Handle photo upload
         if 'photo' in request.FILES:
             egg.photo = request.FILES['photo']
 
         egg.save()
-        return redirect('eggs_detail', batch_number=egg.batchnumber)
+        return redirect('eggs_update', batch_number=egg.batchnumber)
 
     return render(request, 'pages/pages/customer/eggs/details.html', {
         'egg': egg,
@@ -182,12 +185,16 @@ def eggs_detail(request, batch_number):
     })
 
 # Create a new egg
+@login_required
 def eggs_create(request):
     customers = Customer.objects.all()
     breeds = Breed.objects.all()
     items = Item.objects.filter(item_type__type_name='Egg')
     chicks = Chicks.objects.all()  # Get all chicks for selection
-
+    item_data = None
+    if 'item_data' in request.session:
+        item_data = request.session['item_data']
+    
     if request.method == 'POST':
         item_id = request.POST.get('item')
         customer_id = request.POST.get('customer')
@@ -198,7 +205,12 @@ def eggs_create(request):
         returned = request.POST.get('returned')
         item = Item.objects.get(pk=item_id)
         received = int(brought) - int(returned)
-        
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('eggs_create')
         customer = None
         if customer_id:
             customer = get_object_or_404(Customer, id=customer_id)
@@ -206,7 +218,10 @@ def eggs_create(request):
         if chicks_batch:
             chicks = get_object_or_404(Chicks, batchnumber=chicks_batch)
             batch = chicks.batchnumber
-        
+            
+           
+        if 'item_data' in request.session:
+            item_data = request.session['item_data']
         
         # Create and save the egg
         egg = Eggs(
@@ -222,11 +237,15 @@ def eggs_create(request):
         egg.save()
         item.quantity=received
         item.save()
+        messages.success(request, "Egg Created Successfully", extra_tags="success")
+        if 'item_data' in request.session:
+            request.session.pop('item_data')
         return redirect('eggs_list')
 
-    return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items})
+    return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items, 'item_data':item_data})
 
 # Update an existing egg
+@login_required
 def eggs_update(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
     customers = Customer.objects.all()
@@ -238,7 +257,12 @@ def eggs_update(request, batch_number):
         customer_id = request.POST.get('customer')
         breed_id = request.POST.get('breed')
         chick_id = request.POST.get('chick')  # Get selected chick ID
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
+                return redirect('eggs_update', batch_number=batch_number)
         # Update foreign keys only if they are provided
         if customer_id:
             egg.customer_id = customer_id
@@ -255,7 +279,8 @@ def eggs_update(request, batch_number):
             egg.photo = request.FILES['photo']
 
         egg.save()
-        return redirect('eggs_detail', batch_number=egg.batchnumber)
+        messages.success(request, "Egg Updated Successfully", extra_tags="success")
+        return redirect('eggs_update', batch_number=egg.batchnumber)
 
     return render(request, 'pages/pages/customer/eggs/details.html', {
         'egg': egg,
@@ -265,16 +290,18 @@ def eggs_update(request, batch_number):
     })
 
 # Delete an egg
+@login_required
 def eggs_delete(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
     if request.method == 'POST':
         egg.delete()
         egg.item.delete()
+        messages.success(request, "Egg Deleted Successfully", extra_tags="success")
         return redirect('eggs_list')  
     return render(request, 'pages/pages/customer/eggs/delete.html', {'egg': egg})
 
 # Customer Request
-
+@login_required
 def customer_request_list(request):
     customer_requests = CustomerRequest.objects.all()
     paginator = Paginator(customer_requests, 10)  # Paginate the requests

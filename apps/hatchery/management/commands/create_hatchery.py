@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 'address': '123 Hatchery Rd',
                 'latitude': 35.6895,
                 'longitude': 139.6917,
-                'totalcapacity': 5000
+                'total_capacity': 5000  # Ensure this matches the model field name
             },
             {
                 'name': 'Moonlight Hatchery',
@@ -27,19 +27,20 @@ class Command(BaseCommand):
                 'address': '456 Incubate St',
                 'latitude': 34.0522,
                 'longitude': -118.2437,
-                'totalcapacity': 4000
+                'total_capacity': 4000  # Ensure this matches the model field name
             },
         ]
 
         for data in hatchery_data:
+            if Hatchery.objects.filter(email=data['email']).exists():
+                self.stdout.write(self.style.WARNING(f"Hatchery with email {data['email']} already exists."))
+                continue
             hatchery, created = Hatchery.objects.get_or_create(
                 name=data['name'],
                 email=data['email'],
                 phone=data['phone'],
                 address=data['address'],
-                latitude=data['latitude'],
-                longitude=data['longitude'],
-                totalcapacity=data['totalcapacity'],
+                totalcapacity=data['total_capacity']
             )
             if created:
                 self.stdout.write(self.style.SUCCESS(f"Created hatchery: {hatchery.name}"))

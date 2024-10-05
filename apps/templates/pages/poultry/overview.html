@@ -410,7 +410,7 @@ new Chart(ctx3, {
       labels: {{ item_type_labels | safe }},  // Replace with actual item type labels
       datasets: [{
           label: "Items by Type",
-          weight: 5,
+          weight: 1,
           borderWidth: 0,
           borderRadius: 4,
           backgroundColor: "#52796f",
@@ -434,7 +434,7 @@ new Chart(ctx3, {
                   display: true,
                   drawOnChartArea: true,
                   drawTicks: false,
-                  borderDash: [5, 5]
+                  borderDash: [0, 0]
               },
               ticks: {
                   display: true,

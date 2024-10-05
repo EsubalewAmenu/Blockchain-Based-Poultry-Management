@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
+    <link id="pagestyle" href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" />
     <link id="pagestyle" href="{% static 'assets/css/argon-dashboard.css' %}" rel="stylesheet" />
     <title>{{ tracker_type|title }} Tracker Report</title>
     <style>
@@ -33,7 +34,7 @@
         }
 
         .barcode img, .qrcode img {
-            width: 150px; /* Reduce size of barcode and QR code */
+            width: 150px;
             height: auto;
         }
 
@@ -76,7 +77,6 @@
                 </div>
             </div>
         </div>
-        
 
         <div id="tracker-details">
             <div class="accordion" id="trackerAccordion">
@@ -119,22 +119,60 @@
                     </div>
                 {% endif %}
 
-                <!-- Incubation -->
-                <div class="card">
-                    <div class="card-header" id="headingIncubation">
-                        <h2 class="mb-0">
-                            <button class="btn btn-link text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIncubation" aria-expanded="false" aria-controls="collapseIncubation">
-                                Incubation
-                            </button>
-                        </h2>
-                    </div>
+                <!-- Egg Settings (Multiple) -->
+                {% if egg_settings %}
+                    <div class="card">
+                        <div class="card-header" id="headingEggSettings">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEggSettings" aria-expanded="false" aria-controls="collapseEggSettings">
+                                    Egg Settings
+                                </button>
+                            </h2>
+                        </div>
 
-                    <div id="collapseIncubation" class="collapse" aria-labelledby="headingIncubation" data-bs-parent="#trackerAccordion">
-                        <div class="card-body">
-                            <p><strong>Incubation Start:</strong> {% if incubation %}{{ incubation.created|date:"Y-m-d H:i" }}{% else %}Not incubated{% endif %}</p>
+                        <div id="collapseEggSettings" class="collapse" aria-labelledby="headingEggSettings" data-bs-parent="#trackerAccordion">
+                            <div class="card-body">
+                                {% for setting in egg_settings %}
+                                    <p><strong>Setting #{{ forloop.counter }}</strong></p>
+                                    <p><strong>Setting Code:</strong> {{ setting.settingcode|default:"Not set" }}</p>
+                                    <p><strong>No. Of Eggs : </strong> {{setting.eggs}}</p>
+                                    <p><strong>Date:</strong> {{ setting.created|date:"Y-m-d H:i" }}</p>
+                                    <hr />
+                                {% empty %}
+                                    <p>No settings available.</p>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
+
+                <!-- Incubations (Multiple) -->
+                {% if incubations %}
+                    <div class="card">
+                        <div class="card-header" id="headingIncubations">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIncubations" aria-expanded="false" aria-controls="collapseIncubations">
+                                    Incubations
+                                </button>
+                            </h2>
+                        </div>
+
+                        <div id="collapseIncubations" class="collapse" aria-labelledby="headingIncubations" data-bs-parent="#trackerAccordion">
+                            <div class="card-body">
+                                {% for incubation in incubations %}
+                                    <p><strong>Incubation #{{forloop.counter}}</strong></p>
+                                    <p><strong>Incubation Code:</strong> {{ incubation.incubationcode|default:"Not set" }}</p>
+                                    <p><strong>Incubation Egg Setting:</strong> {{ incubation.eggsetting.settingcode}}</p>
+                                    <p><strong>No. Of Eggs : </strong> {{incubation.eggs}}</p>
+                                    <p><strong>Start Date:</strong> {{ incubation.created|date:"Y-m-d H:i" }}</p>
+                                    <hr />
+                                {% empty %}
+                                    <p>No incubations available.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
 
                 <!-- Candling -->
                 <div class="card">
@@ -174,26 +212,28 @@
         </div>
 
         <div class="footer">
-            &copy; {{ current_year }} Hatchtrack. All rights reserved.
+            <p>&copy; 2024 Your Company. All rights reserved.</p>
         </div>
     </div>
+
+    <!-- Bootstrap JS (for accordion functionality) -->
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
 
     <!-- Bootstrap JS -->
     <script src="{% static 'assets/js/argon-dashboard.min.js' %}"></script>
      <!--   Core JS Files   -->
- <script src="{% static 'assets/js/core/popper.min.js' %}"></script>
- <script src="{% static 'assets/js/core/bootstrap.min.js' %}"></script>
- <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
- <script src="{% static 'assets/js/plugins/smooth-scrollbar.min.js' %}"></script>
+    <script src="{% static 'assets/js/core/popper.min.js' %}"></script>
+    <script src="{% static 'assets/js/core/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/smooth-scrollbar.min.js' %}"></script>
 
-  <!-- Github buttons -->
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
 
- <!-- Github buttons -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-formhelpers/2.3.0/js/bootstrap-formhelpers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-formhelpers/2.3.0/js/bootstrap-formhelpers.min.js"></script>
 
-<script src="{% static 'assets/js/plugins/datatables.js' %}"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script src="{% static 'assets/js/plugins/datatables.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 </body>
 </html>

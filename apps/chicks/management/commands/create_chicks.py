@@ -29,12 +29,16 @@ class Command(BaseCommand):
             return
 
         chicks_data = [
-            {'number': 150, 'description': 'Healthy batch of chicks', 'age': '2024-09-01'},
-            {'number': 120, 'description': 'Mixed breed chicks', 'age': '2024-09-05'},
+            {'batchnumber':'CHK-001', 'number': 150, 'description': 'Healthy batch of chicks', 'age': '2024-09-01'},
+            {'batchnumber':'CHK-002', 'number': 120, 'description': 'Mixed breed chicks', 'age': '2024-09-05'},
         ]
 
         for data in chicks_data:
-            chick = Chicks(
+            if Chicks.objects.filter(batchnumber=data['batchnumber']).exists():
+                self.stdout.write(self.style.WARNING(f"Chick batch with batch number {data['batchnumber']} already exists."))
+                continue
+            chick= Chicks(
+                batchnumber=data['batchnumber'],
                 source='customer',
                 customer=customer,
                 breed=breed,
@@ -43,16 +47,7 @@ class Command(BaseCommand):
                 description=data['description'],
                 age=data['age'],
             )
-            chick.batchnumber = self.generate_unique_batchnumber()
             item.quantity = data['number']
             item.save()
             chick.save()
-
             self.stdout.write(self.style.SUCCESS(f"Created chick batch: {chick.batchnumber}"))
-
-    def generate_unique_batchnumber(self):
-        while True:
-            random_suffix = ''.join(random.choices(string.digits, k=4))
-            unique_code = f'CHK-{random_suffix}'
-            if not Chicks.objects.filter(batchnumber=unique_code).exists():
-                return unique_code

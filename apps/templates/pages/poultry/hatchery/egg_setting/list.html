@@ -1,6 +1,22 @@
 {% extends 'dashboard.html' %}
 
 {% block main %}
+<style>
+    .alert-container {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .alert .btn-close {
+      font-size: 1.5rem;
+      line-height: 1.5;   
+      padding: 0.5rem;  
+    }
+    
+    .alert .btn-close span {
+      display: inline-block;
+      transform: scale(1.2); 
+    }
+    </style>
 <div class="d-sm-flex justify-content-between">
     <div>
         <a href="{% url 'egg_setting_create' %}" class="btn btn-icon btn-outline-white">
@@ -12,6 +28,7 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
+            
             <div class="table-responsive">
                 <table class="table table-flush" id="datatable-search">
                     <thead class="thead-light">
@@ -30,7 +47,7 @@
                     </thead>
                     <tbody>
                         {% for egg_setting in egg_settings %}
-                        <tr data-url="{% url 'egg_setting_detail' egg_setting.settingcode %}" class="clickable-row">
+                        <tr>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="form-check">
@@ -173,13 +190,36 @@
         });
     });
 
-    // Handle delete modal
     var deleteModal = document.getElementById('deleteModal');
     deleteModal.addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget; // Button that triggered the modal
-        var url = button.getAttribute('data-url'); // Extract info from data-* attributes
+        var button = event.relatedTarget; 
+        var url = button.getAttribute('data-url');
         var form = deleteModal.querySelector('#deleteForm');
-        form.action = url; // Update the form action to the delete URL
+        form.action = url;
     });
 </script>
+
+<script>
+    setTimeout(function() {
+      var alertElements = document.querySelectorAll('.alert');
+      alertElements.forEach(function(alert) {
+        alert.classList.remove('show');
+      });
+    }, 5000);
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      var closeButtons = document.querySelectorAll('.alert .close');
+    
+      closeButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+          var alert = this.closest('.alert');
+          alert.classList.remove('show');
+          setTimeout(function() {
+            alert.remove();
+          }, 300);
+        });
+      });
+    });
+    
+  </script>
 {% endblock %}

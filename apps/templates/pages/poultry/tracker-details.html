@@ -49,9 +49,25 @@
                                     </span>
                                     <div class="timeline-content">
                                         <h6 class="text-dark text-sm font-weight-bold mb-0">Egg Setting</h6>
+                                        <form method="GET" class="mb-3">
+                                            <div class="form-group">
+                                                <label for="egg_setting_select">Select Egg Setting:</label>
+                                                {% if egg_settings %}
+                                                    <select name="egg_setting_id" id="egg_setting_select" class="form-control" onchange="this.form.submit()">
+                                                        {% for setting in egg_settings %}
+                                                            <option value="{{ setting.id }}" {% if setting.id == egg_setting.id %}selected{% endif %}>
+                                                                {{setting.settingcode}} {% if setting.is_approved == False%} (Not Approved) {% endif%} | {{ setting.created|date:"Y-m-d H:i" }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                {% else %}
+                                                    <p class="text-muted">No egg settings available.</p>
+                                                {% endif %}
+                                            </div>
+                                        </form>
                                         <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
                                             {% if egg_setting %}
-                                            <i class="ni ni-check-bold text-success"></i> Set on {{ egg_setting.created|date:"Y-m-d H:i" }}
+                                            <i class="ni ni-check-bold text-success"></i> Set on {{ egg_setting.created|date:"Y-m-d H:i" }} | {{ egg_setting.eggs}} Eggs
                                             {% else %}
                                             Not set
                                             {% endif %}
@@ -65,9 +81,25 @@
                                     </span>
                                     <div class="timeline-content">
                                         <h6 class="text-dark text-sm font-weight-bold mb-0">Incubation</h6>
+                                        <form method="GET" class="mb-3">
+                                            <div class="form-group">
+                                                <label for="incubation_select">Select Incubation:</label>
+                                                {% if incubations %}
+                                                    <select name="incubation_id" id="incubation_select" class="form-control" onchange="this.form.submit()">
+                                                        {% for incubation in incubations %}
+                                                            <option value="{{ incubation.id }}" {% if incubation.id == incubation.id %}selected{% endif %}>
+                                                                {{incubation.incubationcode}} | {{ incubation.created|date:"Y-m-d H:i" }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                {% else %}
+                                                    <p class="text-muted">No incubations available.</p>
+                                                {% endif %}
+                                            </div>
+                                        </form>
                                         <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
                                             {% if incubation %}
-                                            <i class="ni ni-check-bold text-success"></i> Started on {{ incubation.created|date:"Y-m-d H:i" }}
+                                            <i class="ni ni-check-bold text-success"></i> Started on {{ incubation.created|date:"Y-m-d H:i" }} | {{incubation.eggs}} Eggs
                                             {% else %}
                                             Not incubated
                                             {% endif %}
@@ -130,6 +162,22 @@
                                     </span>
                                     <div class="timeline-content">
                                         <h6 class="text-dark text-sm font-weight-bold mb-0">Egg Setting</h6>
+                                        <form method="GET" class="mb-3">
+                                            <div class="form-group">
+                                                <label for="egg_setting_select">Select Egg Setting:</label>
+                                                {% if egg_settings %}
+                                                    <select name="egg_setting_id" id="egg_setting_select" class="form-control" onchange="this.form.submit()">
+                                                        {% for setting in egg_settings %}
+                                                            <option value="{{ setting.id }}" {% if setting.id == egg_setting.id %}selected{% endif %}>
+                                                                {{setting.settingcode}} | {{ setting.created|date:"Y-m-d H:i" }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                {% else %}
+                                                    <p class="text-muted">No egg settings available.</p>
+                                                {% endif %}
+                                            </div>
+                                        </form>
                                         <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
                                             {% if egg_setting %}
                                             <i class="ni ni-check-bold text-success"></i> Set on {{ egg_setting.created|date:"Y-m-d H:i" }}
@@ -146,6 +194,22 @@
                                     </span>
                                     <div class="timeline-content">
                                         <h6 class="text-dark text-sm font-weight-bold mb-0">Incubation</h6>
+                                        <form method="GET" class="mb-3">
+                                            <div class="form-group">
+                                                <label for="egg_setting_select">Select Incubation:</label>
+                                                {% if egg_settings %}
+                                                    <select name="incubation_id" id="incubation_select" class="form-control" onchange="this.form.submit()">
+                                                        {% for incubation in incubations %}
+                                                            <option value="{{ incubation.id }}" {% if incubation.id == incubation.id %}selected{% endif %}>
+                                                                {{incubation.incubationcode}} | {{ incubation.created|date:"Y-m-d H:i" }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                {% else %}
+                                                    <p class="text-muted">No incubations available.</p>
+                                                {% endif %}
+                                            </div>
+                                        </form>
                                         <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
                                             {% if incubation %}
                                             <i class="ni ni-check-bold text-success"></i> Started on {{ incubation.created|date:"Y-m-d H:i" }}

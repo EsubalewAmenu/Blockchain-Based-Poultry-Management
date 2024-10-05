@@ -18,12 +18,14 @@
       <div class="row">
         <div class="col-lg-6">
           <h4 class="text-white">Make the changes below</h4>
-          <p class="text-white opacity-8">We're constantly trying to express ourselves and actualize our dreams. If you have the opportunity to play.</p>
+          <p class="text-white opacity-8">View and update the  information below.
+
+</p>
         </div>
         <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
-          {% if request.resolver_match.url_name == 'breeders_update' %}
+          {% comment %} {% if request.resolver_match.url_name == 'breeders_update' %} {% endcomment %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
-          {% endif %}
+          {% comment %} {% endif %} {% endcomment %}
           {% if request.resolver_match.url_name == 'breeders_delete' %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Confirm Delete</button>
           {% endif %}
@@ -41,9 +43,9 @@
                   <div class="swiper-slide">
                     <h6>Hens Photo</h6>
                     {% if breeder.hens_photo %}
-                      <img src="{{ breeder.hens_photo.url }}" alt="{{ breeder.batch }} Hens Photo">
+                    <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{{ breeder.hens_photo.url }}" alt="{{ breeder.batch }} Hens Photo">
                     {% else %}
-                      <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                      <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
                     <input type="file" class="form-control mt-3" name="hens_photo">
                   </div>
@@ -52,9 +54,9 @@
                   <div class="swiper-slide">
                     <h6>Cocks Photo</h6>
                     {% if breeder.cocks_photo %}
-                      <img src="{{ breeder.cocks_photo.url }}" alt="{{ breeder.batch }} Cocks Photo">
+                    <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{{ breeder.cocks_photo.url }}" alt="{{ breeder.batch }} Cocks Photo">
                     {% else %}
-                      <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                      <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
                     <input type="file" class="form-control mt-3" name="cocks_photo">
                   </div>
@@ -74,11 +76,16 @@
               <div class="row">
                 <div class="col-12 col-sm-6">
                   <label>Batch</label>
-                  <input class="form-control" type="text" name="batch" value="{{ breeder.batch }}">
+                  <input class="form-control" type="text" name="batch" value="{{ breeder.batch }}" disabled>
                 </div>
                 <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                   <label>Breed</label>
-                  <input class="form-control" type="text" name="breed" value="{{ breeder.breed.breed }}">
+                  <select class="multisteps-form__input form-control" name="breed">
+                    <option value="">{{breeder.breed.breed}}</option>
+                    {% for breed in breeds %}
+                        <option value="{{ breed.id }}">{{ breed.breed }}</option>
+                    {% endfor %}
+                </select>
                 </div>
               </div>
               <div class="row">
@@ -94,17 +101,17 @@
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Mortality Rate (%)</label>
-                  <input class="form-control" type="number" name="mortality" value="{{ breeder.mortality|default:'N/A' }}">
+                  <input class="form-control" type="number" name="mortality" value="{{ breeder.mortality|default:0 }}">
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Butchered</label>
-                  <input class="form-control" type="number" name="butchered" value="{{ breeder.butchered|default:'N/A' }}">
+                  <input class="form-control" type="number" name="butchered" value="{{ breeder.butchered|default:0 }}">
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Sold</label>
-                  <input class="form-control" type="number" name="sold" value="{{ breeder.sold|default:'N/A' }}">
+                  <input class="form-control" type="number" name="sold" value="{{ breeder.sold|default:0 }}">
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Current Number</label>

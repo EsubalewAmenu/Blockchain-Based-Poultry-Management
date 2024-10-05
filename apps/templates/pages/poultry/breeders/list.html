@@ -7,26 +7,7 @@
       New Breeder
     </a>
   </div>
-  <div class="d-flex">
-    <div class="dropdown d-inline">
-      <a href="javascript:;" class="btn btn-outline-white dropdown-toggle " data-bs-toggle="dropdown" id="navbarDropdownMenuLink2">
-        Filters
-      </a>
-      <ul class="dropdown-menu dropdown-menu-lg-start px-2 py-3" aria-labelledby="navbarDropdownMenuLink2" data-popper-placement="left-start">
-        <li><a class="dropdown-item border-radius-md" href="javascript:;">Status: Paid</a></li>
-        <li><a class="dropdown-item border-radius-md" href="javascript:;">Status: Refunded</a></li>
-        <li><a class="dropdown-item border-radius-md" href="javascript:;">Status: Canceled</a></li>
-        <li>
-          <hr class="horizontal dark my-2">
-        </li>
-        <li><a class="dropdown-item border-radius-md text-danger" href="javascript:;">Remove Filter</a></li>
-      </ul>
-    </div>
-    <button class="btn btn-icon btn-outline-white ms-2 export" data-type="csv" type="button">
-      <span class="btn-inner--icon"><i class="ni ni-archive-2"></i></span>
-      <span class="btn-inner--text">Export CSV</span>
-    </button>
-  </div>
+  
 </div>
 <div class="row">
   <div class="col-12">
@@ -37,7 +18,6 @@
               <tr>
                   <th scope="col">Batch</th>
                   <th scope="col">Created</th>
-                  <th scope="col">Status</th>
                   <th scope="col">Breed</th>
                   <th scope="col">Mortality</th>
                   <th scope="col">Current NO.</th>
@@ -46,7 +26,7 @@
           </thead>
           <tbody>
               {% for breeder in breeders %}
-              <tr data-url="{% url 'breeders_detail' breeder.batch %}" class="clickable-row">
+              <tr>
                   <td>
                       <div class="d-flex align-items-center">
                           <div class="form-check">
@@ -59,14 +39,7 @@
                   <td class="font-weight-bold">
                       <span class="my-2 text-xs">{{ breeder.created|date:"d M, h:i A" }}</span>
                   </td>
-                  <td class="text-xs font-weight-bold">
-                      <div class="d-flex align-items-center">
-                          <button class="btn btn-icon-only btn-rounded btn-outline-dark mb-0 me-2 btn-sm d-flex align-items-center justify-content-center">
-                              <i class="fas fa-undo" aria-hidden="true"></i>
-                          </button>
-                          <span>{{ breeder.status|default:"N/A" }}</span>
-                      </div>
-                  </td>
+                  
                   <td class="text-xs font-weight-bold">
                       <div class="d-flex align-items-center">
                               <span>{{ breeder.breed.breed |default:"N/A" }}</span>
@@ -80,7 +53,7 @@
                   <td class="text-xs font-weight-bold">
                       <span class="my-2 text-xs">{{ breeder.current_number |default:"0" }}</span>
                   </td>
-                  <td class="text-sm text-center">
+                  <td class="my-2 text-xs">
                     <div class="d-flex justify-content-center align-items-center">
                       <a href="{% url 'breeders_detail' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                         <i class="fas fa-eye"></i>
@@ -88,7 +61,7 @@
                       <a href="{% url 'breeders_update' breeder.batch %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit breed">
                         <i class="fas fa-user-edit"></i>
                       </a>
-                      <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'breeders_delete' breeder.batch %}">
+                      <a href="#" type="button" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'breeders_delete' breeder.batch %}">
                         <i class="fas fa-trash"></i>
                       </a>
                     </div>
@@ -177,10 +150,10 @@
 <script>
   var deleteModal = document.getElementById('deleteModal');
   deleteModal.addEventListener('show.bs.modal', function (event) {
-    var button = event.relatedTarget; // Button that triggered the modal
-    var url = button.getAttribute('data-url'); // Extract info from data-* attributes
+    var button = event.relatedTarget;
+    var url = button.getAttribute('data-url');
     var form = deleteModal.querySelector('#deleteForm');
-    form.action = url; // Update the form action to the delete URL
+    form.action = url;
   });
 </script>
 {%endblock%}

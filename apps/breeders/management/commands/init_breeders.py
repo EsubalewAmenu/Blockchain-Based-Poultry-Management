@@ -11,26 +11,26 @@ class Command(BaseCommand):
 
     def create_breeds(self):
         breed_data = [
-            {'id': 1, 'code': 'BR001', 'poultry_type': 'Chicken', 'breed': 'Rhode Island Red', 'purpose': 'Dual-purpose', 'eggs_year': 250, 'adult_weight': 3.9, 'description': 'A hardy breed known for good egg production.'},
-            {'id': 2, 'code': 'BR002', 'poultry_type': 'Duck', 'breed': 'Pekin', 'purpose': 'Meat', 'eggs_year': 150, 'adult_weight': 3.6, 'description': 'Popular meat duck with a white plumage.'},
-            {'id': 3, 'code': 'BR003', 'poultry_type': 'Chicken', 'breed': 'Leghorn', 'purpose': 'Egg-laying', 'eggs_year': 300, 'adult_weight': 2.5, 'description': 'Known for excellent egg production.'}
+            {'code': 'BRD001', 'poultry_type': 'Chicken', 'breed': 'Rhode Island Red', 'purpose': 'Dual-purpose', 'eggs_year': 250, 'adult_weight': 3.9, 'description': 'A hardy breed known for good egg production.'},
+            {'code': 'BRD002', 'poultry_type': 'Duck', 'breed': 'Pekin', 'purpose': 'Meat', 'eggs_year': 150, 'adult_weight': 3.6, 'description': 'Popular meat duck with a white plumage.'},
+            {'code': 'BRD003', 'poultry_type': 'Chicken', 'breed': 'Leghorn', 'purpose': 'Egg-laying', 'eggs_year': 300, 'adult_weight': 2.5, 'description': 'Known for excellent egg production.'}
         ]
         
         for data in breed_data:
-            breed, created = Breed.objects.get_or_create(
-                id=data['id'],
-                defaults={
-                    'code': data['code'],
-                    'poultry_type': data['poultry_type'],
-                    'breed': data['breed'],
-                    'purpose': data['purpose'],
-                    'eggs_year': data['eggs_year'],
-                    'adult_weight': data['adult_weight'],
-                    'description': data['description']
-                }
+            if Breed.objects.filter(code=data['code']).exists():
+                self.stdout.write(self.style.WARNING(f"Breed with code {data['code']} already exists."))
+                continue
+            breed = Breed(
+                    code=data['code'],
+                    poultry_type=data['poultry_type'],
+                    breed=data['breed'],
+                    purpose=data['purpose'],
+                    eggs_year=data['eggs_year'],
+                    adult_weight=data['adult_weight'],
+                    description=data['description']
             )
-            if created:
-                self.stdout.write(self.style.SUCCESS(f"Created breed: {breed.id}"))
+            breed.save()
+            self.stdout.write(self.style.SUCCESS(f"Created breed: {breed.code}"))
 
     def create_breeders(self):
         breeders_data = [
@@ -55,5 +55,7 @@ class Command(BaseCommand):
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(f"Created breeder: {breeder.batch}"))
+                else:
+                    self.stdout.write(self.style.WARNING(f"Breeder with batch {breeder.batch} already exists."))
             except Breed.DoesNotExist:
-                self.stdout.write(self.style.ERROR(f"Breed with id {data['breed_id']} does not exist"))
+                self.stdout.write(self.style.ERROR(f"Breed with id {data['breed']} does not exist"))

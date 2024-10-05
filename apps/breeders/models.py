@@ -26,7 +26,7 @@ class Breed(models.Model):
     """
     Breed Model
     """
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True, unique=True, db_index=True, auto_created=True)
     code=models.CharField(null=True,blank=True,max_length=50, unique=True)
     poultry_type=models.CharField(null=True,blank=True,max_length=50)
     breed=models.CharField(null=True,blank=True,max_length=50)

@@ -38,7 +38,13 @@
                     </div>
                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                       <label>Incubator Type</label>
-                      <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Automatic" name="incubatortype" />
+                      <select class="multisteps-form__input form-control" name="incubatortype">
+                        <option value="">Select Incubator Type</option>
+                          <option value="Automatic">Automatic</option>
+                          <option value="Semi-Automatic">Semi-Automatic</option>
+                          <option value="Manual">Manual</option>
+                          <option value="Hybrid">Hybrid</option>
+                      </select>
                     </div>
                   </div>
                   <div class="row mt-3">
@@ -60,7 +66,9 @@
                       <label>Item</label>
                       <select class="multisteps-form__input form-control" name="item">
                           <option value="" disabled selected>Select an Item</option>
-                          <option value="None">None</option>
+                          {% if item_data %}
+                                  <option value="{{ item_data.id }}" selected>{{ item_data.code }} - {{ item_data.item_type }} | {{ item_data.created_at }}</option>
+                            {% endif %}
                           {% for item in items %}
                               <option value="{{ item.pk }}">{{ item.code }}-{{item.item_type.type_name}} | {{item.created_at}}</option>
                           {% endfor %}
