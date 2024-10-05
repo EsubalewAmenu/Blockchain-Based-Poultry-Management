@@ -53,7 +53,7 @@ def customer_create(request):
             if request.FILES.get('photo').content_type not in allowed_image_types:
                 messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
                 return redirect('customer_create')
-        photo = request.FILES.get('photo')
+        photo = request.FILES.get('photo', None)
 
         customer = Customer(
             first_name=first_name,
@@ -238,7 +238,8 @@ def eggs_create(request):
         item.quantity=received
         item.save()
         messages.success(request, "Egg Created Successfully", extra_tags="success")
-        request.session.pop('item_data')
+        if 'item_data' in request.session:
+            request.session.pop('item_data')
         return redirect('eggs_list')
 
     return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items, 'item_data':item_data})

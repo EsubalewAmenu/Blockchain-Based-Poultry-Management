@@ -134,6 +134,11 @@ def hatcher_create(request):
         latitude_str = request.POST.get('latitude', None)
         longitude_str = request.POST.get('longitude', None)
         allowed_image_types = ['image/jpeg', 'image/png']
+        
+        if Hatchery.objects.filter(name=name).exists():
+            messages.error(request, "Hatchery with this name is already registered.", extra_tags="danger")
+            return redirect('hatchery_create')
+        
         if Hatchery.objects.filter(email=email).exists():
             messages.error(request, "This email address is already registered.", extra_tags="danger")
             return redirect('hatchery_create')
@@ -228,7 +233,8 @@ def incubator_create(request):
         item.quantity = 1
         item.save()
         messages.success(request, "Incubator created successfully", extra_tags='success')
-        request.session.pop('item_data')
+        if 'item_data' in request.session:
+            request.session.pop('item_data')
         return redirect('incubator_list')
     
     return render(request, 'pages/poultry/incubators/create.html', {'hatcheries': hatcheries, 'items':items, 'item_data':item_data})
@@ -401,11 +407,23 @@ def egg_setting_detail(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
 
     if request.method == 'POST':
+        if egg_setting.is_approved:
+            messages.success(request, "Egg Setting request is already approved ", extra_tags='danger')
+            return redirect('egg_setting_list')
         egg_setting.settingcode = request.POST.get('settingcode', egg_setting.settingcode)
         egg_setting.incubator = get_object_or_404(Incubators, id=request.POST.get('incubator'))
-        egg_setting.customer = get_object_or_404(Customer, id=request.POST.get('customer'))
         egg_setting.breeders = get_object_or_404(Breeders, id=request.POST.get('breeders'))
-        egg_setting.eggs = request.POST.get('eggs', egg_setting.eggs)
+        if request.POST.get('eggs'):
+            if egg_setting.eggs == int(request.POST.get('eggs')):
+                pass
+            elif egg_setting.item_request.item.quantity < int(request.POST.get('eggs')):
+                messages.error(request, 'Not enough eggs available in the selected egg type.', extra_tags='danger')
+                return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
+            egg_setting.eggs = int(request.POST.get('eggs'))
+            egg_setting.item_request.quantity = int(request.POST.get('eggs'))
+            egg_setting.item_request.save()
+        else:
+            egg_setting.eggs = egg_setting.eggs
         egg_setting.save()
         return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
 

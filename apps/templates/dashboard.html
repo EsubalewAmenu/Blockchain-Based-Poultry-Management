@@ -203,6 +203,12 @@
     } else {
       overallErrorMessage.textContent = "Please fill in all required fields."; // Set overall error message
       overallErrorMessage.style.display = 'block'; // Display overall error message
+      
+      // Set timeout to clear the overall error message after 3 seconds
+      setTimeout(() => {
+        overallErrorMessage.style.display = 'none';
+        overallErrorMessage.textContent = ''; // Clear the message text
+      }, 3000); // 3000 milliseconds = 3 seconds
     }
   });
 

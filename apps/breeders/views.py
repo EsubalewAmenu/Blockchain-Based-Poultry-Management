@@ -223,6 +223,9 @@ def breeders_create(request):
             sold=0
         if butchered in ['', "", None]:
             butchered=0
+            
+        if mortality in ['', "", None]:
+            mortality=0
         hens_photo = request.FILES.get('hens_photo')
         cocks_photo = request.FILES.get('cocks_photo')
 
