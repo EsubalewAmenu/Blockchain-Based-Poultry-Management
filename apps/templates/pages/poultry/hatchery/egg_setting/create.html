@@ -44,21 +44,25 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-sm-6">
                                         <label class="form-label">Item</label>
-                                        <select class="form-control" name="item_request_item" required>
+                                        <select class="form-control" name="item_request_item">
                                             <option value="" disabled selected>Select an item</option>
                                             {% for item in items %}
                                             <option value="{{ item.pk }}">{{ item.code }} - {{ item.item_type.type_name }} | {{item.created_at}}</option>
                                             {% endfor %}
                                         </select>
+                                        {% if errors.item_request_item%}
+                                            <small class="text-danger">{{ errors.item_request_item }}</small>
+                                        {% endif %}
                                     </div>
                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Quantity</label>
-                                        <input class="form-control" type="number" placeholder="e.g., 10" name="item_request_quantity" required />
+                                        <input class="form-control" type="number" placeholder="e.g., 10" name="item_request_quantity"/>
+                                        {% if errors.item_request_quantity%}
+                                            <small class="text-danger">{{ errors.item_request_quantity }}</small>
+                                        {% endif %}
                                     </div>
                                 </div>
-                                {% if error %}
-                                    <div class="alert alert-danger mt-3">{{ error }}</div>
-                                {% endif %}
+                                
                                 <div class="button-row d-flex mt-4">
                                     <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
                                 </div>
@@ -71,21 +75,27 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Incubator</label>
-                                        <select class="form-control" name="incubator" required>
+                                        <select class="form-control" name="incubator">
                                             <option value="" disabled selected>Select an incubator</option>
                                             {% for incubator in incubators %}
                                                 <option value="{{ incubator.pk }}">{{ incubator.code }}</option>
                                             {% endfor %}
                                         </select>
+                                        {% if errors.incubator%}
+                                            <small class="text-danger">{{ errors.incubator }}</small>
+                                        {% endif %}
                                     </div>
                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Breeders</label>
-                                        <select class="form-control" name="breeders" required>
+                                        <select class="form-control" name="breeders">
                                             <option value="" disabled selected>Select breeders</option>
                                             {% for breeder in breeders %}
                                             <option value="{{ breeder.id }}">{{ breeder.batch }} | {{breeder.breed.breed}}</option>
                                             {% endfor %}
                                         </select>
+                                        {% if errors.breeders%}
+                                            <small class="text-danger">{{ errors.breeders }}</small>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -94,9 +104,7 @@
                                 </div>
                                 <div class="row mt-3">
                                 </div>
-                                {% if error %}
-                                    <div class="alert alert-danger mt-3">{{ error }}</div>
-                                {% endif %}
+                                
                                 <div class="button-row d-flex mt-4">
                                     <button class="btn bg-gradient-secondary mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
                                     <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>

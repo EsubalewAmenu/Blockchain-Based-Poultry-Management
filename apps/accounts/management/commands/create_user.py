@@ -77,7 +77,7 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.ERROR('Department is required when assigning a Manager role.'))
                     return
                 department = Department.objects.get(name=department_name)
-                role = Role.objects.get(name=role_name, department=department)
+                role = Role.objects.get(name=role_name)
             else:
                 role = Role.objects.get(name=role_name)
                 department = None if is_superuser else Department.objects.get(name=department_name)

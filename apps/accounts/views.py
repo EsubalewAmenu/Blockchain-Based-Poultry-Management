@@ -88,6 +88,7 @@ def signin_with_wallet(request):
 @csrf_exempt
 @login_required
 def create_user(request):
+    errors = {}
     if request.method == 'POST':
         email = request.POST.get('email')
         username = request.POST.get('username')
@@ -102,39 +103,45 @@ def create_user(request):
             
         if email:
             if not validate_email(email):
-                messages.error(request, "This email address does not exist.", extra_tags="danger")
-                return render(request, 'pages/pages/users/new-user.html')
-
-        # Basic validation
-        if not email or not first_name:
-            messages.error(request, 'All fields are required.', extra_tags='danger')
-            return render(request, 'pages/pages/users/new-user.html')
-        elif User.objects.filter(email=email).exists():
-            messages.error(request, 'Email is already registered.', extra_tags='danger')
-            return render(request, 'pages/pages/users/new-user.html')
+                errors['email'] = 'This email address is not valid.'
+                
+            elif User.objects.filter(email=email).exists():
+                errors['email'] = 'This Email Address already exists'
+                
+        required_fields = ['email', 'first_name', 'primary_phone']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = f'* This field is required.'
+                
+            
+        if errors:
+            messages.error(request, "Error Creating user account", extra_tags="danger")
+            return render(request, 'pages/pages/users/new-user.html', {'errors': errors})
         
         # Generate a username and password
         username = email.split('@')[0]
         characters = string.ascii_letters + string.digits + string.punctuation
         password = ''.join(random.choice(characters) for _ in range(8))
-        
-        # Create the user
-        user = User.objects.create(
-            email=email,
-            username=username,
-            first_name=first_name,
-            last_name=last_name
-        )
-        
-        user.set_password(password)
-        user.save()
-        
-        user_settings = UserSettings(user=user)
-        user_settings.primary_phone = primary_phone
-        user_settings.secondary_phone = secondary_phone
-        user_settings.date_of_birth = date_of_birth
-        user_settings.address = address
-        user_settings.save()
+        try:
+            user = User.objects.create(
+                email=email,
+                username=username,
+                first_name=first_name,
+                last_name=last_name
+            )
+            
+            user.set_password(password)
+            user.save()
+            
+            user_settings = UserSettings(user=user)
+            user_settings.primary_phone = primary_phone
+            user_settings.secondary_phone = secondary_phone
+            user_settings.date_of_birth = date_of_birth
+            user_settings.address = address
+            user_settings.save()
+        except Exception as e:
+            messages.error(request, f'Error creating User : {str(e)}', extra_tags='danger')
+            return render(request, 'pages/pages/users/new-user.html', {"errors": errors})
         
         uidb64 = urlsafe_base64_encode(force_bytes(user.id))
         token = PasswordResetTokenGenerator().make_token(user)
@@ -153,24 +160,28 @@ def create_user(request):
         except Exception as e:
             logger.error(f"Failed to send email: {e}")
             messages.error(request, 'User created but failed to send email. Please contact support.', extra_tags="danger")
-            return render(request, 'pages/pages/users/new-user.html')  # Return to the same form with error message
+            return render(request, 'pages/pages/users/new-user.html', {"errors": errors})
 
-    return render(request, 'pages/pages/users/new-user.html')
+    return render(request, 'pages/pages/users/new-user.html', {"errors": errors})
 
 @login_required
 def update_user(request):
     user = get_object_or_404(User, pk=request.user.pk)
     if request.method == 'POST':
-        user.first_name = request.POST.get('first_name')
-        user.last_name = request.POST.get('last_name')
-        user.email = request.POST.get('email')
-        user.settings.primary_phone = request.POST.get('primary_phone')
-        user.settings.secondary_phone = request.POST.get('secondary_phone')
-        user.settings.date_of_birth = request.POST.get('date_of_birth')
-        user.settings.address = request.POST.get('address')
-        user.save()
-        user.settings.save()
-        messages.success(request, 'User profile updated successfully.', extra_tags='danger')
+        try:
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.email = request.POST.get('email')
+            user.settings.primary_phone = request.POST.get('primary_phone')
+            user.settings.secondary_phone = request.POST.get('secondary_phone')
+            user.settings.date_of_birth = request.POST.get('date_of_birth')
+            user.settings.address = request.POST.get('address')
+            user.save()
+            user.settings.save()
+            messages.success(request, 'User profile updated successfully.', extra_tags='success')
+        except Exception as e:
+            messages.error(request, f'Error updating user: {str(e)}', extra_tags='danger')
+            return redirect('update_user')
         return redirect('usersettings')
     return render(request, 'pages/pages/account/settings.html', {'user': user})
 

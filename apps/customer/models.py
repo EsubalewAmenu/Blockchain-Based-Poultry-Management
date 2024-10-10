@@ -12,6 +12,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django.db import models
 from django.db.models import ImageField
+from django.forms import ValidationError
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import truncatechars, slugify  # or truncatewords
 from django.contrib.gis.db import models as gismodels
@@ -60,11 +61,26 @@ class Customer(models.Model):
         verbose_name = 'Customer'
         verbose_name_plural = "Customers"
         managed = True
+        
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
 
     def save(self, *args, **kwargs):
         self.full_name = self.first_name + " " + self.last_name
-        if Customer.objects.filter(full_name=self.full_name).exists():
-            self.full_name = self.first_name + "_" + self.last_name + "_" + str(random.randint(0, 1000))
+        existing_customer = Customer.objects.filter(full_name=self.full_name).exclude(id=self.id).first()
+
+        if existing_customer and existing_customer.owner != self.owner:
+            self.full_name = f"{self.first_name}_{self.last_name}_{random.randint(0, 1000)}"
+            
+        self.clean()
         super(Customer, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -103,9 +119,24 @@ class Eggs(models.Model):
         verbose_name_plural = "Eggs"
         managed = True
 
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
     def save(self, *args, **kwargs):
         if not self.batchnumber:
             self.batchnumber = self.generate_unique_batchnumber()
+        self.received = int(self.brought) - int(self.returned)
+        self.item.quantity=self.received
+        self.item.save()
+        self.clean()
         super(Eggs, self).save(*args, **kwargs)
         
     def generate_unique_batchnumber(self):

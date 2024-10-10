@@ -31,7 +31,7 @@
                   <div class="row mt-3">
                       <div class="col-12 col-sm-6">
                           <label>Item</label>
-                          <select class="multisteps-form__input form-control" name="item" required>
+                          <select class="multisteps-form__input form-control" name="item">
                               {% comment %} <option value="">Select an Item</option> {% endcomment %}
                               {% if item_data %}
                                   <option value="{{ item_data.id }}" selected>{{ item_data.code }} - {{ item_data.item_type }} | {{ item_data.created_at }}</option>
@@ -40,20 +40,29 @@
                                   <option value="{{ item.pk }}">{{ item.code }} - {{ item.item_type.type_name }} | {{item.created_at}}</option>
                               {% endfor %}
                           </select>
+                          {% if errors.item %}
+                          <small class="text-danger">{{ errors.item }}</small>
+                          {% endif %}
                       </div>
                       <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                           <label for="source" class="form-label">Source</label>
-                          <select class="form-control" name="source" id="source" required>
+                          <select class="form-control" name="source" id="source">
                               <option value="" disabled selected>Select a source</option>
                               <option value="customer">Customer</option>
                               <option value="farm">Farm</option>
                           </select>
+                          {% if errors.source %}
+                          <small class="text-danger">{{ errors.source }}</small>
+                          {% endif %}
                       </div>
                   </div>
                   <div class="row mt-3">
                       <div class="col-12 col-sm-6">
                           <label>Photo</label>
                           <input class="multisteps-form__input form-control" type="file" name="photo" accept="image/*" />
+                          {% if errors.photo %}
+                          <small class="text-danger">{{ errors.photo }}</small>
+                          {% endif %}
                       </div>
                       <div class="col-12 col-sm-6" id="customerField" style="display: none;">
                           <label>Customer</label>
@@ -63,6 +72,9 @@
                                   <option value="{{ customer.id }}">{{ customer.full_name }}</option>
                               {% endfor %}
                           </select>
+                          {% if errors.customer %}
+                          <small class="text-danger">{{ errors.customer }}</small>
+                          {% endif %}
                       </div>
                       <div class="col-12 col-sm-6" id="chickField" style="display: none;">
                           <label>Chicks</label>
@@ -72,16 +84,25 @@
                                   <option value="{{ chick.batchnumber }}">{{ chick.batchnumber }}</option>
                               {% endfor %}
                           </select>
+                          {% if errors.chick %}
+                          <small class="text-danger">{{ errors.chick }}</small>
+                          {% endif %}
                       </div>
                   </div>
                   <div class="row mt-3">
                       <div class="col-12 col-sm-6">
                           <label>Brought</label>
-                          <input class="multisteps-form__input form-control" type="number" name="brought" placeholder="eg. 100" required />
+                          <input class="multisteps-form__input form-control" type="number" name="brought" placeholder="eg. 100" />
+                          {% if errors.brought %}
+                          <small class="text-danger">{{ errors.brought }}</small>
+                          {% endif %}
                       </div>
                       <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                           <label>Returned</label>
-                          <input class="multisteps-form__input form-control" type="number" name="returned" placeholder="eg. 10" required />
+                          <input class="multisteps-form__input form-control" type="number" name="returned" placeholder="eg. 10" value="0"/>
+                          {% if errors.returned %}
+                          <small class="text-danger">{{ errors.returned }}</small>
+                          {% endif %}
                       </div>
                   </div>
                   <div class="button-row d-flex mt-4">
@@ -102,6 +123,9 @@
                         <option value="{{ breed.id }}">{{ breed.breed }}</option>
                       {% endfor %}
                     </select>
+                    {% if errors.breed %}
+                    <small class="text-danger">{{ errors.breed }}</small>
+                    {% endif %}
                   </div>
                 </div>
                 <div class="button-row d-flex mt-4">

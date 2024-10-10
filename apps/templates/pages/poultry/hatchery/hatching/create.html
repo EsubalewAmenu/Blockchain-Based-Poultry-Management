@@ -29,16 +29,22 @@
                                     <div class="row mt-3">
                                         <div class="col-12 col-sm-6">
                                             <label class="form-label">Candling</label>
-                                            <select class="form-control" name="candling" required>
+                                            <select class="form-control" name="candling">
                                                 <option value="" disabled selected>Select a candling</option>
                                                 {% for candling in candlings %}
                                                     <option value="{{ candling.pk }}">{{ candling.candlingcode }} | {{candling.created}}</option>
                                                 {% endfor %}
                                             </select>
+                                            {% if errors.candling%}
+                                            <small class="text-danger">{{ errors.candling }}</small>
+                                            {% endif %}
                                         </div>
                                         <div class="col-12 col-sm-6">
                                             <label class="form-label">Deformed</label>
-                                            <input class="form-control" type="number" placeholder="e.g., 5" name="deformed" required />
+                                            <input class="form-control" type="number" placeholder="e.g., 5" name="deformed" value="0" min="0"/>
+                                            {% if errors.deformed %}
+                                            <small class="text-danger">{{ errors.deformed }}</small>
+                                            {% endif %}
                                         </div>
                                         {% comment %} <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                             <label class="form-label">Hatched</label>
@@ -46,10 +52,12 @@
                                         </div> {% endcomment %}
                                     </div>
                                     <div class="row mt-3">
-                                        
                                         <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                             <label class="form-label">Spoilt</label>
-                                            <input class="form-control" type="number" placeholder="e.g., 5" name="spoilt" required />
+                                            <input class="form-control" type="number" placeholder="e.g., 5" name="spoilt" value="0" min="0"/>
+                                            {% if errors.spoilt %}
+                                            <small class="text-danger">{{ errors.spoilt }}</small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="button-row d-flex mt-4">

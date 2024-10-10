@@ -19,19 +19,24 @@
                         <div class="d-flex justify-content-end">
                             <div class="text-center me-3">
                                 {% if tracker.barcode_image %}
-                                <img src="{% url 'tracker_barcode_image' tracker.tracker_code %}" alt="Tracker Barcode" class="img-fluid" style="max-width: 80px; height: auto;">
+                                <a href="{% url 'tracker_barcode_image' tracker.tracker_code %}" target="_blank">
+                                    <img src="{% url 'tracker_barcode_image' tracker.tracker_code %}" alt="Tracker Barcode" class="img-fluid" style="max-width: 80px; height: auto;">
+                                </a>
                                 {% else %}
                                     <p class="text-danger">No Barcode Available</p>
                                 {% endif %}
                             </div>
                             <div class="text-center">
                                 {% if tracker.qr_code_image %}
-                                <img src="{% url 'tracker_qr_code' tracker.tracker_code %}" alt="Tracker QR Code" class="img-fluid" style="max-width: 80px; height: auto;">
+                                <a href="{% url 'tracker_qr_code' tracker.tracker_code %}" target="_blank">
+                                    <img src="{% url 'tracker_qr_code' tracker.tracker_code %}" alt="Tracker QR Code" class="img-fluid" style="max-width: 80px; height: auto;">
+                                </a>
                                 {% else %}
                                     <p class="text-danger">No QR Code Available</p>
                                 {% endif %}
                             </div>
                         </div>
+                        
                     </div>
                 </div>
                 <div class="card-body p-3 pt-0">

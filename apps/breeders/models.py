@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-#########################################################################
-#
-# Copyright (C) 2020:  TelelBirds
-#
-#
-#########################################################################
 from __future__ import unicode_literals
 import os
 import datetime
@@ -12,14 +5,16 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django.db import models
 from django.db.models import ImageField
+from django.forms import ValidationError
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import truncatechars, slugify  # or truncatewords
 from django.contrib.gis.db import models as gismodels
 
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
-
 from telelbirds import settings
+import random
+import string
 
 
 class Breed(models.Model):
@@ -46,8 +41,33 @@ class Breed(models.Model):
         verbose_name_plural = "Breed"
         managed = True
     
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors)   
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.generate_unique_code()
+        self.eggs_year = int(self.eggs_year) if self.eggs_year else None
+        self.clean()
+        super(Breed, self).save(*args, **kwargs)
+        
+    def generate_unique_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'BRD-{random_suffix}'
+            if not Breed.objects.filter(code=unique_code).exists():
+                return unique_code
+
     def get_absolute_url(self):
         return '/breed/{}'.format(self.code)
+    
 
 
 class Breeders(models.Model):
@@ -75,16 +95,45 @@ class Breeders(models.Model):
         verbose_name = 'Breeders'
         verbose_name_plural = "Breeders"
         managed = True
-
+        
+    def generate_unique_batch(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'BRDR-{random_suffix}'
+            if not Breeders.objects.filter(batch=unique_code).exists():
+                return unique_code
+            
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors)            
+                
     def save(self, *args, **kwargs):
-        cocks = int(self.cocks) if self.cocks else 0
-        hens = int(self.hens) if self.hens else 0
-        butchered = int(self.butchered) if self.butchered else 0
-        sold = int(self.sold) if self.sold else 0
-        mortality = float(self.mortality) if self.mortality else 0.0
-
-        # Calculate current_number based on the validated values
-        self.current_number = cocks + hens - butchered - sold - mortality
+        if not self.batch:
+            self.batch = self.generate_unique_batch()
+        try:
+            self.cocks = int(self.cocks) if self.cocks is not None else 0
+            self.hens = int(self.hens) if self.hens is not None else 0
+            self.butchered = int(self.butchered) if self.butchered is not None else 0
+            self.sold = int(self.sold) if self.sold is not None else 0
+            self.mortality = float(self.mortality) if self.mortality is not None else 0.0
+            
+            # Calculate current number
+            self.current_number = self.cocks + self.hens - self.butchered - self.sold
+            
+            # Ensure current_number is valid
+            if self.current_number < 0:
+                raise ValidationError("Current number cannot be negative.")
+            
+        except (ValueError, TypeError) as e:
+            raise ValidationError(f"Invalid input for numbers: {e}")
+        self.clean()
         super(Breeders, self).save(*args, **kwargs)
     
     def get_absolute_url(self):
