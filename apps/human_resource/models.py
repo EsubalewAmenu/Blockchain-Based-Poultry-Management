@@ -12,9 +12,7 @@ class Department(models.Model):
         return self.name
 
 class Role(models.Model):
-    name = models.CharField(max_length=50)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='roles')
-    
+    name = models.CharField(max_length=50)    
     ROLE_TYPES = (
         ('Manager', 'Manager'),
         ('Staff', 'Staff'),

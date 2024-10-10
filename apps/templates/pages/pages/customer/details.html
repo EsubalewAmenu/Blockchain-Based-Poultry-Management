@@ -38,13 +38,20 @@
             <div class="col-6">
               <label class="form-label">First Name</label>
               <div class="input-group">
-                <input id="firstName" name="first_name" class="form-control" type="text" value="{{ customer.first_name }}" required="required">
+                <input id="firstName" name="first_name" class="form-control" type="text" value="{{ customer.first_name }}">
+                {% if errors.first_name %}
+                <small class="text-danger">{{ errors.first_name }}</small>
+                {% endif %}
+
               </div>
             </div>
             <div class="col-6">
               <label class="form-label">Last Name</label>
               <div class="input-group">
-                <input id="lastName" name="last_name" class="form-control" type="text" value="{{ customer.last_name }}" required="required">
+                <input id="lastName" name="last_name" class="form-control" type="text" value="{{ customer.last_name }}">
+                {% if errors.last_name %}
+                <small class="text-danger">{{ errors.last_name }}</small>
+              {% endif %}
               </div>
             </div>
           </div>
@@ -53,12 +60,18 @@
               <label class="form-label mt-4">Email</label>
               <div class="input-group">
                 <input id="email" name="email" class="form-control" type="email" value="{{ customer.email }}" placeholder="example@email.com">
+                {% if errors.email %}
+                <small class="text-danger">{{ errors.email }}</small>
+                {% endif %}
               </div>
             </div>
             <div class="col-6">
               <label class="form-label mt-4">Phone Number</label>
               <div class="input-group">
                 <input id="phone" name="phone" class="form-control" type="text" value="{{ customer.phone }}" placeholder="+40 735 631 620">
+                {% if errors.phone %}
+                <small class="text-danger">{{ errors.phone }}</small>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -67,12 +80,6 @@
               <label class="form-label mt-4">Address</label>
               <div class="input-group">
                 <input id="address" name="address" class="form-control" type="text" value="{{ customer.address }}" placeholder="123 Main St">
-              </div>
-            </div>
-            <div class="col-6">
-              <label class="form-label mt-4">Location</label>
-              <div class="input-group">
-                <input id="location" name="location" class="form-control" type="text" value="{{ customer.location }}" placeholder="Sydney, A">
               </div>
             </div>
           </div>
@@ -150,11 +157,11 @@
     <!-- Card Delete Account -->
     <div class="card mt-4" id="delete">
       <div class="card-header">
-        <h5>Delete Account</h5>
-        <p class="text-sm mb-0">Once you delete your account, there is no going back. Please be certain.</p>
+        <h5>Delete Customer</h5>
+        <p class="text-sm mb-0">Once you delete this customer, there is no going back. Please be certain.</p>
       </div>
       <div class="card-body d-sm-flex pt-0">
-        <button class="btn bg-gradient-danger mb-0 ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Account</button>
+        <button class="btn bg-gradient-danger mb-0 ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Customer</button>
       </div>
     </div>
 
@@ -167,13 +174,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            <p>Are you sure you want to delete this customer? This action cannot be undone.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <form action="{% url 'customer_delete' customer.full_name %}" method="post" class="d-inline">
               {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Delete Account</button>
+              <button type="submit" class="btn btn-danger">Delete Customer</button>
             </form>
           </div>
         </div>

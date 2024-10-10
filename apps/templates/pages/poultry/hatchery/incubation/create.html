@@ -28,16 +28,22 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-sm-6">
                                         <label class="form-label">Egg Setting</label>
-                                        <select class="form-control" name="eggsetting" required>
+                                        <select class="form-control" name="eggsetting">
                                             <option value="" disabled selected>Select an egg setting</option>
                                             {% for setting in egg_settings %}
                                                 <option value="{{ setting.pk }}">{{ setting.settingcode }} | {{setting.created}}</option>
                                             {% endfor %}
                                         </select>
+                                        {% if errors.eggsetting %}
+                                            <small class="text-danger">{{ errors.eggsetting }}</small>
+                                        {% endif %}
                                     </div>
                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Number of Eggs</label>
-                                        <input class="form-control" type="number" placeholder="e.g., 100" name="eggs" required />
+                                        <input class="form-control" type="number" placeholder="e.g., 100" name="eggs" />
+                                        {% if errors.eggs %}
+                                            <small class="text-danger">{{ errors.eggs }}</small>
+                                        {% endif %}
                                     </div>
                                     {% comment %} <div class="col-12 col-sm-6">
                                         <label class="form-label">Breeders</label>
@@ -62,9 +68,6 @@
                                     
                                     
                                 </div>
-                                {% if error %}
-                                    <div class="alert alert-danger mt-3">{{ error }}</div>
-                                {% endif %}
                                 <div class="button-row d-flex mt-4">
                                     <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
                                 </div>

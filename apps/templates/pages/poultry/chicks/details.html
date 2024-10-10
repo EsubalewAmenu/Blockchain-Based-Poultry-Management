@@ -43,6 +43,9 @@
                       <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
                     <input type="file" class="form-control mt-3" name="chick_photo">
+                    {% if errors.chick_photo %}
+                    <small class="text-danger">{{ errors.chick_photo }}</small>
+                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -57,11 +60,11 @@
               <div class="row">
                 <div class="col-12 col-sm-6">
                   <label>Batch Number</label>
-                  <input class="form-control" type="text" name="batchnumber" value="{{ chick.batchnumber }}">
+                  <input class="form-control" type="text" name="batchnumber" value="{{ chick.batchnumber }}" readonly>
                 </div>
                 <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                   <label>Source</label>
-                  <input class="form-control" type="text" name="source" value="{{ chick.source }}">
+                  <input class="form-control" type="text" name="source" value="{{ chick.source }}" readonly>
                 </div>
               </div>
               <div class="row">
@@ -75,11 +78,16 @@
                       {% endif %}
                     {% endfor %}
                   </select>
-                  </select>
+                  {% if errors.breed %}
+                  <small class="text-danger">{{ errors.breed }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Age</label>
-                  <input class="form-control" type="date" name="age" value="{{ chick.age|date:'Y-m-d' }}">
+                  <input class="form-control" type="date" name="age" value="{{ chick.age|date:'Y-m-d' }}" readonly>
+                  {% if errors.age %}
+                  <small class="text-danger">{{ errors.age }}</small>
+                  {% endif %}
                 </div>
               </div>
               <div class="row">
@@ -90,15 +98,38 @@
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Customer</label>
                   {% comment %} <input class="form-control" type="text" name="customer" value="{{ chick.customer.full_name}}" disabled> {% endcomment %}
+                  {% if chick.source == "hatching"%}
+                    <select class="multisteps-form__input form-control" name="customer" disabled>
+                      <option value="">{{chick.customer.full_name}}</option>
+                      {% for customer in customers %}
+                          <option value="{{ customer.id }}">{{ customer.full_name }}</option>
+                      {% endfor %}
+                  </select>
+                  {% else%}
                   <select class="multisteps-form__input form-control" name="customer">
                     <option value="">{{chick.customer.full_name}}</option>
                     {% for customer in customers %}
                         <option value="{{ customer.id }}">{{ customer.full_name }}</option>
                     {% endfor %}
+                  {% endif %}
                 </select>
+                {% if errors.customer %}
+                <small class="text-danger">{{ errors.customer }}</small>
+                {% endif %}
                 </div>
               </div>
-              
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Total Number</label>
+                  {% if chick.source == "hatching"%}
+                  <input class="form-control" type="number" name="number" value="{{ chick.number}}" readonly>
+                  {% else %}
+                  <input class="form-control" type="number" name="number" value="{{ chick.number }}">
+                  {% endif %}
+                  {% if errors.number %}
+                  <small class="text-danger">{{ errors.number }}</small>
+                  {% endif %}
+                </div>
             </div>
               <div class="row">
                 <div class="col-12 mt-3">

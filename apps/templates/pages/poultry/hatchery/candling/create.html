@@ -28,16 +28,22 @@
                                 <div class="row mt-3">
                                     <div class="col-12 col-sm-6">
                                         <label class="form-label">Incubation</label>
-                                        <select class="form-control" name="incubation" required>
+                                        <select class="form-control" name="incubation">
                                             <option value="" disabled selected>Select an incubation</option>
                                             {% for incubation in incubations %}
                                                 <option value="{{ incubation.pk }}">{{ incubation.incubationcode }} | {{incubation.created}}</option>
                                             {% endfor %}
                                         </select>
+                                        {% if errors.incubation %}
+                                        <small class="text-danger">{{ errors.incubation }}</small>
+                                        {% endif %}
                                     </div>
                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Candled Date</label>
-                                        <input class="form-control" type="date" name="candled_date" />
+                                        <input class="form-control" type="date" name="candled_date" value={{today}} readonly/>
+                                        {% if errors.candled_date %}
+                                        <small class="text-danger">{{ errors.candled_date }}</small>
+                                        {% endif %}
                                     </div>
                                     {% comment %} <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Customer</label>
@@ -74,7 +80,10 @@
                                     </div> {% endcomment %}
                                     <div class="col-12 col-sm-6">
                                         <label class="form-label">Spoilt Eggs</label>
-                                        <input class="form-control" type="number" placeholder="e.g., 10" name="spoilt_eggs" required />
+                                        <input class="form-control" type="number" placeholder="e.g., 10" name="spoilt_eggs" value="0" min=0/>
+                                        {% if errors.spoilt_eggs %}
+                                        <small class="text-danger">{{ errors.spoilt_eggs }}</small>
+                                        {% endif %}
                                     </div>
                                     {% comment %} <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                         <label class="form-label">Candled Date</label>
@@ -84,9 +93,6 @@
                                 <div class="row mt-3">
                                     
                                 </div>
-                                {% if error %}
-                                    <div class="alert alert-danger mt-3">{{ error }}</div>
-                                {% endif %}
                                 <div class="button-row d-flex mt-4">
                                     <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
                                 </div>

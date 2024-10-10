@@ -205,7 +205,7 @@ def item_request(request):
     amount = request.POST.get('amount')
     item = get_object_or_404(Item, pk=item_id)
 
-    if item.quantity is None or item.quantity >= int(amount):
+    if item.quantity is None or item.quantity < int(amount):
        messages.error(request, "Requested amount is above the item's quantity.", extra_tags='danger')
        return redirect('item_request_list')
         
@@ -263,6 +263,9 @@ def item_request_delete(request, code):
     item = get_object_or_404(Item, code=item_request.item.code)
 
     if request.method == 'POST':
+        if EggSetting.objects.filter(item_request=item_request.id, is_approved=True).exists():
+            messages.error(request, 'Cannot delete item request associated with approved egg settings.', extra_tags='danger')
+            return redirect('item_request_list')
         item_request.delete()
         item.quantity += item_request.quantity
         item.save()

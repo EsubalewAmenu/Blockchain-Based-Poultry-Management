@@ -3,15 +3,15 @@
 
 {% block main %}
 <div class="d-sm-flex justify-content-between">
-    <div>
-        <a href="#" class="btn btn-icon btn-outline-white" data-bs-toggle="modal" data-bs-target="#createItemTypeModal">
+    <div class="mb-3">
+        {% comment %} <a href="#" class="btn btn-icon btn-outline-white" data-bs-toggle="modal" data-bs-target="#createItemTypeModal">
             New Item Type
-        </a>
+        </a> {% endcomment %}
     </div>
     
 </div>
 
-<div class="row">
+<div class="row mt-3">
     <div class="col-12">
         <div class="card">
             <div class="table-responsive">
@@ -22,7 +22,7 @@
                             <th scope="col">Code</th>
                             <th scope="col">Type Name</th>
                             <th scope="col">Created At</th>
-                            <th scope="col">Actions</th>
+                            {% comment %} <th scope="col">Actions</th> {% endcomment %}
                         </tr>
                     </thead>
                     <tbody>
@@ -33,7 +33,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="customCheck{{ item_type.id }}">
                                     </div>
-                                    <a href="{% url 'item_type_detail' item_type.code %}" class="text-decoration-none">
+                                    <a href="#" class="text-decoration-none">
                                         <p class="text-xs font-weight-bold ms-2 mb-0">#{{ item_type.id }}</p>
                                     </a>
                                 </div>
@@ -44,20 +44,20 @@
                             <td class="my-2 text-xs">{{ item_type.created_at|date:"Y-m-d H:i" }}</td>
                             <td class="my-2 text-xs">
                                 <div class="d-flex justify-content-left align-items-left">
-                                <a href="{% url 'item_type_detail' item_type.code %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
+                                {% comment %} <a href="{% url 'item_type_detail' item_type.code %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                                     <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="#" class="btn btn-link text-secondary" 
+                                </a> {% endcomment %}
+                                {% comment %} <a href="#" class="btn btn-link text-secondary" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#updateItemTypeModal" 
                                     data-id="{{ item_type.code }}" 
                                     data-type-name="{{ item_type.type_name }}" 
                                     data-model-name="{{ item_type.related_object }}">
                                         <i class="fas fa-user-edit"></i>
-                                    </a>
-                                <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'item_type_delete' item_type.code %}">
+                                    </a> {% endcomment %}
+                                {% comment %} <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'item_type_delete' item_type.code %}">
                                     <i class="fas fa-trash"></i>
-                                </a>
+                                </a> {% endcomment %}
                             </div>
                             </td>
                         </tr>
@@ -154,7 +154,7 @@
                     <input type="hidden" name="item_type_id" id="item_type_id">
                     <div class="mb-3">
                         <label for="update_type_name" class="form-label">Type Name</label>
-                        <input type="text" class="form-control" name="type_name" id="update_type_name" required>
+                        <input type="text" class="form-control" name="type_name" id="update_type_name" value={{item_type.type_name}}>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -238,6 +238,7 @@
 
         modalTitle.textContent = 'Update Item Type';
         typeNameInput.value = typeName; // Set the type name input
+        typeNameInput.placeholder = typeName; // Set the placeholder to the current type name
         itemTypeIdInput.value = itemTypeId; // Set the item type ID
 
         // Set the selected related object model
