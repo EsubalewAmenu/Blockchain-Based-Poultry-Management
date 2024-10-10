@@ -23,31 +23,41 @@ def chicks_list(request):
 
 @login_required
 def chicks_detail(request, batchnumber):
-    breeds =  Breed.objects.all()
-    items = Item.objects.all()
     chick = get_object_or_404(Chicks, batchnumber=batchnumber)
-    
+    breeds = Breed.objects.all()
+    errors={}
     if request.method == 'POST':
         chick.batchnumber = request.POST.get('batchnumber', chick.batchnumber)
         chick.source = request.POST.get('source', chick.source)
-        breed_id = request.POST.get('breed', chick.breed.pk)
+        breed_id = request.POST.get('breed')
         if breed_id:
             chick.breed = Breed.objects.get(pk=breed_id)
+        
         chick.age = request.POST.get('age', chick.age)
         chick.description = request.POST.get('description', chick.description)
-        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+        allowed_image_types = ['image/jpeg', 'image/png']
+        
+        if request.POST.get('age') and datetime.datetime.strptime(request.POST.get('age'), "%Y-%m-%d").date() > datetime.datetime.now().date():
+            errors['age'] = "Invalid Age. Age should be less than or equal to current date."
 
         if request.FILES.get('chick_photo'):
             if request.FILES.get('chick_photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('chicks_detail', batchnumber=batchnumber)
-            
+                errors['chick_photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+                
+        if errors:
+            messages.error(request, "Updating chick failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds': breeds, 'errors': errors})
+                
         if 'chick_photo' in request.FILES:
             chick.chick_photo = request.FILES['chick_photo']
-        chick.save()
+        try:
+            chick.save()
+            messages.success(request, "Chicks Updated Successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, f"Error updating chick: {str(e)}", extra_tags='danger')        
         return redirect('chicks_detail', batchnumber=chick.batchnumber)
-    
-    return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds':breeds})
+
+    return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds': breeds})
 
 @login_required
 def chicks_create(request):
@@ -57,6 +67,8 @@ def chicks_create(request):
     customers = Customer.objects.all()
     hatchings = Hatching.objects.all()
     item_data = None
+    errors = {}
+    
     if 'item_data' in request.session:
         item_data = request.session['item_data']
     if request.method == 'POST':
@@ -68,25 +80,49 @@ def chicks_create(request):
         number = int(request.POST.get('number'))
         customer_id = request.POST.get('customer')
         hatching_code = request.POST.get('hatching')
+        chick_photo = request.FILES.get('chick_photo')
         customer = None
+        allowed_image_types = ['image/jpeg', 'image/png']
         
+        required_fields = ['item', 'source', 'breed', 'number']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This field is required."
+                
+                
+        if source:
+            if source == 'hatching' and not hatching_code:
+                errors['hatching'] = "* This field is required"
+            elif source == 'customer' and not customer_id:
+                errors['customer'] = "* This field is required"
+                
         if age in ['', ""]:
             age = datetime.datetime.now().date()
+        
+        if age and datetime.datetime.strptime(age, "%Y-%m-%d").date() > datetime.datetime.now().date():
+            errors['age'] = "Invalid Age. Age should be less than or equal to current date."
+            
+        if chick_photo:
+            if request.FILES.get('chick_photo').content_type not in allowed_image_types:
+                errors['chick_photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+            
         if customer_id:
             customer = get_object_or_404(Customer, id=customer_id)
             
         hatching = None
         if hatching_code:
             hatching = get_object_or_404(Hatching, hatchingcode=hatching_code)
+            
         item_data = None    
         if 'item_data' in request.session:
             item_data = request.session['item_data']
+            
+        if errors:
+            messages.error(request, "Creating chick failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/chicks/create.html', {'breeds': breeds, 'eggs': eggs, 'items': items, 'item_data': item_data, 'customers': customers, 'hatchings': hatchings, 'errors': errors})
+            
         item = Item.objects.filter(pk=item_id).first()
-        item.quantity=int(number)
-        item.save()
         
-        chick_photo = request.FILES.get('chick_photo')
-
         chick = Chicks(
             item=item,
             source=source,
@@ -110,36 +146,36 @@ def chicks_create(request):
 def chicks_update(request, batchnumber):
     chick = get_object_or_404(Chicks, batchnumber=batchnumber)
     breeds = Breed.objects.all()
-    
+    errors={}
     if request.method == 'POST':
         chick.batchnumber = request.POST.get('batchnumber', chick.batchnumber)
         chick.source = request.POST.get('source', chick.source)
-        
         breed_id = request.POST.get('breed')
         if breed_id:
             chick.breed = Breed.objects.get(pk=breed_id)
-        elif chick.breed:
-            pass  # Keep the existing breed if no new breed is selected
-        else:
-            chick.breed = None  # Set breed to None if no value is provided and no existing breed is present
         
         chick.age = request.POST.get('age', chick.age)
         chick.description = request.POST.get('description', chick.description)
-        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+        allowed_image_types = ['image/jpeg', 'image/png']
+        
+        if request.POST.get('age') and datetime.datetime.strptime(request.POST.get('age'), "%Y-%m-%d").date() > datetime.datetime.now().date():
+            errors['age'] = "Invalid Age. Age should be less than or equal to current date."
 
         if request.FILES.get('chick_photo'):
             if request.FILES.get('chick_photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('chicks_detail', batchnumber=batchnumber)
+                errors['chick_photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+                
+        if errors:
+            messages.error(request, "Updating chick failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds': breeds, 'errors': errors})
+                
         if 'chick_photo' in request.FILES:
             chick.chick_photo = request.FILES['chick_photo']
-        elif chick.chick_photo:
-            pass  # Keep the existing photo if no new photo is uploaded
-        else:
-            chick.chick_photo = None  # Set photo to None if no value is provided and no existing photo is present
-
-        chick.save()
-        messages.success(request, "Chicks Updated Successfully", extra_tags="success")
+        try:
+            chick.save()
+            messages.success(request, "Chicks Updated Successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, f"Error updating chick: {str(e)}", extra_tags='danger')        
         return redirect('chicks_detail', batchnumber=chick.batchnumber)
 
     return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds': breeds})

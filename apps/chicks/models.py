@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models import ImageField
 from django.contrib.gis.db import models as gismodels
 
+from django.forms import ValidationError
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
 from telelbirds import settings
@@ -48,9 +49,23 @@ class Chicks(models.Model):
     def get_absolute_url(self):
         return '/chicks/{}'.format(self.batchnumber)
     
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
     def save(self, *args, **kwargs):
         if not self.batchnumber:
             self.batchnumber = self.generate_unique_batchnumber()
+        self.item.quantity=int(self.number)
+        self.item.save()
+        self.clean()
         super(Chicks, self).save(*args, **kwargs)
         
     def generate_unique_batchnumber(self):

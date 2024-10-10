@@ -4,6 +4,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.gis.geos import Point
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+
+from apps.hatchery.models import EggSetting
+from apps.inventory.models import ItemRequest
 from .models import *
 from .forms import EggsForm
 from apps.chicks.models import Chicks
@@ -25,51 +28,59 @@ def customer_detail(request, full_name):
 
 @login_required
 def customer_create(request):
+    errors = {}
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
         phone = request.POST.get('phone').replace(' ', '')
         address = request.POST.get('address')
-        latitude_str = request.POST.get('latitude', None)
-        longitude_str = request.POST.get('longitude', None)
-
-        # Initialize latitude and longitude
-        latitude = None
-        longitude = None
+        photo = request.FILES.get('photo', None)
+        required_fields = ['first_name','last_name', 'email', 'phone']
+        
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This field is required"
+        
         if Customer.objects.filter(email=email).exists():
-            messages.error(request, "This email address is already registered.", extra_tags="danger")
-            return redirect('customer_create')
+            errors['email'] = "This email address is already registered."
+            
         if email:
             if not validate_email(email):
-                messages.error(request, "This email address does not exist.", extra_tags="danger")
-                return redirect('customer_create')
+                errors['email'] = "This email address is not valid."
+                
+            
         notification_sms = request.POST.get('notification_sms') == 'on'
         delivery = request.POST.get('delivery') == 'on'
         followup = request.POST.get('followup') == 'on'
-        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+        allowed_image_types = ['image/jpeg', 'image/png']
 
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('customer_create')
-        photo = request.FILES.get('photo', None)
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+        
 
-        customer = Customer(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            phone=phone,
-            address=address,
-            latitude=latitude,
-            longitude=longitude,
-            notification_sms=notification_sms,
-            delivery=delivery,
-            followup=followup,
-            photo=photo
-        )
-        customer.save()
-        messages.success(request, "Customer created successfully", extra_tags="success")
+        if errors:
+            messages.error(request, "Creating customer failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/pages/customer/create.html', {'errors': errors})
+        
+        try:
+            customer = Customer(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+                address=address,
+                notification_sms=notification_sms,
+                delivery=delivery,
+                followup=followup,
+                photo=photo
+            )
+            customer.save()
+            messages.success(request, "Customer created successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, f"Creating customer failed: {str(e)}", extra_tags='danger')
+            return render(request, 'pages/pages/customer/create.html', {'errors': errors})
         return redirect('customer_list') 
     else:
         return render(request, 'pages/pages/customer/create.html')
@@ -77,6 +88,7 @@ def customer_create(request):
 @login_required
 def customer_update(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
+    errors = {}
     if request.method == 'POST':
         # Retrieve data from the form
         customer.first_name = request.POST.get('first_name')
@@ -84,18 +96,35 @@ def customer_update(request, full_name):
         customer.email = request.POST.get('email')
         customer.phone = request.POST.get('phone').replace(' ', '')
         customer.address = request.POST.get('address')
-        customer.latitude = request.POST.get('latitude')
-        customer.longitude = request.POST.get('longitude')
         customer.notification_sms = request.POST.get('notification_sms') == 'on'
         customer.delivery = request.POST.get('delivery') == 'on'
         customer.followup = request.POST.get('followup') == 'on'
         
         # Handle file upload
         photo = request.FILES.get('photo')
+        allowed_image_types = ['image/jpeg', 'image/png']
+        
+        
+            
+        if request.POST.get('email'):
+            if Customer.objects.filter(email=request.POST.get('email')).exclude(full_name=full_name).exists():
+                errors['email'] = "This email address is already registered."
+            if not validate_email(request.POST.get('email')):
+                errors['email'] = "This email address is not valid."
+                
         if photo:
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
             customer.photo = photo
-
-        customer.save()
+            
+        if errors:
+            messages.error(request, "Updating customer failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/pages/customer/details.html', {'customer': customer, 'errors': errors})
+        try:
+            customer.save()
+        except Exception as e:
+            messages.error(request, f"Updating customer failed: {str(e)}", extra_tags='danger')
+            return render(request, 'pages/pages/customer/details.html', {'customer': customer, 'errors': errors})
         messages.success(request, "Customer Updated Successfully", extra_tags="success")
         return redirect('customer_list')
     else:
@@ -120,6 +149,9 @@ def customer_update_notifications(request, full_name):
 def customer_delete(request, full_name):
     customer = get_object_or_404(Customer, full_name=full_name)
     if request.method == 'POST':
+        if Eggs.objects.filter(customer=customer).exists() or Chicks.objects.filter(customer=customer).exists():
+            messages.error(request, "Cannot delete customer associated with eggs or chicks.", extra_tags='danger')
+            return redirect('customer_detail', full_name=customer.full_name)
         customer.delete()
         return redirect('customer_list')
     else:
@@ -143,17 +175,23 @@ def eggs_list(request):
 @login_required
 def eggs_detail(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
-    egg = get_object_or_404(Eggs, batchnumber=batch_number)
     customers = Customer.objects.all()
     breeds = Breed.objects.all()
     chicks = Chicks.objects.all()  # Get all chicks for selection
-
+    errors={}
     if request.method == 'POST':
         egg.batchnumber = request.POST.get('batchnumber', egg.batchnumber)
         customer_id = request.POST.get('customer')
         breed_id = request.POST.get('breed')
         chick_id = request.POST.get('chick')  # Get selected chick ID
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+            else:
+                egg.photo = request.FILES['photo']
+                
         # Update foreign keys only if they are provided
         if customer_id:
             egg.customer_id = customer_id
@@ -164,17 +202,29 @@ def eggs_detail(request, batch_number):
 
         egg.brought = request.POST.get('brought', egg.brought)
         egg.returned = request.POST.get('returned', egg.returned)
-        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
-
-        if request.FILES.get('photo'):
-            if request.FILES.get('photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('eggs_detail', batch_number=batch_number)
-        # Handle photo upload
-        if 'photo' in request.FILES:
-            egg.photo = request.FILES['photo']
-
-        egg.save()
+        
+        if request.POST.get('brought') and request.POST.get('returned'):
+            if int(request.POST.get('returned')) > int(request.POST.get('brought')):
+                errors['returned'] = "* Returned number cannot be greater than brought number."
+                
+        if request.POST.get('returned') and int(request.POST.get('returned')) > int(egg.brought):
+            errors['returned'] = "* Returned number cannot be greater than brought number."
+            
+        if errors:
+            messages.error(request, "Updating egg failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/pages/customer/eggs/details.html', {
+                'egg': egg,
+                'customers': customers,
+                'breeds': breeds,
+                'chicks': chicks,
+                'errors': errors
+            })
+        try:    
+            egg.save()
+            messages.success(request, "Egg Updated Successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, "Error updating egg: " + str(e), extra_tags='danger')
+            
         return redirect('eggs_update', batch_number=egg.batchnumber)
 
     return render(request, 'pages/pages/customer/eggs/details.html', {
@@ -192,6 +242,7 @@ def eggs_create(request):
     items = Item.objects.filter(item_type__type_name='Egg')
     chicks = Chicks.objects.all()  # Get all chicks for selection
     item_data = None
+    errors = {}
     if 'item_data' in request.session:
         item_data = request.session['item_data']
     
@@ -199,18 +250,38 @@ def eggs_create(request):
         item_id = request.POST.get('item')
         customer_id = request.POST.get('customer')
         chicks_batch = request.POST.get('chick')
+        source = request.POST.get('source')
         breed_id = request.POST.get('breed')
         photo = request.FILES.get('photo')
         brought = request.POST.get('brought')
-        returned = request.POST.get('returned')
+        returned = request.POST.get('returned', 0)
         item = Item.objects.get(pk=item_id)
-        received = int(brought) - int(returned)
-        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+        allowed_image_types = ['image/jpeg', 'image/png']
+        
+        required_fields = ['item', 'breed', 'brought', 'source']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This field is required."
+        if brought:
+            if int(brought) <= 0:
+                errors['brought'] = "* Please enter a positive number."
+                
+        if brought and returned and int(returned) > int(brought):
+            errors['returned'] = "* Returned number cannot be greater than brought number."
+            
+        if not brought and returned and int(returned) >0:
+            errors['returned'] = "* Returned number cannot be provided without brought number."
+                
+        if source:
+            if source == 'farm' and not chicks_batch:
+                errors['chick'] = "* This field is required"
+            elif source == 'customer' and not customer_id:
+                errors['customer'] = "* This field is required"
 
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('eggs_create')
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+                
         customer = None
         if customer_id:
             customer = get_object_or_404(Customer, id=customer_id)
@@ -219,25 +290,30 @@ def eggs_create(request):
             chicks = get_object_or_404(Chicks, batchnumber=chicks_batch)
             batch = chicks.batchnumber
             
-           
+        if errors:
+            messages.error(request, "Creating egg failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items': items, 'item_data': item_data, 'errors': errors})
+               
         if 'item_data' in request.session:
             item_data = request.session['item_data']
         
         # Create and save the egg
-        egg = Eggs(
-            item=item,
-            customer=customer,
-            chicks=batch,
-            breed_id=breed_id,
-            photo=photo,
-            brought=brought,
-            returned=returned,
-            received=received
-        )
-        egg.save()
-        item.quantity=received
-        item.save()
-        messages.success(request, "Egg Created Successfully", extra_tags="success")
+        try:
+            egg = Eggs(
+                item=item,
+                customer=customer,
+                chicks=batch,
+                source =source,
+                breed_id=breed_id,
+                photo=photo,
+                brought=brought,
+                returned=returned            )
+            egg.save()
+            
+            messages.success(request, "Egg Created Successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, "Error creating egg: " + str(e), extra_tags='danger')
+            
         if 'item_data' in request.session:
             request.session.pop('item_data')
         return redirect('eggs_list')
@@ -251,7 +327,7 @@ def eggs_update(request, batch_number):
     customers = Customer.objects.all()
     breeds = Breed.objects.all()
     chicks = Chicks.objects.all()  # Get all chicks for selection
-
+    errors={}
     if request.method == 'POST':
         egg.batchnumber = request.POST.get('batchnumber', egg.batchnumber)
         customer_id = request.POST.get('customer')
@@ -261,8 +337,10 @@ def eggs_update(request, batch_number):
 
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('eggs_update', batch_number=batch_number)
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+            else:
+                egg.photo = request.FILES['photo']
+                
         # Update foreign keys only if they are provided
         if customer_id:
             egg.customer_id = customer_id
@@ -273,13 +351,29 @@ def eggs_update(request, batch_number):
 
         egg.brought = request.POST.get('brought', egg.brought)
         egg.returned = request.POST.get('returned', egg.returned)
-
-        # Handle photo upload
-        if 'photo' in request.FILES:
-            egg.photo = request.FILES['photo']
-
-        egg.save()
-        messages.success(request, "Egg Updated Successfully", extra_tags="success")
+        
+        if request.POST.get('brought') and request.POST.get('returned'):
+            if int(request.POST.get('returned')) > int(request.POST.get('brought')):
+                errors['returned'] = "* Returned number cannot be greater than brought number."
+                
+        if request.POST.get('returned') and int(request.POST.get('returned')) > int(egg.brought):
+            errors['returned'] = "* Returned number cannot be greater than brought number."
+            
+        if errors:
+            messages.error(request, "Updating egg failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/pages/customer/eggs/details.html', {
+                'egg': egg,
+                'customers': customers,
+                'breeds': breeds,
+                'chicks': chicks,
+                'errors': errors
+            })
+        try:    
+            egg.save()
+            messages.success(request, "Egg Updated Successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, "Error updating egg: " + str(e), extra_tags='danger')
+            
         return redirect('eggs_update', batch_number=egg.batchnumber)
 
     return render(request, 'pages/pages/customer/eggs/details.html', {
@@ -294,6 +388,12 @@ def eggs_update(request, batch_number):
 def eggs_delete(request, batch_number):
     egg = get_object_or_404(Eggs, batchnumber=batch_number)
     if request.method == 'POST':
+        if ItemRequest.objects.filter(item=egg.item).exists():
+            messages.error(request, "Cannot delete egg because it has associated item requests.", extra_tags='danger')
+            return redirect('eggs_list', batch_number=egg.batchnumber)
+        if EggSetting.objects.filter(egg=egg).exists():
+            messages.error(request, "Cannot delete egg because it has associated egg settings.", extra_tags='danger')
+            return redirect('eggs_list', batch_number=egg.batchnumber)
         egg.delete()
         egg.item.delete()
         messages.success(request, "Egg Deleted Successfully", extra_tags="success")

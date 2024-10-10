@@ -34,38 +34,52 @@
                                 <div class="multisteps-form__content">
                                     <div class="row mt-3">
                                         <div class="col-12 col-sm-6">
-                                            <label>Code</label>
-                                            <input class="multisteps-form__input form-control" type="text" placeholder="e.g., BRD001" name='code' required/>
+                                            <label>Breed</label>
+                                            <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Leghorn" name='breed_name'/>
+                                            {% if errors.breed_name %}
+                                                <small class="text-danger">{{ errors.breed_name }}</small>
+                                            {% endif %}
                                         </div>
                                         <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                             <label>Poultry Type</label>
                                             <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Chicken" name='poultry_type'/>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-12 col-sm-6">
-                                            <label>Breed</label>
-                                            <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Leghorn" name='breed_name' required/>
-                                        </div>
-                                        <div class="col-12 col-sm-6 mt-3 mt-sm-0">
-                                            <label>Purpose</label>
-                                            <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Eggs" name='purpose'/>
+                                            {% if errors.poultry_type %}
+                                                <small class="text-danger">{{ errors.poultry_type }}</small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-12 col-sm-6">
                                             <label>Eggs per Year</label>
-                                            <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 300" name='eggs_per_year' required/>
+                                            <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 300" name='eggs_per_year'/>
+                                            {% if errors.eggs_per_year %}
+                                                <small class="text-danger">{{ errors.eggs_per_year }}</small>
+                                            {% endif %}
                                         </div>
                                         <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                            <label>Purpose</label>
+                                            <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Eggs" name='purpose'/>
+                                            {% if errors.purpose %}
+                                                <small class="text-danger">{{ errors.purpose }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                             <label>Adult Weight (kg)</label>
-                                            <input class="multisteps-form__input form-control" type="number" step="0.01" placeholder="e.g., 2.5" name='adult_weight' required/>
+                                            <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 2.5" name='adult_weight'/>
+                                            {% if errors.adult_weight %}
+                                                <small class="text-danger">{{ errors.adult_weight }}</small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col-12">
                                             <label>Description</label>
                                             <textarea class="multisteps-form__input form-control" placeholder="Describe the breed..." rows="4" name='description'></textarea>
+                                            {% if errors.description %}
+                                            <small class="text-danger">{{ errors.description }}</small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="button-row d-flex mt-4">
@@ -80,15 +94,24 @@
                                     <div class="row mt-3">
                                         <div class="col-12 col-sm-4">
                                             <label>Front Photo</label>
-                                            <input type="file" class="form-control" name='front_photo' accept=".jpg,.jpeg,.png" required/>
+                                            <input type="file" class="form-control" name='front_photo' accept=".jpg,.jpeg,.png" />
+                                            {% if errors.front_photo %}
+                                                <small class="text-danger">{{ errors.front_photo }}</small>
+                                            {% endif %}
                                         </div>
                                         <div class="col-12 col-sm-4 mt-3 mt-sm-0">
                                             <label>Side Photo</label>
-                                            <input type="file" class="form-control" name='side_photo' accept=".jpg,.jpeg,.png" required/>
+                                            <input type="file" class="form-control" name='side_photo' accept=".jpg,.jpeg,.png" />
+                                            {% if errors.side_photo %}
+                                                <small class="text-danger">{{ errors.side_photo }}</small>
+                                            {% endif %}
                                         </div>
                                         <div class="col-12 col-sm-4 mt-3 mt-sm-0">
                                             <label>Back Photo</label>
-                                            <input type="file" class="form-control" name='back_photo' accept=".jpg,.jpeg,.png" required/>
+                                            <input type="file" class="form-control" name='back_photo' accept=".jpg,.jpeg,.png" />
+                                            {% if errors.back_photo %}
+                                                <small class="text-danger">{{ errors.back_photo }}</small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="button-row d-flex mt-4">

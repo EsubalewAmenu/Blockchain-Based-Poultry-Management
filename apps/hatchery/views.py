@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import datetime, timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -29,155 +29,134 @@ def hatchery_list(request):
 @login_required
 def hatchery_detail(request, name):
     hatchery = Hatchery.objects.get(name=name)
+    errors = {}
     if request.method == 'POST':
-        # Update hatchery instance with the new data from the request
         hatchery.name = request.POST.get('name', hatchery.name)
         hatchery.email = request.POST.get('email', hatchery.email)
         hatchery.phone = request.POST.get('phone', hatchery.phone).replace(' ', '')
         hatchery.address = request.POST.get('address', hatchery.address)
-        latitude_str = request.POST.get('latitude')
-        longitude_str = request.POST.get('longitude')
-
-        # Initialize latitude and longitude
-        hatchery.latitude = hatchery.latitude
-        hatchery.longitude = hatchery.longitude
-
-        # Validate and convert latitude
-        if latitude_str:
-            try:
-                hatchery.latitude = float(latitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set latitude to None
-                hatchery.latitude = hatchery.latitude
-
-        # Validate and convert longitude
-        if longitude_str:
-            try:
-                hatchery.longitude = float(longitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set longitude to None
-                hatchery.longitude = hatchery.longitude
         hatchery.totalcapacity = request.POST.get('totalcapacity', hatchery.totalcapacity)
         allowed_image_types = ['image/jpeg', 'image/png']
 
+        if request.POST.get('email'):
+            if not validate_email(request.POST.get('email')):
+                errors['email'] = "This email address is not valid."
+                
+            elif Hatchery.objects.filter(email=request.POST.get('email')).exists():
+                errors['email'] = "This Email Address already exists"
+        
+        if hatchery.email:
+            if not validate_email(hatchery.email):
+               errors['email'] = "This email address is not valid."
+                       
+        if request.POST.get('totalcapacity') and int(request.POST.get('totalcapacity')) < 0:
+            errors['total_capacity'] = "Total capacity cannot less than zero."
+                
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('hatchery_update', name=name)
-        # Handle file upload
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+        
+        if errors:
+            messages.error(request, "Updating hatchery failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery, 'errors': errors})
+        
         if request.FILES.get('photo'):
             hatchery.photo = request.FILES['photo']
-
-        # Save the updated hatchery instance
-        hatchery.save()
+        try:
+            hatchery.save()
+        except Exception as e:
+            messages.error(request, f'Error updating hatchery: {str(e)}', extra_tags='danger')
         return redirect('hatchery_update', name=name)
     return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery})
 
 @login_required
 def hatchery_update(request, name):
     hatchery = Hatchery.objects.get(name=name)
+    errors = {}
     if request.method == 'POST':
-        # Update hatchery instance with the new data from the request
         hatchery.name = request.POST.get('name', hatchery.name)
         hatchery.email = request.POST.get('email', hatchery.email)
         hatchery.phone = request.POST.get('phone', hatchery.phone).replace(' ', '')
         hatchery.address = request.POST.get('address', hatchery.address)
-        latitude_str = request.POST.get('latitude')
-        longitude_str = request.POST.get('longitude')
-
-        # Initialize latitude and longitude
-        hatchery.latitude = hatchery.latitude
-        hatchery.longitude = hatchery.longitude
-
-        # Validate and convert latitude
-        if latitude_str:
-            try:
-                hatchery.latitude = float(latitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set latitude to None
-                hatchery.latitude = hatchery.latitude
-
-        # Validate and convert longitude
-        if longitude_str:
-            try:
-                hatchery.longitude = float(longitude_str)
-            except ValueError:
-                # Handle the case where conversion fails
-                # You can log an error or set longitude to None
-                hatchery.longitude = hatchery.longitude
         hatchery.totalcapacity = request.POST.get('totalcapacity', hatchery.totalcapacity)
         allowed_image_types = ['image/jpeg', 'image/png']
+
+        if request.POST.get('email'):
+            if not validate_email(request.POST.get('email')):
+                errors['email'] = "This email address is not valid."
+                
+            elif Hatchery.objects.filter(email=request.POST.get('email')).exists():
+                errors['email'] = "This Email Address already exists"
+        
+        if hatchery.email:
+            if not validate_email(hatchery.email):
+               errors['email'] = "This email address is not valid."
+                       
+        if request.POST.get('totalcapacity') and int(request.POST.get('totalcapacity')) < 0:
+            errors['total_capacity'] = "Total capacity cannot less than zero."
+                
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('hatchery_update', name=name)
-        # Handle file upload
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+        
+        if errors:
+            messages.error(request, "Updating hatchery failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery, 'errors': errors})
+        
         if request.FILES.get('photo'):
             hatchery.photo = request.FILES['photo']
-
-        # Save the updated hatchery instance
-        hatchery.save()
-        return redirect('hatchery_list')
+        try:
+            hatchery.save()
+        except Exception as e:
+            messages.error(request, f'Error updating hatchery: {str(e)}', extra_tags='danger')
+        return redirect('hatchery_update', name=name)
     return render(request, 'pages/poultry/hatchery/details.html', {'hatchery': hatchery})
 
 @login_required
 def hatcher_create(request):
+    errors = {}
     if request.method == 'POST':
         name = request.POST['name']
         photo = request.FILES.get('photo', None)
         email = request.POST['email']
         phone = request.POST.get('phone').replace(' ', '')
+        totalcapacity = request.POST['totalcapacity']
         address = request.POST['address']
-        latitude_str = request.POST.get('latitude', None)
-        longitude_str = request.POST.get('longitude', None)
         allowed_image_types = ['image/jpeg', 'image/png']
+        required_fields = ['email', 'phone', 'name', 'total_capacity']
+        
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This field is required"
         
         if Hatchery.objects.filter(name=name).exists():
-            messages.error(request, "Hatchery with this name is already registered.", extra_tags="danger")
-            return redirect('hatchery_create')
+            errors['name'] = f"Hatchery with name '{name}' already exists."
         
         if Hatchery.objects.filter(email=email).exists():
-            messages.error(request, "This email address is already registered.", extra_tags="danger")
-            return redirect('hatchery_create')
+            errors['email'] = f"Hatcher with email '{email}' already exists"
+            
         if email:
             if not validate_email(email):
-                messages.error(request, "This email address does not exist.", extra_tags="danger")
-                return redirect('hatchery_create')
+                errors['email'] = f"Email '{email}' is not valid"
+                
         
-            
+        if totalcapacity and totalcapacity < 0:
+            errors['totalcapacity'] = f"Total capacity should be a valid number"
+                
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
-                messages.error(request, "Invalid image format for front photo. Only JPEG or PNG is allowed.", extra_tags='danger')
-                return redirect('hatchery_create')
-        latitude = None
-        longitude = None
-
-        if latitude_str:
-            try:
-                latitude = float(latitude_str)
-            except ValueError:
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
                 
-                latitude = None
-
-        
-        if longitude_str:
-            try:
-                longitude = float(longitude_str)
-            except ValueError:
-                longitude = None
-
-        if latitude is not None and longitude is not None:
-            location = Point(longitude, latitude, srid=4326)
-        else:
-            location = None
-        totalcapacity = request.POST['totalcapacity']
-
-        hatchery = Hatchery(name=name, photo=photo, email=email, phone=phone, address=address, location=location, latitude=latitude, longitude=longitude, totalcapacity=totalcapacity)
-        hatchery.save()
-        messages.success(request, "Hatchery Created Successfully", extra_tags='success')
+        if errors:
+            messages.error(request, "Error creating hatchery, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/create.html', {'errors': errors})
+                
+        try:
+            hatchery = Hatchery(name=name, photo=photo, email=email, phone=phone, address=address, totalcapacity=totalcapacity)
+            hatchery.save()
+            messages.success(request, "Hatchery Created Successfully", extra_tags='success')
+        except Exception as e:
+            messages.error(request, f"Error creating hatchery: {str(e)}", extra_tags='danger')
         return redirect('hatchery_list')
     else:
         return render(request, 'pages/poultry/hatchery/create.html')
@@ -405,11 +384,11 @@ def egg_setting_list(request):
 @login_required
 def egg_setting_detail(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
-
+    errors={}
     if request.method == 'POST':
         if egg_setting.is_approved:
             messages.success(request, "Egg Setting request is already approved ", extra_tags='danger')
-            return redirect('egg_setting_list')
+            return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
         egg_setting.settingcode = request.POST.get('settingcode', egg_setting.settingcode)
         egg_setting.incubator = get_object_or_404(Incubators, id=request.POST.get('incubator'))
         egg_setting.breeders = get_object_or_404(Breeders, id=request.POST.get('breeders'))
@@ -417,13 +396,23 @@ def egg_setting_detail(request, settingcode):
             if egg_setting.eggs == int(request.POST.get('eggs')):
                 pass
             elif egg_setting.item_request.item.quantity < int(request.POST.get('eggs')):
-                messages.error(request, 'Not enough eggs available in the selected egg type.', extra_tags='danger')
-                return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
+                errors['eggs'] = "Insufficient quantity of eggs available for the slected egg type."
+                
             egg_setting.eggs = int(request.POST.get('eggs'))
             egg_setting.item_request.quantity = int(request.POST.get('eggs'))
             egg_setting.item_request.save()
         else:
             egg_setting.eggs = egg_setting.eggs
+            
+        if errors:
+            messages.error(request, "Updating egg setting failed: Please double-check your entries and try again.", extra_tags="danger")
+            return render(request, 'pages/poultry/hatchery/egg_setting/details.html', {
+                'egg_setting': egg_setting,
+                'errors': errors,
+                'incubators': Incubators.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all()
+            })
         egg_setting.save()
         return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
 
@@ -439,21 +428,41 @@ def egg_setting_detail(request, settingcode):
 
 @login_required
 def egg_setting_create(request):
-    
+    errors = {}
     if request.method == 'POST':
         incubator_id = request.POST.get('incubator')
         breeders_id = request.POST.get('breeders')
         item_request_item_id = request.POST.get('item_request_item')
         item_request_quantity = request.POST.get('item_request_quantity')
-        item_request_item = get_object_or_404(Item, id=item_request_item_id)
         
-        egg = Eggs.objects.filter(item=item_request_item).first()
-        if int(item_request_quantity)>egg.received:
-            messages.error(request, 'Not enough eggs available in the selected egg type.', extra_tags='danger')
-            return redirect('egg_setting_create')
+        required_fields = ['incubator', 'breeders', 'item_request_item', 'item_request_quantity']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This Field is required"
+                
+        if item_request_item_id:
+            item_request_item = get_object_or_404(Item, id=item_request_item_id)
+            egg = Eggs.objects.filter(item=item_request_item).first()
+        
+            if item_request_quantity and int(item_request_quantity)> egg.received:
+                errors['item_request_quantity'] = "Insufficient quantity of eggs available for the slected egg type."
+         
+        if incubator_id:
+            incubator = get_object_or_404(Incubators, pk=incubator_id)
 
-        incubator = get_object_or_404(Incubators, pk=incubator_id)
-        breeders = get_object_or_404(Breeders, pk=breeders_id)
+        if breeders_id:    
+            breeders = get_object_or_404(Breeders, pk=breeders_id)
+            
+        if errors:
+            messages.error(request, "Error creating egg setting, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/egg_setting/create.html', {
+                'errors': errors,
+                'incubators': Incubators.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all(),
+                'egg': Eggs.objects.all(),
+                'items': Item.objects.filter(item_type__type_name="Egg"),
+            })
         
         item_request = ItemRequest(item=item_request_item, quantity=item_request_quantity, requested_by=request.user)
         item_request.save()
@@ -490,23 +499,36 @@ def egg_setting_create(request):
 @login_required
 def egg_setting_update(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
-
+    errors={}
     if request.method == 'POST':
-        if egg_setting.approved:
-            messages.error(request, "Egg setting is approved can't be updated.", extra_tags="danger")
+        if egg_setting.is_approved:
+            messages.success(request, "Egg Setting request is already approved ", extra_tags='danger')
             return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
-        
         egg_setting.settingcode = request.POST.get('settingcode', egg_setting.settingcode)
         egg_setting.incubator = get_object_or_404(Incubators, id=request.POST.get('incubator'))
-        egg_setting.customer = get_object_or_404(Customer, id=request.POST.get('customer'))
         egg_setting.breeders = get_object_or_404(Breeders, id=request.POST.get('breeders'))
-        egg_setting.eggs = request.POST.get('eggs', egg_setting.eggs)
-        
-        if egg_setting.eggs > egg_setting.item_request.quantity:
-            egg_setting.item_request.quantity = egg_setting.eggs
+        if request.POST.get('eggs'):
+            if egg_setting.eggs == int(request.POST.get('eggs')):
+                pass
+            elif egg_setting.item_request.item.quantity < int(request.POST.get('eggs')):
+                errors['eggs'] = "Insufficient quantity of eggs available for the slected egg type."
+                
+            egg_setting.eggs = int(request.POST.get('eggs'))
+            egg_setting.item_request.quantity = int(request.POST.get('eggs'))
             egg_setting.item_request.save()
+        else:
+            egg_setting.eggs = egg_setting.eggs
+            
+        if errors:
+            messages.error(request, "Updating egg setting failed: Please double-check your entries and try again.")
+            return render(request, 'pages/poultry/hatchery/egg_setting/details.html', {
+                'egg_setting': egg_setting,
+                'errors': errors,
+                'incubators': Incubators.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all()
+            })
         egg_setting.save()
-        messages.success(request, "Egg setting updated successfully", extra_tags="success")
         return redirect('egg_setting_detail', settingcode=egg_setting.settingcode)
 
     incubators = Incubators.objects.all()
@@ -523,7 +545,11 @@ def egg_setting_update(request, settingcode):
 def egg_setting_delete(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
     if request.method == 'POST':
+        if Incubation.objects.filter(eggsetting=egg_setting.id).exists():
+            messages.error(request, "Cannot delete Incubation associated with existing Egg Setting.", extra_tags='danger')
+            return redirect('egg_setting_list')
         egg_setting.delete()
+        messages.success(request, 'Egg Setting deleted successfully.', extra_tags='success')
         return redirect('egg_setting_list')
     return render(request, 'egg_settings/egg_setting_confirm_delete.html', {'egg_setting': egg_setting})
 
@@ -544,46 +570,78 @@ def incubation_list(request):
 @login_required
 def incubation_detail(request, incubationcode):
     incubation = get_object_or_404(Incubation, incubationcode=incubationcode)
-
+    errors = {}
     if request.method == 'POST':
-        # Update the incubation instance with new data
         incubation.eggsetting = EggSetting.objects.get(id=request.POST.get('eggsetting'))
-        # incubation.customer = Customer.objects.get(id=request.POST.get('customer'))
         incubation.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
         incubation.eggs = request.POST.get('eggs')
-        incubation.save()  # Save the updated instance
-        return redirect(incubation.get_absolute_url())  # Redirect to the updated detail view
+        
+        if request.POST.get('eggs') and int(request.POST.get('eggs')) > incubation.eggsetting.eggs:
+            errors['eggs'] = "Insufficient quantity of eggs available for the slected egg setting."
+            
+        if errors:
+            messages.error(request, "Updating incubation failed: Please double-check your entries and try again.")
+            return render(request, 'pages/poultry/hatchery/incubation/details.html', {
+                'incubation': incubation,
+                'errors': errors,
+                'egg_settings': EggSetting.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all()
+            })
+        
+        incubation.save()
+        messages.success(request, "Incubation updated successfully.", extra_tags='success')
+        return redirect(incubation.get_absolute_url())
 
     context = {
         'incubation': incubation,
-        'egg_settings': EggSetting.objects.all(),  # Pass all egg settings for the dropdown
-        'customers': Customer.objects.all(),        # Pass all customers for the dropdown
-        'breeders': Breeders.objects.all(),         # Pass all breeders for the dropdown
+        'egg_settings': EggSetting.objects.all(),
+        'customers': Customer.objects.all(),
+        'breeders': Breeders.objects.all(),
     }
     return render(request, 'pages/poultry/hatchery/incubation/details.html', context)
 
 ## Create View
 @login_required
 def incubation_create(request):
+    errors = {}
+    egg_settings = EggSetting.objects.filter(is_approved=True)
+    customers = Customer.objects.all()
+    breeders = Breeders.objects.all()
     if request.method == 'POST':
         eggsetting_id = request.POST.get('eggsetting')
         eggs = request.POST.get('eggs')
-        eggsetting=EggSetting.objects.get(id=eggsetting_id)
+        
+        
+        required_fields = ['eggsetting', 'eggs']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = '* This field is required.'
+                
+        if eggsetting_id:
+            eggsetting=EggSetting.objects.get(id=eggsetting_id) 
+            if eggs and int(eggs) > int(eggsetting.eggs):
+                errors['eggs'] = "Insufficient quantity of eggs available for the slected egg setting."
+        
+        context = {
+            'egg_settings': egg_settings,
+            'customers': customers,
+            'breeders': breeders,
+            'errors':errors
+        }    
+        if errors:
+            messages.error(request, "Creating incubation failed: Please double-check your entries and try again.")
+            return render(request, 'pages/poultry/hatchery/incubation/create.html', context)
+        
+        eggsetting=EggSetting.objects.get(id=eggsetting_id)   
         incubation = Incubation(
             eggsetting=eggsetting,
             breeders=eggsetting.breeders,
             eggs=eggs
         )
-        
-        if int(eggs) > int(eggsetting.eggs):
-            messages.error(request, 'Not enough eggs available in the selected egg setting.', extra_tags='danger')
-            return redirect('incubation_create')
         incubation.save()
+        messages.success(request, "Incubation saved successfully", extra_tags='success')
         return redirect('incubation_list')
-
-    egg_settings = EggSetting.objects.filter(is_approved=True)
-    customers = Customer.objects.all()
-    breeders = Breeders.objects.all()
 
     context = {
         'egg_settings': egg_settings,
@@ -597,13 +655,27 @@ def incubation_create(request):
 @login_required
 def incubation_update(request, incubationcode):
     incubation = get_object_or_404(Incubation, incubationcode=incubationcode)
-
+    errors = {}
     if request.method == 'POST':
         incubation.eggsetting = EggSetting.objects.get(id=request.POST.get('eggsetting'))
-        incubation.customer = Customer.objects.get(id=request.POST.get('customer'))
         incubation.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
         incubation.eggs = request.POST.get('eggs')
+        
+        if request.POST.get('eggs') and int(request.POST.get('eggs')) > incubation.eggsetting.eggs:
+            errors['eggs'] = "Insufficient quantity of eggs available for the slected egg setting."
+            
+        if errors:
+            messages.error(request, "Updating incubation failed: Please double-check your entries and try again.")
+            return render(request, 'pages/poultry/hatchery/incubation/details.html', {
+                'incubation': incubation,
+                'errors': errors,
+                'egg_settings': EggSetting.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all()
+            })
+        
         incubation.save()
+        messages.success(request, "Incubation updated successfully.", extra_tags='success')
         return redirect(incubation.get_absolute_url())
 
     context = {
@@ -620,8 +692,12 @@ def incubation_delete(request, incubationcode):
     incubation = get_object_or_404(Incubation, incubationcode=incubationcode)
 
     if request.method == 'POST':
+        if Candling.objects.filter(incubation=incubation.id).exists():
+            messages.error(request, "Cannot delete incubation with existing candling records.")
+            return redirect(incubation.get_absolute_url())
         incubation.delete()
-        return redirect('incubation_list')  # Redirect to the list view
+        messages.success(request, "Incubation deleted successfully.", extra_tags='success')
+        return redirect('incubation_list')
 
     context = {
         'incubation': incubation,
@@ -649,21 +725,56 @@ def candling_detail(request, candlingcode):
     View for a single Candling record with update functionality.
     """
     candling = get_object_or_404(Candling, candlingcode=candlingcode)
+    errors = {}
 
     if request.method == 'POST':
-        # Update the candling instance with new data
-        candling.incubation = Incubation.objects.get(id=request.POST.get('incubation'))
-        candling.customer = Customer.objects.get(id=request.POST.get('customer'))
-        candling.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
-        candling.eggs = int(request.POST.get('eggs'))
-        candling.candled = request.POST.get('candled') == 'on'  # Convert checkbox to boolean
-        candling.candled_date = request.POST.get('candled_date')
-        candling.spoilt_eggs = int(request.POST.get('spoilt_eggs'))
+        # Retrieve and validate input data
+        incubation_id = request.POST.get('incubation')
+        breeders_id = request.POST.get('breeders')
+        eggs = request.POST.get('eggs')
+        candled = request.POST.get('candled') == 'on'
+        candled_date = request.POST.get('candled_date')
+        spoilt_eggs = request.POST.get('spoilt_eggs')
 
+        try:
+            # Validate and assign values
+            candling.incubation = get_object_or_404(Incubation, id=incubation_id)
+            candling.breeders = get_object_or_404(Breeders, id=breeders_id)
+            candling.eggs = int(eggs)
+            candling.candled = candled
+            candling.candled_date = datetime.datetime.strptime(candled_date, '%Y-%m-%d').date()
+            candling.spoilt_eggs = int(spoilt_eggs)
+
+            # Check if spoilt_eggs is not greater than the total eggs
+            if int(spoilt_eggs) > candling.incubation.eggs:
+                errors['spoilt_eggs'] = "Spoilt eggs quantity cannot exceed the available eggs in the selected incubation."
+                
+            if candled_date and datetime.datetime.strptime(candled_date, "%Y-%m-%d").date() > datetime.datetime.now().date():
+                errors['candled_date'] = "Candled date cannot be in the future."
+
+        except ValueError:
+            errors['eggs'] = "Please enter valid numbers for eggs and spoilt eggs."
+        except Incubation.DoesNotExist:
+            errors['incubation'] = "Selected incubation does not exist."
+        except Breeders.DoesNotExist:
+            errors['breeders'] = "Selected breeders do not exist."
+
+        if errors:
+            messages.error(request, "Updating candling failed: Please double-check your entries and try again.", extra_tags="danger")
+            return render(request, 'pages/poultry/hatchery/candling/details.html', {
+                'candling': candling,
+                'errors': errors,
+                'incubations': Incubation.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all()
+            })
+            
         # Automatically calculate fertile eggs before saving
-        candling.fertile_eggs = int(candling.eggs) - int(candling.spoilt_eggs)
+        candling.fertile_eggs = candling.eggs - candling.spoilt_eggs
         candling.save()
-        return redirect('candling_detail', candlingcode=candling.candlingcode)  # Redirect to the updated detail view
+
+        messages.success(request, 'Candling record updated successfully.', extra_tags="success")
+        return redirect('candling_detail', candlingcode=candling.candlingcode)
 
     context = {
         'candling': candling,
@@ -678,30 +789,74 @@ def candling_create(request):
     """
     Create a new Candling record.
     """
-    
+    errors={}
     if request.method == 'POST':
-        incubation=Incubation.objects.get(id=request.POST.get('incubation'))
-        candled_date=request.POST.get('candled_date')
-        if candled_date in ['', ""]:
-            candled_date = datetime.datetime.now().date()
-        candling = Candling(
-            incubation=incubation,
-            customer=incubation.customer,
-            breeders=incubation.breeders,
-            eggs=incubation.eggs,
-            candled=request.POST.get('candled') == 'on',  # Convert checkbox to boolean
-            candled_date=candled_date,
-            spoilt_eggs=int(request.POST.get('spoilt_eggs')),
-        )
-        # Automatically calculate fertile eggs before saving
-        candling.save()
-        egg=Eggs.objects.get(id=incubation.eggsetting.egg.id)
-        return redirect('candling_list') 
+        
+        incubation_id = request.POST.get('incubation')
+        if not incubation_id:
+            errors['incubation'] = '* This Field is required'
+            
+        spoilt_eggs = request.POST.get('spoilt_eggs', 0)
+        if spoilt_eggs and int(spoilt_eggs) < 0:
+            errors['spoilt_eggs'] = '* This Field must be a valid number'
+            
+        if incubation_id and spoilt_eggs and int(spoilt_eggs) > Incubation.objects.get(id=incubation_id).eggs:
+            errors['spoilt_eggs'] = "* Spoilt eggs quantity cannot exceed the available eggs in the selected incubation."
+            
+        # Get the candled date or use today's date if not provided
+        candled_date = request.POST.get('candled_date') or datetime.datetime.now().date()
+        
+        if incubation_id and Candling.objects.filter(incubation=incubation_id).exists():
+            errors['incubation'] = 'Selected incubation is already candled'
+            
+        if errors:
+            messages.error(request, "Creating candling failed: Please double-check your entries and try again.", extra_tags="danger")
+            context = {
+                'incubations': Incubation.objects.filter(eggsetting__is_approved=True).exclude(candling_incubation__isnull=False),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all(),
+                "errors": errors,
+                'today': datetime.datetime.now().date().strftime('%Y-%m-%d'),
+            }
+            return render(request, 'pages/poultry/hatchery/candling/create.html', context=context)
+        
+        
 
+        incubation = get_object_or_404(Incubation, id=incubation_id)
+        try:    
+            # Create the Candling object
+            candling = Candling(
+                incubation=incubation,
+                customer=incubation.customer,
+                breeders=incubation.breeders,
+                eggs=incubation.eggs,
+                candled=True,
+                candled_date=candled_date,
+                spoilt_eggs=int(spoilt_eggs),  # Default to 0 if not provided
+            )
+            
+            # Save the Candling record
+            candling.save()
+
+            # Fetch the associated Eggs object (ensuring the record exists)
+            egg = get_object_or_404(Eggs, id=incubation.eggsetting.egg.id)
+            
+            messages.success(request, 'Candling record created successfully.', extra_tags="success")
+            return redirect('candling_list')
+
+        except (ValueError, TypeError) as e:
+            messages.error(request, f"An error occurred: {e}")
+        except Incubation.DoesNotExist:
+            messages.error(request, "The specified incubation does not exist.", extra_tags="danger")
+        except Eggs.DoesNotExist:
+            messages.error(request, "The related eggs record does not exist.", extra_tags="danger")
+    
+    # Prepare the context for the GET request or in case of errors
     context = {
-        'incubations': Incubation.objects.filter(eggsetting__is_approved=True),
+        'incubations': Incubation.objects.filter(eggsetting__is_approved=True).exclude(candling_incubation__isnull=False),
         'customers': Customer.objects.all(),
         'breeders': Breeders.objects.all(),
+        'today': datetime.datetime.now().date().strftime('%Y-%m-%d'),
     }
     return render(request, 'pages/poultry/hatchery/candling/create.html', context)
 
@@ -713,6 +868,9 @@ def candling_delete(request, candlingcode):
     candling = get_object_or_404(Candling, candlingcode=candlingcode)
 
     if request.method == 'POST':
+        if Hatching.objects.filter(candling=candling.id).exists():
+            messages.error(request, "Cannot delete a candling record that is associated with a hatching record.")
+            return redirect('candling_detail', candlingcode=candlingcode)
         candling.delete()
         return redirect('candling_list')  # Redirect to the list view
 
@@ -745,16 +903,22 @@ def hatching_detail(request, hatchingcode):
     hatching = get_object_or_404(Hatching, hatchingcode=hatchingcode)
 
     if request.method == 'POST':
-        hatching.candling = Candling.objects.get(id=request.POST.get('candling'))
-        hatching.customer = Customer.objects.get(id=request.POST.get('customer'))
-        hatching.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
+        candling=request.POST.get('candling')
+        breeders = request.POST.get('breeders')
+        if candling:
+            hatching.candling = get_object_or_404(Candling, id=candling)
+        if breeders:
+            hatching.breeders = get_object_or_404(Breeders, id=breeders)
         hatching.hatched = request.POST.get('hatched')
         hatching.deformed = request.POST.get('deformed')
         hatching.spoilt = request.POST.get('spoilt')
         hatching.notify_customer = request.POST.get('notify_customer') == 'on'
 
-        hatching.chicks_hatched = hatching.hatched - hatching.deformed
-        hatching.save()
+        try:
+            hatching.save()
+            messages.success(request, 'Hatching record updated successfully.', extra_tags='success')
+        except Exception as e:
+            messages.error(request, f"Error Updating Hatching: {e}", extra_tags='danger')
         return redirect('hatching_detail', hatchingcode=hatching.hatchingcode)
 
     context = {
@@ -770,39 +934,60 @@ def hatching_create(request):
     """
     Create a new Hatching record.
     """
+    errors = {}
     if request.method == 'POST':
-        candling=Candling.objects.get(id=request.POST.get('candling'))
+        candling_id=request.POST.get('candling')
+        deformed = request.POST.get('deformed', 0)
+        spoilt = request.POST.get('spoilt', 0)
         
-        # hatched = int(request.POST.get('hatched'))
-        deformed = int(request.POST.get('deformed'))
-        spoilt = int(request.POST.get('spoilt'))
-
-        total_count = candling.fertile_eggs + deformed + spoilt
-        if total_count > candling.eggs:
-            messages.error(request, 'Hatched, deformed, or spoilt cannot exceed the total eggs.')
-            return redirect('hatching_create')
-        
-        hatching = Hatching(
-            candling=candling,
-            customer=None,
-            breeders=candling.breeders,
-            hatched=candling.fertile_eggs,
-            deformed=deformed,
-            spoilt=spoilt,
-        )
-        
-        hatching.save()
-        item_type = ItemType.objects.get_or_create(type_name="Chicks")
-        item = Item(item_type=item_type[0])
-        item.quantity = int(hatching.chicks_hatched)
-        item.save()
-        from datetime import datetime
-        chick = Chicks(item=item, source='hatching', breed=hatching.breeders.breed, age=datetime.now().date(), hatching=hatching, number=hatching.chicks_hatched)
-        chick.save()
+        if not candling_id:
+            errors['candling'] = "* This Field is required."
+        if candling_id:
+            candling = Candling.objects.get(id=candling_id)
+            total_count = int(deformed) + int(spoilt)
+            if deformed and int(deformed) > candling.fertile_eggs:
+                errors['deformed'] = "Deformed eggs quantity value cannot exceed the amount of fertile eggs."
+            if spoilt and int(spoilt) > candling.fertile_eggs:
+                errors['spoilt'] = "Spoilt eggs quantity value cannot exceed the amount of fertile eggs."
+                
+            if total_count > candling.fertile_eggs:
+                errors['deformed'] = "Total deformed and spoilt eggs count value cannot exceed the amount of fertile eggs."
+                errors['spoilt'] = "Total deformed and spoilt eggs count value cannot exceed the amount of fertile eggs."
+            
+        if errors:
+            messages.error(request, "Creating hatching failed: Please double-check your entries and try again.", extra_tags="danger")
+            context = {
+                'candlings': Candling.objects.exclude(hatching_candling__isnull=False),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all(),
+                'errors': errors,
+            }
+            return render(request, 'pages/poultry/hatchery/hatching/create.html', context=context)
+        try:
+            hatching = Hatching(
+                candling=candling,
+                customer=None,
+                breeders=candling.breeders,
+                hatched=candling.fertile_eggs,
+                deformed=deformed,
+                spoilt=spoilt,
+            )
+            
+            hatching.save()
+            item_type = ItemType.objects.get_or_create(type_name="Chicks")
+            item = Item(item_type=item_type[0])
+            item.quantity = int(hatching.chicks_hatched)
+            item.save()
+            from datetime import datetime
+            chick = Chicks(item=item, source='hatching', breed=hatching.breeders.breed, age=datetime.now().date(), hatching=hatching, number=hatching.chicks_hatched)
+            chick.save()
+            messages.success(request, 'Hatching record created successfully.', extra_tags="success")
+        except Exception as e:
+            messages.error(request, f"Creating hatching failed: {str(e)}.", extra_tags="danger")
         return redirect('hatching_list')
 
     context = {
-        'candlings': Candling.objects.all(),
+        'candlings': Candling.objects.exclude(hatching_candling__isnull=False),
         'customers': Customer.objects.all(),
         'breeders': Breeders.objects.all(),
     }

@@ -40,6 +40,9 @@
                       <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
                     <input type="file" class="form-control mt-3" name="photo">
+                    {% if errors.photo %}
+                          <small class="text-danger">{{ errors.photo }}</small>
+                    {% endif %}
                   </div>
                 </div>
                 <hr/>
@@ -57,21 +60,33 @@
               <div class="row">
                 <div class="col-12 col-sm-6">
                   <label>Name</label>
-                  <input class="form-control" type="text" name="name" value="{{ hatchery.name }}" required>
+                  <input class="form-control" type="text" name="name" value="{{ hatchery.name }}">
+                  {% if errors.name %}
+                          <small class="text-danger">{{ errors.name }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                   <label>Email</label>
-                  <input class="form-control" type="email" name="email" value="{{ hatchery.email }}" required>
+                  <input class="form-control" type="email" name="email" value="{{ hatchery.email }}">
+                  {% if errors.email %}
+                          <small class="text-danger">{{ errors.email }}</small>
+                  {% endif %}
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Phone</label>
-                  <input class="form-control" type="tel" name="phone" value="{{ hatchery.phone }}" required>
+                  <input class="form-control" type="tel" name="phone" value="{{ hatchery.phone }}">
+                  {% if errors.phone %}
+                          <small class="text-danger">{{ errors.phone }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Address</label>
-                  <input class="form-control" type="text" name="address" value="{{ hatchery.address }}" required>
+                  <input class="form-control" type="text" name="address" value="{{ hatchery.address }}">
+                  {% if errors.address %}
+                          <small class="text-danger">{{ errors.address }}</small>
+                  {% endif %}
                 </div>
               </div>
               {% comment %} <div class="row">
@@ -88,6 +103,9 @@
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Total Capacity</label>
                   <input class="form-control" type="number" name="totalcapacity" value="{{ hatchery.totalcapacity }}" required>
+                  {% if errors.totalcapacity %}
+                          <small class="text-danger">{{ errors.totalcapacity }}</small>
+                  {% endif %}
                 </div>
               </div>
             </div>

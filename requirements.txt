@@ -119,3 +119,4 @@ qrcode[pil]
 validate-email
 dnspython
 reportlab
+phonenumbers==8.13.47

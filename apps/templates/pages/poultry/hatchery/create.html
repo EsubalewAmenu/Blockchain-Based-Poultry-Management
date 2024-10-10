@@ -29,21 +29,34 @@
                   <div class="row mt-3">
                     <div class="col-12 col-sm-6">
                       <label>Name</label>
-                      <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Afro Chicken" name="name" required/>
+                      <input class="multisteps-form__input form-control" type="text" placeholder="e.g., Afro Chicken" name="name"/>
+                      {% if errors.name %}
+                          <small class="text-danger">{{ errors.name }}</small>
+                      {% endif %}
+
                     </div>
                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                       <label>Photo</label>
                       <input class="multisteps-form__input form-control" type="file" name="photo" />
+                      {% if errors.photo %}
+                          <small class="text-danger">{{ errors.photo }}</small>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="row mt-3">
                     <div class="col-12 col-sm-6">
                       <label>Email</label>
-                      <input class="multisteps-form__input form-control" type="email" placeholder="e.g., example@example.com" name="email" required/>
+                      <input class="multisteps-form__input form-control" type="email" placeholder="e.g., example@example.com" name="email" />
+                      {% if errors.email %}
+                          <small class="text-danger">{{ errors.email }}</small>
+                      {% endif %}
                     </div>
                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                       <label>Phone</label>
-                      <input class="multisteps-form__input form-control" type="tel" placeholder="e.g., 0901234567" name="phone" required/>
+                      <input class="multisteps-form__input form-control" type="tel" placeholder="e.g., 0901234567" name="phone"/>
+                      {% if errors.phone %}
+                          <small class="text-danger">{{ errors.phone }}</small>
+                      {% endif %}
                     </div>
                   </div>
                   
@@ -66,6 +79,9 @@
                     <div class="col-12">
                       <label>Address</label>
                       <input class="multisteps-form__input form-control" type="text" placeholder="e.g., 123, MST" name="address" />
+                      {% if errors.address %}
+                          <small class="text-danger">{{ errors.address }}</small>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="row mt-3">
@@ -91,7 +107,10 @@
                   <div class="row">
                     <div class="col-12">
                       <label>Total Capacity</label>
-                      <input type="number" class="form-control" name="totalcapacity" required/>
+                      <input type="number" class="form-control" name="totalcapacity"/>
+                      {% if errors.totalcapacity %}
+                          <small class="text-danger">{{ errors.totalcapacity }}</small>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="row mt-4">

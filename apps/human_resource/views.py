@@ -31,10 +31,19 @@ def is_manager_of_department(user, department):
 # API view to get roles based on department
 def roles_by_department(request):
     department_id = request.GET.get('department_id')
+
     if not department_id:
         return JsonResponse({'roles': []})
 
-    roles = Role.objects.filter(department_id=department_id).values('id', 'name')
+    roles_query = Role.objects.all()
+
+    is_admin_department = Department.objects.filter(id=department_id, name__iexact='Admin').exists()
+
+    if is_admin_department:
+        roles = roles_query.values('id', 'name')
+    else:
+        roles = roles_query.filter(name__in=['Staff', 'Manager']).values('id', 'name')
+
     return JsonResponse({'roles': list(roles)})
 
 
@@ -87,7 +96,7 @@ def _validate_and_create_employee(request):
     
     if email:
         if not validate_email(email):
-            errors['email'] = 'Invalid email address.'
+            errors['email'] = 'This email address is not valid.'
 
     # Validate first name and last name
     if not first_name:
@@ -228,7 +237,7 @@ def employee_detail(request, employee_id):
         return redirect('no_access')
 
     departments = Department.objects.all()
-    roles = Role.objects.values('name').distinct()
+    roles = Role.objects.all()
     
     context = {
         'employee': employee,
@@ -250,25 +259,30 @@ def update_employee_role(request, employee_id):
         new_role_id = request.POST.get('role')
         new_department_id = request.POST.get('department')
 
-        if new_role_id and new_department_id:
+        updated = False
+        print(f"Received Role ID: {new_role_id}, Department ID: {new_department_id}")
+        if new_role_id:
             new_role = get_object_or_404(Role, id=new_role_id)
-            new_department = get_object_or_404(Department, id=new_department_id)
             employee.role = new_role
-            employee.department = new_department
-            employee.save()
+            updated = True
 
-            # Redirect to the employee detail page after successful update
+        if new_department_id:
+            new_department = get_object_or_404(Department, id=new_department_id)
+            employee.department = new_department
+            updated = True
+
+        if updated:
+            employee.save()
             return redirect(reverse('employee_detail', args=[employee.id]))
 
-    # If not POST, render the form again (this is for GET requests)
     departments = Department.objects.all()
-    roles = Role.objects.values('name').distinct()
+    roles = Role.objects.all()
     context = {
         'employee': employee,
         'departments': departments,
         'roles': roles,
     }
-    return render(request, 'pages/human_resource/update_employee_role.html', context)
+    return render(request, 'pages/human_resource/employee_detail.html', context)
 
 @login_required
 @user_passes_test(is_admin_or_manager)

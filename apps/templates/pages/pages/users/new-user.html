@@ -54,12 +54,18 @@
                   <div class="col-12 mt-3 mt-sm-0">
                     <label>Email Address</label>
                     <input class="multisteps-form__input form-control" type="email" name="email" placeholder="eg. johndoe@example.com" />
+                    {% if errors.email %}
+                        <small class="text-danger">{{ errors.email }}</small>
+                    {% endif %}
                   </div>
                 </div>
                 <div class="row mt-3">
                   <div class="col-12 col-sm-6">
                     <label>First Name</label>
-                    <input class="multisteps-form__input form-control" type="text" name="first_name" placeholder="eg. John" required/>
+                    <input class="multisteps-form__input form-control" type="text" name="first_name" placeholder="eg. John"/>
+                    {% if errors.first_name %}
+                        <small class="text-danger">{{ errors.first_name }}</small>
+                    {% endif %}
                   </div>
                   <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                     <label>Last Name</label>
@@ -79,7 +85,10 @@
                 <div class="row mt-3">
                   <div class="col-12 col-sm-6">
                     <label>Primary Phone</label>
-                    <input class="multisteps-form__input form-control" type="text" name="primary_phone" placeholder="eg. +123456789" required/>
+                    <input class="multisteps-form__input form-control" type="tel" name="primary_phone" placeholder="eg. +123456789"/>
+                    {% if errors.first_name %}
+                        <small class="text-danger">{{ errors.primary_phone }}</small>
+                    {% endif %}
                   </div>
                   <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                     <label>Secondary Phone</label>

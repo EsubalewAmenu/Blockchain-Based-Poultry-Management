@@ -73,7 +73,7 @@ def verify_email_account(email, mx_records):
         try:
             server = smtplib.SMTP(mx_record)
             server.set_debuglevel(0)
-            server.helo()
+            server.ehlo()
             server.mail(settings.DEFAULT_FROM_EMAIL)
             code, _ = server.rcpt(email)
             
@@ -82,7 +82,5 @@ def verify_email_account(email, mx_records):
         except Exception as e:
             print(f"An error occurred during SMTP verification with {mx_record}: {e}")
             return False
-        finally:
-            server.quit()
 
     return False

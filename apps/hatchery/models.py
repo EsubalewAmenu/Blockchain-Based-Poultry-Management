@@ -12,6 +12,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from django.db import models
 from django.db.models import ImageField
+from django.forms import ValidationError
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import truncatechars, slugify  # or truncatewords
 from django.contrib.gis.db import models as gismodels
@@ -65,6 +66,21 @@ class Hatchery(models.Model):
     def __int__(self):
         return self.id
     
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+    
     def get_absolute_url(self):
         return '/hatchery/{}'.format(self.name)
 
@@ -96,10 +112,21 @@ class Incubators(models.Model):
     def get_absolute_url(self):
         return '/incubator/{}'.format(self.code)
     
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = self.generate_unique_code()
-        
+        self.clean()
         super(Incubators, self).save(*args, **kwargs)
 
     def generate_unique_code(self):
@@ -169,10 +196,21 @@ class EggSetting(models.Model):
     def get_absolute_url(self):
         return '/egg_setting/{}'.format(self.settingcode)
     
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
     def save(self, *args, **kwargs):
         if not self.settingcode:
             self.settingcode = self.generate_unique_code()
-        
+        self.clean()
         super(EggSetting, self).save(*args, **kwargs)
 
     def generate_unique_code(self):
@@ -211,9 +249,21 @@ class Incubation(models.Model):
     def get_absolute_url(self):
         return '/incubation/{}'.format(self.incubationcode)
     
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
     def save(self, *args, **kwargs):
         if not self.incubationcode:
             self.incubationcode = self.generate_unique_incubation_code()
+        self.clean()
         super().save(*args, **kwargs)
 
     def generate_unique_incubation_code(self):
@@ -253,10 +303,22 @@ class Candling(models.Model):
         verbose_name_plural = "Candling"
         managed = True
 
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
     def save(self, *args, **kwargs):
         if not self.candlingcode:
             self.candlingcode = self.generate_unique_candling_code()
         self.fertile_eggs = self.eggs - self.spoilt_eggs
+        self.clean()
         super(Candling, self).save(*args, **kwargs)
 
     def generate_unique_candling_code(self):
@@ -302,14 +364,25 @@ class Hatching(models.Model):
         verbose_name_plural = "Hatching"
         managed = True
 
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
     def save(self, *args, **kwargs):
         # Automatically calculate chicks hatched
-        self.chicks_hatched = self.hatched - self.deformed - self.spoilt
+        self.chicks_hatched = int(self.hatched) - int(self.deformed) - int(self.spoilt)
         
         # Generate a unique hatching code if it is not already set
         if not self.hatchingcode:
             self.hatchingcode = self.generate_unique_hatching_code()
-        
+        self.clean()   
         super(Hatching, self).save(*args, **kwargs)  # Ensure the correct class is used
 
     def generate_unique_hatching_code(self):

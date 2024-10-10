@@ -48,6 +48,10 @@
                       <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
                     <input type="file" class="form-control mt-3" name="hens_photo">
+                    {% if errors.hens_photo%}
+                        <small class="text-danger">{{ errors.hens_photo }}</small>
+                    {% endif %}
+
                   </div>
   
                   <!-- Cocks Photo Slide -->
@@ -59,6 +63,9 @@
                       <img class="w-100 border-radius-lg shadow-lg mx-auto" src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
                     <input type="file" class="form-control mt-3" name="cocks_photo">
+                    {% if errors.cocks_photo%}
+                        <small class="text-danger">{{ errors.cocks_photo }}</small>
+                    {% endif %}
                   </div>
                 </div>
                 <hr/>
@@ -92,26 +99,41 @@
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Hens</label>
                   <input class="form-control" type="number" name="hens" value="{{ breeder.hens|default:'N/A' }}">
+                  {% if errors.hens%}
+                  <small class="text-danger">{{ errors.hens }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Cocks</label>
                   <input class="form-control" type="number" name="cocks" value="{{ breeder.cocks|default:'N/A' }}">
+                  {% if errors.cocks%}
+                  <small class="text-danger">{{ errors.cocks }}</small>
+                  {% endif %}
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Mortality Rate (%)</label>
                   <input class="form-control" type="number" name="mortality" value="{{ breeder.mortality|default:0 }}">
+                  {% if errors.mortality%}
+                  <small class="text-danger">{{ errors.mortality }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Butchered</label>
                   <input class="form-control" type="number" name="butchered" value="{{ breeder.butchered|default:0 }}">
+                  {% if errors.butchered %}
+                  <small class="text-danger">{{ errors.butchered }}</small>
+                  {% endif %}
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Sold</label>
                   <input class="form-control" type="number" name="sold" value="{{ breeder.sold|default:0 }}">
+                  {% if errors.sold %}
+                  <small class="text-danger">{{ errors.sold }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Current Number</label>
