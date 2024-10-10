@@ -27,7 +27,7 @@
                             </div>
                             <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                 <label>Egg Setting</label>
-                                <select class="form-control" name="eggsetting" required>
+                                <select class="form-control" name="eggsetting" readonly>
                                     <option value="{{ incubation.eggsetting.id }}">{{ incubation.eggsetting.settingcode }}</option>
                                     {% for eggsetting in egg_settings %}
                                         {% if eggsetting.id != incubation.eggsetting.id %}
@@ -51,7 +51,10 @@
                             </div>
                             <div class="col-12 col-sm-6 mt-3">
                                 <label>Number of Eggs</label>
-                                <input class="form-control" type="number" name="eggs" value="{{ incubation.eggs }}" required>
+                                <input class="form-control" type="number" name="eggs" value="{{ incubation.eggs }}">
+                                {% if errors.eggs %}
+                                <small class="text-danger">{{ errors.eggs }}</small>
+                                {% endif %}
                             </div>
                         </div>
                         

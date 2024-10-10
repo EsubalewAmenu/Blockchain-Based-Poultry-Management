@@ -78,8 +78,11 @@
                                 <div class="row mt-3" id="role-container">
                                     <div class="col-12">
                                         <label>Role</label>
-                                        <select class="multisteps-form__input form-control" name="role" id="role-select" required>
+                                        <select class="multisteps-form__input form-control" name="role" id="role-select">
                                             <option value="" selected disabled>Select Role</option>
+                                            {% for role in roles %}
+                                                <option value="{{ role.id }}" {% if form_data.role == role.id|stringformat:"s" %}selected{% endif %}>{{ role.name }}</option>
+                                            {% endfor %}
                                         </select>
                                         {% if errors.role %}
                                             <small class="text-danger">{{ errors.role }}</small>

@@ -44,6 +44,9 @@
                     {% endif %}
                     {% if request.resolver_match.url_name == 'eggs_update' %}
                       <input type="file" class="form-control mt-3" name="photo">
+                      {% if errors.photo %}
+                      <small class="text-danger">{{ errors.photo }}</small>
+                      {% endif %}
                     {% endif %}
                   </div>
                 </div>
@@ -62,7 +65,10 @@
               <div class="row">
                 <div class="col-12 col-sm-6">
                   <label>Batch Number</label>
-                  <input class="form-control" type="text" name="batchnumber" value="{{ egg.batchnumber }}">
+                  <input class="form-control" type="text" name="batchnumber" value="{{ egg.batchnumber }}" readonly>
+                  {% if errors.bacth %}
+                  <small class="text-danger">{{ errors.batch }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                   <label>Customer</label>
@@ -72,38 +78,55 @@
                         <option value="{{ customer.id }}">{{ customer.full_name }}</option>
                     {% endfor %}
                 </select>
+                {% if errors.customer %}
+                <small class="text-danger">{{ errors.customer }}</small>
+                {% endif %}
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Breed</label>
-                  <input class="form-control" type="text" name="breed" value="{{ egg.breed.breed }}">
                   <select class="multisteps-form__input form-control" name="breed">
                     <option value="">{{egg.breed.breed}}</option>
                     {% for breed in breeds %}
                         <option value="{{ breed.id }}">{{ breed.breed }}</option>
                     {% endfor %}
                 </select>
+                {% if errors.breed %}
+                <small class="text-danger">{{ errors.breed }}</small>
+                {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Item Code</label>
                   <input class="form-control" type="text" name="item" value="{{ egg.item.code }}" disabled>
+                  {% if errors.item %}
+                  <small class="text-danger">{{ errors.item }}</small>
+                  {% endif %}
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Brought</label>
                   <input class="form-control" type="number" name="brought" value="{{ egg.brought }}">
+                  {% if errors.brought %}
+                  <small class="text-danger">{{ errors.brought }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Returned</label>
                   <input class="form-control" type="number" name="returned" value="{{ egg.returned }}">
+                  {% if errors.returned %}
+                  <small class="text-danger">{{ errors.returned }}</small>
+                  {% endif %}
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Received</label>
-                  <input class="form-control" type="number" name="received" value="{{ egg.received }}">
+                  <input class="form-control" type="number" name="received" value="{{ egg.received }}" readonly>
+                  {% if errors.received %}
+                  <small class="text-danger">{{ errors.received }}</small>
+                  {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Created</label>

@@ -26,18 +26,17 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'Department "{dept_data["name"]}" already exists.'))
 
             if dept_data['name'] == 'Admin':
-                self._create_role('Administrator', 'Manager', department)
-            else:
-                for role_data in roles_data:
-                    self._create_role(role_data['name'], role_data['role_type'], department)
+                self._create_role('Administrator', 'Manager')
+        
+        for role_data in roles_data:
+            self._create_role(role_data['name'], role_data['role_type'])        
 
         self.stdout.write(self.style.SUCCESS('Successfully seeded HRMS roles and departments.'))
 
-    def _create_role(self, name, role_type, department):
+    def _create_role(self, name, role_type):
         role, created = Role.objects.get_or_create(
             name=name, 
-            role_type=role_type, 
-            department=department
-        )
+            role_type=role_type
+            )
         if not created:
-            self.stdout.write(self.style.WARNING(f'Role "{name}" in "{department.name}" department already exists.'))
+            self.stdout.write(self.style.WARNING(f'Role already exists.'))

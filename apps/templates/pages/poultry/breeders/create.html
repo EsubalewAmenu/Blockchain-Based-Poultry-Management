@@ -36,10 +36,7 @@
                                             <h5 class="font-weight-bolder">Breeder Information</h5>
                                             <div class="multisteps-form__content">
                                                 <div class="row mt-3">
-                                                    <div class="col-12 col-sm-6">
-                                                        <label>Batch</label>
-                                                        <input class="multisteps-form__input form-control" type="text" placeholder="e.g., BRDR001" name='batch' required/>
-                                                    </div>
+                                                    
                                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                                         <label>Breed</label>
                                                         <select class="multisteps-form__input form-control" name="breed">
@@ -47,34 +44,54 @@
                                                                 <option value="{{ breed.pk }}">{{ breed.breed }}</option>
                                                             {% endfor %}
                                                         </select>
+                                                        {% if errors.breed %}
+                                                            <small class="text-danger">{{ errors.breed }}</small>
+                                                        {% endif %}
                                                     </div>
-                                                </div>
-                                                <div class="row mt-3">
                                                     <div class="col-12 col-sm-6">
                                                         <label>Hens</label>
-                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 50" name='hens' required/>
-                                                    </div>
-                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
-                                                        <label>Cocks</label>
-                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 10" name='cocks' required/>
+                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 50" name='hens'/>
+                                                        {% if errors.hens %}
+                                                            <small class="text-danger">{{ errors.hens }}</small>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="row mt-3">
+                                                    
+                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                                        <label>Cocks</label>
+                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 10" name='cocks'/>
+                                                        {% if errors.cocks %}
+                                                            <small class="text-danger">{{ errors.cocks }}</small>
+                                                        {% endif %}
+
+                                                    </div>
                                                     <div class="col-12 col-sm-6">
                                                         <label>Mortality Rate (%)</label>
                                                         <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 5.0" name='mortality' value=0/>
-                                                    </div>
-                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
-                                                        <label>Butchered</label>
-                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 20" name='butchered', value=0/>
+                                                        {% if mortality%}
+                                                        <small class="text-danger">{{ errors.mortality }}</small>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="row mt-3">
+                                                    
+                                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                                        <label>Butchered</label>
+                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 20" name='butchered', value=0/>
+                                                        {% if errors.butchered %}
+                                                        <small class="text-danger">{{ errors.butchered }}</small>
+                                                        {% endif %}
+                                                    </div>
                                                     <div class="col-12 col-sm-6">
                                                         <label>Sold</label>
                                                         <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 30" name='sold' value=0/>
+                                                        {% if errors.sold %}
+                                                        <small class="text-danger">{{ errors.sold }}</small>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
+                                                
                                                 <div class="button-row d-flex mt-4">
                                                     <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
                                                 </div>
@@ -87,11 +104,17 @@
                                                 <div class="row mt-3">
                                                     <div class="col-12 col-sm-6">
                                                         <label>Hens Photo</label>
-                                                        <input type="file" class="form-control" name='hens_photo' accept=".jpg,.jpeg,.png" required/>
+                                                        <input type="file" class="form-control" name='hens_photo' accept=".jpg,.jpeg,.png"/>
+                                                        {% if errors.hens_photo%}
+                                                        <small class="text-danger">{{ errors.hens_photo }}</small>
+                                                        {% endif %}
                                                     </div>
                                                     <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                                         <label>Cocks Photo</label>
-                                                        <input type="file" class="form-control" name='cocks_photo' accept=".jpg,.jpeg,.png" required/>
+                                                        <input type="file" class="form-control" name='cocks_photo' accept=".jpg,.jpeg,.png"/>
+                                                        {% if errors.cocks_photo %}
+                                                        <small class="text-danger">{{ errors.cocks_photo }}</small>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="button-row d-flex mt-4">
