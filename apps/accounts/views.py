@@ -1,3 +1,4 @@
+import datetime
 import logging
 from django.urls import reverse
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -50,16 +51,27 @@ def logout_view(request):
 @csrf_exempt
 @axes_dispatch
 def login_view(request):
-    # Force logout.
     logout(request)
+    
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
+
+        if not email or not password:
+            messages.error(request, 'Email and password are required.', extra_tags='danger')
+            return render(request, 'pages/authentication/signin/illustration.html')
+
         user = authenticate(request, email=email, password=password)
+        
         if user is not None:
             if user.is_active:
                 login(request, user)
                 return HttpResponseRedirect('/dashboard/')
+            else:
+                messages.error(request, 'This account is inactive. Please contact support.', extra_tags='danger')
+        else:
+            messages.error(request, 'Invalid email or password. Please try again.', extra_tags='danger')
+    
     return render(request, 'pages/authentication/signin/illustration.html')
 
 @csrf_exempt
@@ -69,15 +81,13 @@ def signin_with_wallet(request):
         wallet_address = request.POST.get('wallet_address')
         print("Wallet address: %s" % wallet_address)
         if wallet_address:
-            # Look for a user associated with this wallet address
             try:
                 wallet = UserWalletAddress.objects.get(address=wallet_address)
                 user = wallet.user
                 
-                # Log the user in
                 login(request, user)
                 messages.success(request, 'Successfully signed in with wallet.', extra_tags='success')
-                return redirect('dashboard')  # Redirect to the user's dashboard or desired page
+                return redirect('dashboard')
             except UserWalletAddress.DoesNotExist:
                 messages.error(request, 'Wallet address not found.', extra_tags='danger')
         else:
@@ -167,6 +177,7 @@ def create_user(request):
 @login_required
 def update_user(request):
     user = get_object_or_404(User, pk=request.user.pk)
+    errors = {}
     if request.method == 'POST':
         try:
             user.first_name = request.POST.get('first_name')
@@ -176,8 +187,27 @@ def update_user(request):
             user.settings.secondary_phone = request.POST.get('secondary_phone')
             user.settings.date_of_birth = request.POST.get('date_of_birth')
             user.settings.address = request.POST.get('address')
-            user.save()
-            user.settings.save()
+            
+            if request.POST.get('email') and User.objects.filter(email=request.POST.get('email')).exclude(id=request.user.id).exists():
+                errors['email'] = '* Email address already exists.'
+                
+            if request.POST.get('email'):
+                if not validate_email(request.POST.get('email')):
+                    errors['email'] = '* This email address is not valid.'
+            
+            if request.POST.get('date_of_birth') and datetime.datetime.strptime(request.POST.get('date_of_birth'), "%Y-%m-%d").date() > datetime.datetime.now().date():
+                errors['date_of_birth'] = '* Date of Birth cannot be in the future.'
+                
+            if errors:
+                messages.error(request, 'Error updating user profile: Please double-check your entries and try again.', extra_tags='danger')
+                return render(request, 'pages/pages/account/settings.html', {'user': user, 'errors': errors})
+            try:    
+                user.save()
+                user.settings.save()
+            except Exception as e:
+                messages.error(request, f'Error updating user settings: {str(e)}', extra_tags='danger')
+                return redirect('update_user')
+            
             messages.success(request, 'User profile updated successfully.', extra_tags='success')
         except Exception as e:
             messages.error(request, f'Error updating user: {str(e)}', extra_tags='danger')
