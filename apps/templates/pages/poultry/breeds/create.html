@@ -67,7 +67,7 @@
                                     <div class="row mt-3">
                                         <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                                             <label>Adult Weight (kg)</label>
-                                            <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 2.5" name='adult_weight'/>
+                                            <input class="multisteps-form__input form-control" type="number" step="0.01" placeholder="e.g., 2.5" name='adult_weight'/>
                                             {% if errors.adult_weight %}
                                                 <small class="text-danger">{{ errors.adult_weight }}</small>
                                             {% endif %}

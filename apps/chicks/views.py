@@ -99,7 +99,7 @@ def chicks_create(request):
         if age in ['', ""]:
             age = datetime.datetime.now().date()
         
-        if age and datetime.datetime.strptime(age, "%Y-%m-%d").date() > datetime.datetime.now().date():
+        if age and datetime.datetime.strptime(str(age), "%Y-%m-%d").date() > datetime.datetime.now().date():
             errors['age'] = "Invalid Age. Age should be less than or equal to current date."
             
         if chick_photo:
