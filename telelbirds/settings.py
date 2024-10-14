@@ -86,6 +86,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://hatchtrack.awura.tech',
+    'hatchtrack.awura.tech',
+]
+
 ROOT_URLCONF = 'telelbirds.urls'
 
 TEMPLATES = [
