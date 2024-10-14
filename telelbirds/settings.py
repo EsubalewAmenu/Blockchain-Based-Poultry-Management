@@ -84,6 +84,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://hatchtrack.awura.tech',
+    'hatchtrack.awura.tech',
 ]
 
 ROOT_URLCONF = 'telelbirds.urls'
@@ -146,7 +152,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = ['apps.accounts.backend.EmailBackend']
++AUTHENTICATION_BACKENDS = ['apps.accounts.backend.EmailBackend', 'axes.backends.AxesStandaloneBackend']
+
 
 
 # Internationalization
