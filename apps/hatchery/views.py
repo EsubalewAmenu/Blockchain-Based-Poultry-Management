@@ -140,7 +140,7 @@ def hatcher_create(request):
                 errors['email'] = f"Email '{email}' is not valid"
                 
         
-        if totalcapacity and totalcapacity < 0:
+        if totalcapacity and int(totalcapacity) < 0:
             errors['totalcapacity'] = f"Total capacity should be a valid number"
                 
         if request.FILES.get('photo'):

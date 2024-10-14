@@ -24,6 +24,7 @@ from django.urls import reverse_lazy
 from .forms import UserSettingsForm
 from .models import UserSettings, UserWalletAddress
 from .validators import validate_email
+from .backend import EmailBackend
 import random
 import string
 
@@ -85,7 +86,7 @@ def signin_with_wallet(request):
                 wallet = UserWalletAddress.objects.get(address=wallet_address)
                 user = wallet.user
                 
-                login(request, user)
+                login(request, user, backend='apps.accounts.backend.EmailBackend')
                 messages.success(request, 'Successfully signed in with wallet.', extra_tags='success')
                 return redirect('dashboard')
             except UserWalletAddress.DoesNotExist:
