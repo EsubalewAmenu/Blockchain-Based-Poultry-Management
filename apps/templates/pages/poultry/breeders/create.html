@@ -68,7 +68,7 @@
                                                     </div>
                                                     <div class="col-12 col-sm-6">
                                                         <label>Mortality Rate (%)</label>
-                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 5.0" name='mortality' value=0/>
+                                                        <input class="multisteps-form__input form-control" type="number" placeholder="e.g., 5.0" step="0.01" name='mortality' value=0/>
                                                         {% if mortality%}
                                                         <small class="text-danger">{{ errors.mortality }}</small>
                                                         {% endif %}

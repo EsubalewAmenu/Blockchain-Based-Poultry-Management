@@ -114,7 +114,7 @@
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Mortality Rate (%)</label>
-                  <input class="form-control" type="number" name="mortality" value="{{ breeder.mortality|default:0 }}">
+                  <input class="form-control" type="number" step="0.01" name="mortality" value="{{ breeder.mortality|default:0 }}">
                   {% if errors.mortality%}
                   <small class="text-danger">{{ errors.mortality }}</small>
                   {% endif %}
