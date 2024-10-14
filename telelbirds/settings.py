@@ -152,7 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-+AUTHENTICATION_BACKENDS = ['apps.accounts.backend.EmailBackend', 'axes.backends.AxesStandaloneBackend']
+AUTHENTICATION_BACKENDS = ['apps.accounts.backend.EmailBackend', 'axes.backends.AxesStandaloneBackend']
 
 
 
