@@ -123,7 +123,7 @@ def hatcher_create(request):
         totalcapacity = request.POST['totalcapacity']
         address = request.POST['address']
         allowed_image_types = ['image/jpeg', 'image/png']
-        required_fields = ['email', 'phone', 'name', 'total_capacity']
+        required_fields = ['email', 'phone', 'name', 'totalcapacity']
         
         for field in required_fields:
             if not request.POST.get(field):
@@ -148,6 +148,7 @@ def hatcher_create(request):
                 errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
                 
         if errors:
+            print("Error: %s" % errors)
             messages.error(request, "Error creating hatchery, Please double-check your entries and try again.", extra_tags='danger')
             return render(request, 'pages/poultry/hatchery/create.html', {'errors': errors})
                 
