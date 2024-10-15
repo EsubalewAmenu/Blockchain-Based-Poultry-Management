@@ -275,6 +275,28 @@ def item_request_delete(request, code):
             messages.error(request, 'Cannot delete item request associated with approved egg settings.', extra_tags='danger')
             return redirect('item_request_list')
         item_request.delete()
+        egg_setting = EggSetting.objects.filter(item_request__id=item_request.id).first()
+        
+        if egg_setting:
+            egg_setting.delete()
+        
+        if Chicks.objects.filter(item=item_request.item).exists():
+            chicks = Chicks.objects.filter(item=item_request.item)
+            for chick in chicks:
+                chick.number += item_request.quantity
+                chick.save()
+                
+        if Eggs.objects.filter(item=item_request.item).exists():
+            eggs = Eggs.objects.filter(item=item_request.item)
+            for egg in eggs:
+                egg.received += item_request.quantity
+                egg.save()
+                
+        if Incubators.objects.filter(item=item_request.item).exists():
+            incubator = Incubators.objects.filter(item=item_request.item).first()
+            incubator.number += item_request.quantity
+            incubator.save()
+        
         item.quantity += item_request.quantity
         item.save()
         messages.success(request, 'Item request deleted successfully', extra_tags='success')
@@ -310,6 +332,23 @@ def item_request_approve(request, code):
     if egg_setting:
         egg_setting.is_approved = True
         egg_setting.save()
-
+        
+    if Chicks.objects.filter(item=item_request.item).exists():
+        chicks = Chicks.objects.filter(item=item_request.item)
+        for chick in chicks:
+            chick.number -= item_request.quantity
+            chick.save()
+            
+    if Eggs.objects.filter(item=item_request.item).exists():
+        eggs = Eggs.objects.filter(item=item_request.item)
+        for egg in eggs:
+            egg.received -= item_request.quantity
+            egg.save()
+            
+    if Incubators.objects.filter(item=item_request.item).exists():
+        incubator = Incubators.objects.filter(item=item_request.item).first()
+        incubator.number -= item_request.quantity
+        incubator.save()
+    
     messages.success(request, 'Item request approved successfully.', extra_tags='success')
     return redirect('item_request_list')

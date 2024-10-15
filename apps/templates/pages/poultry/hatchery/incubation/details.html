@@ -51,7 +51,7 @@
                             </div>
                             <div class="col-12 col-sm-6 mt-3">
                                 <label>Number of Eggs</label>
-                                <input class="form-control" type="number" name="eggs" value="{{ incubation.eggs }}">
+                                <input class="form-control" type="number" name="eggs" value="{{ incubation.eggs }}" {% if candling %} disabled {% endif %}>
                                 {% if errors.eggs %}
                                 <small class="text-danger">{{ errors.eggs }}</small>
                                 {% endif %}

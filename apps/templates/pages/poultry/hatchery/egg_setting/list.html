@@ -41,6 +41,7 @@
                             <th scope="col">Customer</th>
                             <th scope="col">Breeders</th>
                             <th scope="col">Number of Eggs</th>
+                            <th scope="col">Available Eggs</th>
                             <th scope="col">Created</th>
                             <th scope="col">Actions</th> <!-- New Actions Column -->
                         </tr>
@@ -85,6 +86,9 @@
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span class="my-2 text-xs">{{ egg_setting.eggs|default:"0" }}</span>
+                            </td>
+                            <td class="text-xs font-weight-bold">
+                                <span class="my-2 text-xs">{{ egg_setting.available_quantity|default:"0" }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span class="my-2 text-xs">{{ egg_setting.created|date:"Y-m-d H:i" }}</span>
