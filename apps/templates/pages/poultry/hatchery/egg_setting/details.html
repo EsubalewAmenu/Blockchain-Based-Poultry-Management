@@ -90,12 +90,15 @@
                                 {% endif %}
                             </div>
                             <div class="col-12 col-sm-6">
-                                <label>Created</label>
-                                <input class="form-control" type="text" value="{{ egg_setting.created|date:'Y-m-d H:i' }}" readonly>
+                                <label>Available (UnIncubated) </label>
+                                <input class="form-control" type="text" value="{{ egg_setting.available_quantity|default:"0" }}" readonly>
                             </div>
                         </div>
                         <div class="row mt-3">
-                            
+                            <div class="col-12 col-sm-6">
+                                <label>Created</label>
+                                <input class="form-control" type="text" value="{{ egg_setting.created|date:'Y-m-d H:i' }}" readonly>
+                            </div>
                             <div class="col-12 col-sm-6">
                                 <label>Approved</label>
                                 <input class="form-control" type="text" value="{{ egg_setting.is_approved }}" readonly>

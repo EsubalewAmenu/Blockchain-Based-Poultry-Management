@@ -474,6 +474,7 @@ def egg_setting_create(request):
             item_request = item_request,
             egg = egg,
             eggs = item_request_quantity,
+            available_quantity = item_request_quantity,
         )
         egg_setting.save()
         messages.success(request, 'Egg Setting set successfully.', extra_tags='success')
@@ -486,8 +487,6 @@ def egg_setting_create(request):
     items = Item.objects.filter(item_type__type_name="Egg")
 
     # Get all eggs that are not in the egg_settings
-    
-    
     
     return render(request, 'pages/poultry/hatchery/egg_setting/create.html', {
         'incubators': incubators,
@@ -550,6 +549,16 @@ def egg_setting_delete(request, settingcode):
             messages.error(request, "Cannot delete Incubation associated with existing Egg Setting.", extra_tags='danger')
             return redirect('egg_setting_list')
         egg_setting.delete()
+        item_request = ItemRequest.objects.filter(id=egg_setting.item_request.id).first()
+        item = get_object_or_404(Item, code=item_request.item.code)
+        item.quantity += item_request.quantity
+        item.save()
+        if Eggs.objects.filter(item=item_request.item).exists():
+            eggs = Eggs.objects.filter(item=item_request.item)
+            for egg in eggs:
+                egg.received += item_request.quantity
+                egg.save()
+        item_request.delete()
         messages.success(request, 'Egg Setting deleted successfully.', extra_tags='success')
         return redirect('egg_setting_list')
     return render(request, 'egg_settings/egg_setting_confirm_delete.html', {'egg_setting': egg_setting})
@@ -571,15 +580,29 @@ def incubation_list(request):
 @login_required
 def incubation_detail(request, incubationcode):
     incubation = get_object_or_404(Incubation, incubationcode=incubationcode)
+    candling = Candling.objects.filter(incubation=incubation).exists()
     errors = {}
     if request.method == 'POST':
-        incubation.eggsetting = EggSetting.objects.get(id=request.POST.get('eggsetting'))
-        incubation.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
-        incubation.eggs = request.POST.get('eggs')
+        try:
+            incubation.eggsetting = EggSetting.objects.get(id=request.POST.get('eggsetting'))
+            incubation.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
+        except (EggSetting.DoesNotExist, Breeders.DoesNotExist):
+            errors['selection'] = "Invalid selection for egg setting or breeders."
         
-        if request.POST.get('eggs') and int(request.POST.get('eggs')) > incubation.eggsetting.eggs:
-            errors['eggs'] = "Insufficient quantity of eggs available for the slected egg setting."
-            
+        eggs = request.POST.get('eggs')
+        if eggs:
+            try:
+                eggs = int(eggs)
+                if eggs > incubation.eggsetting.eggs:
+                    errors['eggs'] = "Insufficient quantity of eggs available for the selected egg setting."
+            except ValueError:
+                errors['eggs'] = "Please enter a valid number of eggs."
+
+            if not errors and eggs < incubation.eggsetting.eggs:
+                incubation.eggsetting.available_quantity = incubation.eggsetting.eggs - eggs
+                incubation.eggsetting.save()
+                incubation.eggs = eggs
+        
         if errors:
             messages.error(request, "Updating incubation failed: Please double-check your entries and try again.")
             return render(request, 'pages/poultry/hatchery/incubation/details.html', {
@@ -599,6 +622,7 @@ def incubation_detail(request, incubationcode):
         'egg_settings': EggSetting.objects.all(),
         'customers': Customer.objects.all(),
         'breeders': Breeders.objects.all(),
+        'candling': candling
     }
     return render(request, 'pages/poultry/hatchery/incubation/details.html', context)
 
@@ -606,7 +630,7 @@ def incubation_detail(request, incubationcode):
 @login_required
 def incubation_create(request):
     errors = {}
-    egg_settings = EggSetting.objects.filter(is_approved=True)
+    egg_settings = EggSetting.objects.filter(is_approved=True, available_quantity__gte=1)
     customers = Customer.objects.all()
     breeders = Breeders.objects.all()
     if request.method == 'POST':
@@ -621,7 +645,7 @@ def incubation_create(request):
                 
         if eggsetting_id:
             eggsetting=EggSetting.objects.get(id=eggsetting_id) 
-            if eggs and int(eggs) > int(eggsetting.eggs):
+            if eggs and int(eggs) > int(eggsetting.available_quantity if eggsetting.available_quantity else 0):
                 errors['eggs'] = "Insufficient quantity of eggs available for the slected egg setting."
         
         context = {
@@ -641,6 +665,8 @@ def incubation_create(request):
             eggs=eggs
         )
         incubation.save()
+        eggsetting.available_quantity -= int(eggs)
+        eggsetting.save()
         messages.success(request, "Incubation saved successfully", extra_tags='success')
         return redirect('incubation_list')
 
@@ -656,15 +682,29 @@ def incubation_create(request):
 @login_required
 def incubation_update(request, incubationcode):
     incubation = get_object_or_404(Incubation, incubationcode=incubationcode)
+    candling = Candling.objects.filter(incubation=incubation).exists()
     errors = {}
     if request.method == 'POST':
-        incubation.eggsetting = EggSetting.objects.get(id=request.POST.get('eggsetting'))
-        incubation.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
-        incubation.eggs = request.POST.get('eggs')
+        try:
+            incubation.eggsetting = EggSetting.objects.get(id=request.POST.get('eggsetting'))
+            incubation.breeders = Breeders.objects.get(id=request.POST.get('breeders'))
+        except (EggSetting.DoesNotExist, Breeders.DoesNotExist):
+            errors['selection'] = "Invalid selection for egg setting or breeders."
         
-        if request.POST.get('eggs') and int(request.POST.get('eggs')) > incubation.eggsetting.eggs:
-            errors['eggs'] = "Insufficient quantity of eggs available for the slected egg setting."
-            
+        eggs = request.POST.get('eggs')
+        if eggs:
+            try:
+                eggs = int(eggs)
+                if eggs > incubation.eggsetting.eggs:
+                    errors['eggs'] = "Insufficient quantity of eggs available for the selected egg setting."
+            except ValueError:
+                errors['eggs'] = "Please enter a valid number of eggs."
+
+            if not errors and eggs < incubation.eggsetting.eggs:
+                incubation.eggsetting.available_quantity = incubation.eggsetting.eggs - eggs
+                incubation.eggsetting.save()
+                incubation.eggs = eggs
+        
         if errors:
             messages.error(request, "Updating incubation failed: Please double-check your entries and try again.")
             return render(request, 'pages/poultry/hatchery/incubation/details.html', {
@@ -684,8 +724,10 @@ def incubation_update(request, incubationcode):
         'egg_settings': EggSetting.objects.all(),
         'customers': Customer.objects.all(),
         'breeders': Breeders.objects.all(),
+        'candling': candling
     }
     return render(request, 'pages/poultry/hatchery/incubation/details.html', context)
+
 
 ## Delete View
 @login_required
@@ -1040,15 +1082,15 @@ def tracker_list_view(request):
 def tracker_details_view(request, tracker_code):
     tracker = get_object_or_404(Tracker, tracker_code=tracker_code)
     tracker_type = 'egg' if tracker.egg else 'chick'
-    egg_setting_id = request.GET.get('egg_setting_id')  # Capture the egg setting ID from the query param
-    incubation_id = request.GET.get('incubation_id')  # Capture the incubation ID from the query param
+    egg_setting_id = request.GET.get('egg_setting_id')
+    incubation_id = request.GET.get('incubation_id')
 
     if tracker_type == 'egg':
         egg = tracker.egg
-        egg_settings = EggSetting.objects.filter(egg=egg)  # Get all egg settings for this egg
+        egg_settings = EggSetting.objects.filter(egg=egg)
         egg_setting = egg_settings.filter(id=egg_setting_id).first() if egg_setting_id else egg_settings.first()
-        incubations = Incubation.objects.filter(eggsetting=egg_setting) if egg_setting else None
-        incubation = incubations.filter(id=incubation_id).first() if incubation_id else incubations.first() if incubations else None
+        incubations = Incubation.objects.filter(eggsetting=egg_setting) if egg_setting else Incubation.objects.none()
+        incubation = incubations.filter(id=incubation_id).first() if incubation_id else incubations.first()
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
         chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
@@ -1058,8 +1100,8 @@ def tracker_details_view(request, tracker_code):
             'egg': egg,
             'tracker': tracker,
             'egg_setting': egg_setting,
-            'egg_settings': egg_settings,  # Pass all egg settings for dropdown in the template
-            'incubations': incubations,  # Pass all incubations for dropdown in the template
+            'egg_settings': egg_settings,
+            'incubations': incubations,
             'incubation': incubation,
             'candling': candling,
             'hatching': hatching,
@@ -1068,11 +1110,11 @@ def tracker_details_view(request, tracker_code):
 
     elif tracker_type == 'chick':
         chick = tracker.chick
-        egg = Eggs.objects.filter(chicks=chick.batchnumber).first()  # Get the associated egg for the chick
-        egg_settings = EggSetting.objects.filter(egg=egg)  # Get all egg settings for the associated egg
+        egg = Eggs.objects.filter(chicks=chick.batchnumber).first()
+        egg_settings = EggSetting.objects.filter(egg=egg)
         egg_setting = egg_settings.filter(id=egg_setting_id).first() if egg_setting_id else egg_settings.first()
-        incubations = Incubation.objects.filter(eggsetting=egg_setting) if egg_setting else None
-        incubation = incubations.filter(id=incubation_id).first() if incubation_id else incubations.first() if incubations else None
+        incubations = Incubation.objects.filter(eggsetting=egg_setting) if egg_setting else Incubation.objects.none()
+        incubation = incubations.filter(id=incubation_id).first() if incubation_id else incubations.first()
         candling = Candling.objects.filter(incubation=incubation).first() if incubation else None
         hatching = Hatching.objects.filter(candling=candling).first() if candling else None
         chicks = Chicks.objects.filter(hatching=hatching) if hatching else []
@@ -1083,8 +1125,8 @@ def tracker_details_view(request, tracker_code):
             'tracker': tracker,
             'egg': egg,
             'egg_setting': egg_setting,
-            'egg_settings': egg_settings,  # Pass all egg settings for dropdown in the template
-            'incubations': incubations,  # Pass all incubations for dropdown in the template
+            'egg_settings': egg_settings,
+            'incubations': incubations,
             'incubation': incubation,
             'candling': candling,
             'hatching': hatching,

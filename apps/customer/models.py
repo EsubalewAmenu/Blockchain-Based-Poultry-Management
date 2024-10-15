@@ -133,7 +133,8 @@ class Eggs(models.Model):
     def save(self, *args, **kwargs):
         if not self.batchnumber:
             self.batchnumber = self.generate_unique_batchnumber()
-        self.received = int(self.brought) - int(self.returned)
+        if not self.received:
+            self.received = int(self.brought) - int(self.returned)
         self.item.quantity=self.received
         self.item.save()
         self.clean()
