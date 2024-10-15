@@ -486,7 +486,6 @@ def egg_setting_create(request):
     eggs = Eggs.objects.all()
     items = Item.objects.filter(item_type__type_name="Egg")
 
-    # Get all eggs that are not in the egg_settings
     
     return render(request, 'pages/poultry/hatchery/egg_setting/create.html', {
         'incubators': incubators,
