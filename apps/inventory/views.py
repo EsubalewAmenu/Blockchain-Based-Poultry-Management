@@ -242,7 +242,7 @@ def item_request_list(request):
         amount = request.POST.get('amount')
         item = get_object_or_404(Item, pk=item_id)
 
-        if item.quantity == 0 or item.quantity <= int(amount):
+        if item.quantity == 0 or item.quantity < int(amount):
             messages.error(request, "Requested amount is above the item's quantity.", extra_tags='danger')
             return redirect('item_request_list')
 
