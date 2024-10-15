@@ -654,7 +654,7 @@ def incubation_create(request):
             'errors':errors
         }    
         if errors:
-            messages.error(request, "Creating incubation failed: Please double-check your entries and try again.")
+            messages.error(request, "Creating incubation failed: Please double-check your entries and try again.", extra_tags='danger')
             return render(request, 'pages/poultry/hatchery/incubation/create.html', context)
         
         eggsetting=EggSetting.objects.get(id=eggsetting_id)   
@@ -705,7 +705,7 @@ def incubation_update(request, incubationcode):
                 incubation.eggs = eggs
         
         if errors:
-            messages.error(request, "Updating incubation failed: Please double-check your entries and try again.")
+            messages.error(request, "Updating incubation failed: Please double-check your entries and try again.", extra_tags='danger')
             return render(request, 'pages/poultry/hatchery/incubation/details.html', {
                 'incubation': incubation,
                 'errors': errors,
