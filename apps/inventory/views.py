@@ -203,23 +203,31 @@ def item_request(request):
     """
     item_id = request.POST.get('item')
     amount = request.POST.get('amount')
+    
+    try:
+        # Ensure the requested amount is a valid integer
+        amount = int(amount)
+    except ValueError:
+        messages.error(request, "Please provide a valid number for the requested amount.", extra_tags='danger')
+        return redirect('item_request_list')
+
     item = get_object_or_404(Item, pk=item_id)
 
-    if item.quantity is None or item.quantity < int(amount):
-       messages.error(request, "Requested amount is above the item's quantity.", extra_tags='danger')
-       return redirect('item_request_list')
-        
-    item.quantity -= int(amount)
-    item.save()
+    # Check if the requested amount exceeds the available quantity
+    if item.quantity is None or item.quantity < amount:
+        messages.error(request, "Requested amount exceeds the available quantity.", extra_tags='danger')
+        return redirect('item_request_list')
 
+    # Instead of reducing the quantity immediately, just create the request
     item_request = ItemRequest(
         item=item,
         quantity=amount,
-        requested_by=request.user
+        requested_by=request.user,
+        is_approved=False  # Track approval status
     )
     item_request.save()
-    messages.success(request, 'Item request created successfully', extra_tags='success')
 
+    messages.success(request, 'Item request created successfully and is pending approval.', extra_tags='success')
     return redirect('item_request_list')
 
 @login_required
@@ -234,7 +242,7 @@ def item_request_list(request):
         amount = request.POST.get('amount')
         item = get_object_or_404(Item, pk=item_id)
 
-        if item.quantity == 0 or item.quantity <= int(amount):
+        if item.quantity == 0 or item.quantity < int(amount):
             messages.error(request, "Requested amount is above the item's quantity.", extra_tags='danger')
             return redirect('item_request_list')
 
@@ -267,6 +275,28 @@ def item_request_delete(request, code):
             messages.error(request, 'Cannot delete item request associated with approved egg settings.', extra_tags='danger')
             return redirect('item_request_list')
         item_request.delete()
+        egg_setting = EggSetting.objects.filter(item_request__id=item_request.id).first()
+        
+        if egg_setting:
+            egg_setting.delete()
+        
+        if Chicks.objects.filter(item=item_request.item).exists():
+            chicks = Chicks.objects.filter(item=item_request.item)
+            for chick in chicks:
+                chick.number += item_request.quantity
+                chick.save()
+                
+        if Eggs.objects.filter(item=item_request.item).exists():
+            eggs = Eggs.objects.filter(item=item_request.item)
+            for egg in eggs:
+                egg.received += item_request.quantity
+                egg.save()
+                
+        if Incubators.objects.filter(item=item_request.item).exists():
+            incubator = Incubators.objects.filter(item=item_request.item).first()
+            incubator.number += item_request.quantity
+            incubator.save()
+        
         item.quantity += item_request.quantity
         item.save()
         messages.success(request, 'Item request deleted successfully', extra_tags='success')
@@ -279,16 +309,46 @@ def item_request_delete(request, code):
     return render(request, 'pages/inventory/item/delete.html', context)
 @login_required
 def item_request_approve(request, code):
+    """
+    Approve an item request and reduce the item quantity.
+    """
     item_request = get_object_or_404(ItemRequest, code=code)
-    item_request.approve()
+
+    # Check if the item has enough quantity before approving
+    if item_request.item.quantity < item_request.quantity:
+        messages.error(request, "Cannot approve the request: not enough stock.", extra_tags='danger')
+        return redirect('item_request_list')
+
+    # Deduct the quantity from the item
     item_request.item.quantity -= item_request.quantity
     item_request.item.save()
+
+    # Mark the request as approved
+    item_request.is_approved = True
+    item_request.save()
+
+    # Handle egg setting approval logic, if applicable
     egg_setting = EggSetting.objects.filter(item_request=item_request).first()
-        
     if egg_setting:
         egg_setting.is_approved = True
         egg_setting.save()
+        
+    if Chicks.objects.filter(item=item_request.item).exists():
+        chicks = Chicks.objects.filter(item=item_request.item)
+        for chick in chicks:
+            chick.number -= item_request.quantity
+            chick.save()
+            
+    if Eggs.objects.filter(item=item_request.item).exists():
+        eggs = Eggs.objects.filter(item=item_request.item)
+        for egg in eggs:
+            egg.received -= item_request.quantity
+            egg.save()
+            
+    if Incubators.objects.filter(item=item_request.item).exists():
+        incubator = Incubators.objects.filter(item=item_request.item).first()
+        incubator.number -= item_request.quantity
+        incubator.save()
     
-    messages.success(request, 'Item request approved successfully', extra_tags='success')
+    messages.success(request, 'Item request approved successfully.', extra_tags='success')
     return redirect('item_request_list')
-

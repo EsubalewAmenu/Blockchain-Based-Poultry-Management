@@ -63,9 +63,6 @@
                             <td class="my-2 text-xs">{{ item_request.created_at|date:"Y-m-d H:i" }}</td>
                             <td class="my-2 text-xs">
                                 <div class="d-flex justify-content-left align-items-left">
-                                    {% comment %} <a href="" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
-                                        <i class="fas fa-eye"></i>
-                                    </a> {% endcomment %}
                                     {% if item_request.is_approved %}
                                     <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'item_request_delete' item_request.code %}">
                                         <i class="fas fa-trash"></i>

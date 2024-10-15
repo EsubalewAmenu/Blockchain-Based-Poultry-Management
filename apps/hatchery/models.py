@@ -183,6 +183,7 @@ class EggSetting(models.Model):
     egg = models.ForeignKey(Eggs, on_delete=models.SET_NULL, null=True, blank=True)
     item_request = models.ForeignKey(ItemRequest, on_delete=models.SET_NULL, null=True, blank=True, related_name="egg_setting")
     eggs=models.IntegerField(null=True,blank=True,max_length=50)
+    available_quantity = models.IntegerField(null=True,blank=True,max_length=50)
     is_approved = models.BooleanField(default=False, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 

@@ -2,22 +2,6 @@
 {% load static %}
 
 {% block main %}
-<style>
-    .alert-container {
-        margin-top: 10px;
-        margin-bottom: 20px;
-    }
-    .alert .btn-close {
-      font-size: 1.5rem;
-      line-height: 1.5;   
-      padding: 0.5rem;  
-    }
-    
-    .alert .btn-close span {
-      display: inline-block;
-      transform: scale(1.2); 
-    }
-    </style>
 <div class="row">
     <div class="col-12 col-lg-8 mx-auto">
         <div class="card">
@@ -117,27 +101,4 @@
         </div>
     </div>
 </div>
-<script>
-    setTimeout(function() {
-      var alertElements = document.querySelectorAll('.alert');
-      alertElements.forEach(function(alert) {
-        alert.classList.remove('show');
-      });
-    }, 5000);
-  
-    document.addEventListener('DOMContentLoaded', function() {
-      var closeButtons = document.querySelectorAll('.alert .close');
-    
-      closeButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
-          var alert = this.closest('.alert');
-          alert.classList.remove('show');
-          setTimeout(function() {
-            alert.remove();
-          }, 300);
-        });
-      });
-    });
-    
-  </script>
 {% endblock %}
