@@ -13,215 +13,98 @@
 
     <hr class="horizontal dark mt-0">
 
+
+    <style>
+        .nav-link.active {
+            font-weight: bold; /* Makes the active link bold */
+            background-color: #e0ffe0; /* Light green background for the active link */
+            color: #005500 !important; /* Dark green text color */
+            border-left: 4px solid #28a745; /* Add a green border on the left */
+        }
+        .collapsible-sidenav.show {
+            display: block !important;
+        }
+    </style>
+    
     <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
 
             <!-- Dashboard is always visible -->
             <li class="nav-item">
-                <a href="{% url 'dashboard' %}" class="nav-link">
+                <a href="{% url 'dashboard' %}" class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                         <i class="fa-solid fa-table-columns text-success text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Dashboard</span>
                 </a>
             </li>
-
-            <!-- Admin sees everything -->
+        
+            <!-- Users (Admin Only) -->
             {% if request.user.is_superuser %}
             <li class="nav-item">
-                <a href="{% url 'users_list' %}" class="nav-link">
+                <a href="{% url 'users_list' %}" class="nav-link {% if request.path == '/accounts/user/list/' %}active{% endif %}">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="fa fa-users text-success text-sm opacity-10"></i>
+                        <i class="fa-solid fa-table-columns text-success text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Users</span>
                 </a>
             </li>
-
+        
             <!-- Human Resource Section -->
             <li class="nav-item">
-              <a data-bs-toggle="collapse" href="#hrPages" class="nav-link" aria-controls="hrPages" role="button" aria-expanded="false">
-                  <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                      <i class="fa-solid fa-user-tie text-success text-sm opacity-10"></i>
-                  </div>
-                  <span class="nav-link-text ms-1">Human Resource</span>
-              </a>
-              <div class="collapse collapsible-sidenav" id="hrPages">
-                  <ul class="nav ms-4">
-                      <!-- Employees Link -->
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'employee_list' %}">
-                              <span class="sidenav-mini-icon"> E </span>
-                              <span class="sidenav-normal"> Employees <b class="caret"></b></span>
-                          </a>
-                      </li>
-                      <!-- Departments Link -->
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'department_list' %}">
-                              <span class="sidenav-mini-icon"> D </span>
-                              <span class="sidenav-normal"> Departments <b class="caret"></b></span>
-                          </a>
-                      </li>
-                  </ul>
-              </div>
-          </li>
-
-            <li class="nav-item">
-              <a data-bs-toggle="collapse" href="#poultryPages" class="nav-link" aria-controls="poultryPages" role="button" aria-expanded="false">
-                  <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                      <i class="ni ni-ungroup text-success text-sm opacity-10"></i>
-                  </div>
-                  <span class="nav-link-text ms-1">Poultry</span>
-              </a>
-              <div class="collapse collapsible-sidenav" id="poultryPages">
-                  <ul class="nav ms-4">
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'breed_list' %}">
-                              <span class="sidenav-mini-icon"> B </span>
-                              <span class="sidenav-normal"> Breed <b class="caret"></b></span>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'breeders_list' %}">
-                              <span class="sidenav-mini-icon"> Br </span>
-                              <span class="sidenav-normal"> Breeder <b class="caret"></b></span>
-                          </a>
-                      </li>
-                  </ul>
-              </div>
-          </li>
-
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#hatcheryPages" class="nav-link" aria-controls="hatcheryPages" role="button" aria-expanded="false">
-                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-warehouse text-success text-sm opacity-10"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Hatchery</span>
-                </a>
-                <div class="collapse collapsible-sidenav" id="hatcheryPages">
-                    <ul class="nav ms-4">
-                        <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'hatchery_list' %}">
-                              <span class="sidenav-mini-icon"> B </span>
-                              <span class="sidenav-normal"> Hatchery <b class="caret"></b></span>
-                            </a>
-                        </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'egg_setting_list' %}">
-                              <span class="sidenav-mini-icon"> ES </span>
-                              <span class="sidenav-normal"> Egg Setting <b class="caret"></b></span>
-                            </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'incubation_list' %}">
-                              <span class="sidenav-mini-icon"> IB </span>
-                              <span class="sidenav-normal"> Incubation <b class="caret"></b></span>
-                            </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'candling_list' %}">
-                              <span class="sidenav-mini-icon"> CA </span>
-                              <span class="sidenav-normal"> Candlings <b class="caret"></b></span>
-                            </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'hatching_list' %}">
-                              <span class="sidenav-mini-icon"> HT </span>
-                              <span class="sidenav-normal"> Hatchings <b class="caret"></b></span>
-                            </a>
-                          </li> 
-                    </ul>
-                </div>
-            </li>
-
-            <li class="nav-item">
-              <a data-bs-toggle="collapse" href="#inventoryPages" class="nav-link" aria-controls="inventoryPages" role="button" aria-expanded="false">
-                  <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                      <i class="fa-solid fa-boxes-stacked text-success text-sm opacity-10"></i>
-                  </div>
-                  <span class="nav-link-text ms-1">Inventory</span>
-              </a>
-              <div class="collapse collapsible-sidenav" id="inventoryPages">
-                  <ul class="nav ms-4">
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'item_list' %}">
-                              <span class="sidenav-mini-icon"> IM </span>
-                              <span class="sidenav-normal"> Items <b class="caret"></b></span>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'item_request_list' %}">
-                              <span class="sidenav-mini-icon"> IR </span>
-                              <span class="sidenav-normal"> Items Request <b class="caret"></b></span>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'item_type_list' %}">
-                              <span class="sidenav-mini-icon"> IT </span>
-                              <span class="sidenav-normal"> Item Types <b class="caret"></b></span>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'customer_list' %}">
-                              <span class="sidenav-mini-icon"> C </span>
-                              <span class="sidenav-normal"> Customers <b class="caret"></b></span>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'chicks_list' %}">
-                              <span class="sidenav-mini-icon"> C </span>
-                              <span class="sidenav-normal"> Chicks <b class="caret"></b></span>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'eggs_list' %}">
-                              <span class="sidenav-mini-icon"> E </span>
-                              <span class="sidenav-normal"> Eggs <b class="caret"></b></span>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'incubator_list' %}">
-                              <span class="sidenav-mini-icon"> B </span>
-                              <span class="sidenav-normal"> Incubator <b class="caret"></b></span>
-                          </a>
-                      </li>
-                  </ul>
-              </div>
-          </li>
-
-            <li class="nav-item">
-              <a href="{% url 'tracker_list' %}" class="nav-link " role="button">
-                <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                  <i class="fa fa-chart-column text-success text-sm opacity-10"></i>
-                </div>
-                <span class="nav-link-text ms-1">Tracker</span>
-              </a>
-            </li>
-            {% endif %}
-
-            <!-- Hatchery Department -->
-            {% if request.user.employee.department.name == 'Hatchery' %}
-            {% if request.user.employee.role.role_type == 'Manager' %}
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#hrPages" class="nav-link" aria-controls="hrPages" role="button" aria-expanded="false">
+                <a data-bs-toggle="collapse" href="#hrPages" class="nav-link {% if request.path == '/human_resource/employees/' or request.path == '/human_resource/departments/' %}active{% endif %}" aria-controls="hrPages" role="button" aria-expanded="{% if request.path == '/human_resource/employees/' or request.path == '/human_resource/departments/' %}true{% else %}false{% endif %}">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                         <i class="fa-solid fa-user-tie text-success text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Human Resource</span>
                 </a>
-                <div class="collapse collapsible-sidenav" id="hrPages">
+                <div class="collapse collapsible-sidenav {% if request.path == '/human_resource/employees/' or request.path == 'human_resource/departments/' %}show{% endif %}" id="hrPages">
                     <ul class="nav ms-4">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'employee_list' %}">
+                            <a class="nav-link {% if request.path == '/human_resource/employees/' %}active{% endif %}" href="{% url 'employee_list' %}">
                                 <span class="sidenav-mini-icon"> E </span>
-                                <span class="sidenav-normal"> Employees </span>
+                                <span class="sidenav-normal"> Employees <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/human_resource/departments/' %}active{% endif %}" href="{% url 'department_list' %}">
+                                <span class="sidenav-mini-icon"> D </span>
+                                <span class="sidenav-normal"> Departments <b class="caret"></b></span>
                             </a>
                         </li>
                     </ul>
                 </div>
             </li>
-
+        
+            <!-- Poultry Section -->
             <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#hatcheryPages" class="nav-link" aria-controls="hatcheryPages" role="button" aria-expanded="false">
+                <a data-bs-toggle="collapse" href="#poultryPages" class="nav-link {% if request.path == '/breed/' or request.path == '/breeders/' %}active{% endif %}" aria-controls="poultryPages" role="button" aria-expanded="false">
+                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                        <i class="ni ni-ungroup text-success text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Poultry</span>
+                </a>
+                <div class="collapse collapsible-sidenav" id="poultryPages">
+                    <ul class="nav ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/breed/' %}active{% endif %}" href="{% url 'breed_list' %}">
+                                <span class="sidenav-mini-icon"> B </span>
+                                <span class="sidenav-normal"> Breed <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/breeders/' %}active{% endif %}" href="{% url 'breeders_list' %}">
+                                <span class="sidenav-mini-icon"> Br </span>
+                                <span class="sidenav-normal"> Breeders <b class="caret"></b></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        
+            <!-- Hatchery Section -->
+            <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#hatcheryPages" class="nav-link {% if request.path == '/hatchery/' or request.path == '/egg-settings/' or request.path == '/incubations/' or request.path == '/candlings/' or request.path == '/hatchings/' %}active{% endif %}" aria-controls="hatcheryPages" role="button" aria-expanded="false">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                         <i class="fa-solid fa-warehouse text-success text-sm opacity-10"></i>
                     </div>
@@ -229,109 +112,240 @@
                 </a>
                 <div class="collapse collapsible-sidenav" id="hatcheryPages">
                     <ul class="nav ms-4">
-                        <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'hatchery_list' %}">
-                              <span class="sidenav-mini-icon"> B </span>
-                              <span class="sidenav-normal"> Hatchery <b class="caret"></b></span>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/hatchery/' %}active{% endif %}" href="{% url 'hatchery_list' %}">
+                                <span class="sidenav-mini-icon"> B </span>
+                                <span class="sidenav-normal"> Hatchery <b class="caret"></b></span>
                             </a>
-                        </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'egg_setting_list' %}">
-                              <span class="sidenav-mini-icon"> ES </span>
-                              <span class="sidenav-normal"> Egg Setting <b class="caret"></b></span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/egg-settings/' %}active{% endif %}" href="{% url 'egg_setting_list' %}">
+                                <span class="sidenav-mini-icon"> ES </span>
+                                <span class="sidenav-normal"> Egg Setting <b class="caret"></b></span>
                             </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'incubation_list' %}">
-                              <span class="sidenav-mini-icon"> IB </span>
-                              <span class="sidenav-normal"> Incubation <b class="caret"></b></span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/incubations/' %}active{% endif %}" href="{% url 'incubation_list' %}">
+                                <span class="sidenav-mini-icon"> IB </span>
+                                <span class="sidenav-normal"> Incubation <b class="caret"></b></span>
                             </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'candling_list' %}">
-                              <span class="sidenav-mini-icon"> CA </span>
-                              <span class="sidenav-normal"> Candlings <b class="caret"></b></span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/candlings/' %}active{% endif %}" href="{% url 'candling_list' %}">
+                                <span class="sidenav-mini-icon"> CA </span>
+                                <span class="sidenav-normal"> Candlings <b class="caret"></b></span>
                             </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'hatching_list' %}">
-                              <span class="sidenav-mini-icon"> HT </span>
-                              <span class="sidenav-normal"> Hatchings <b class="caret"></b></span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/hatchings/' %}active{% endif %}" href="{% url 'hatching_list' %}">
+                                <span class="sidenav-mini-icon"> HT </span>
+                                <span class="sidenav-normal"> Hatchings <b class="caret"></b></span>
                             </a>
-                          </li> 
+                        </li>
                     </ul>
                 </div>
             </li>
-
+        
+            <!-- Inventory Section -->
             <li class="nav-item">
-                <a href="{% url 'tracker_list' %}" class="nav-link">
+                <a data-bs-toggle="collapse" href="#inventoryPages" class="nav-link {% if request.path == '/items/' or request.path == '/item/request/list/' or request.path == '/item-type/' or request.path == '/customer/' or request.path == '/chicks/' or request.path == '/eggs/' or request.path == '/incubator/' %}active{% endif %}" aria-controls="inventoryPages" role="button" aria-expanded="false">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-chart-column text-success text-sm opacity-10"></i>
+                        <i class="fa-solid fa-boxes-stacked text-success text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Inventory</span>
+                </a>
+                <div class="collapse collapsible-sidenav" id="inventoryPages">
+                    <ul class="nav ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/items/' %}active{% endif %}" href="{% url 'item_list' %}">
+                                <span class="sidenav-mini-icon"> IM </span>
+                                <span class="sidenav-normal"> Items <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/item/request/list/' %}active{% endif %}" href="{% url 'item_request_list' %}">
+                                <span class="sidenav-mini-icon"> IR </span>
+                                <span class="sidenav-normal"> Items Request <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/item-type/' %}active{% endif %}" href="{% url 'item_type_list' %}">
+                                <span class="sidenav-mini-icon"> IT </span>
+                                <span class="sidenav-normal"> Item Types <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/customer/' %}active{% endif %}" href="{% url 'customer_list' %}">
+                                <span class="sidenav-mini-icon"> C </span>
+                                <span class="sidenav-normal"> Customers <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/chicks/' %}active{% endif %}" href="{% url 'chicks_list' %}">
+                                <span class="sidenav-mini-icon"> C </span>
+                                <span class="sidenav-normal"> Chicks <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/eggs/' %}active{% endif %}" href="{% url 'eggs_list' %}">
+                                <span class="sidenav-mini-icon"> E </span>
+                                <span class="sidenav-normal"> Eggs <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/incubator/' %}active{% endif %}" href="{% url 'incubator_list' %}">
+                                <span class="sidenav-mini-icon"> B </span>
+                                <span class="sidenav-normal"> Incubator <b class="caret"></b></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        
+            <li class="nav-item">
+                <a href="{% url 'tracker_list' %}" class="nav-link {% if request.path == '/tracker/list/' %}active{% endif %}">
+                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                        <i class="fa fa-chart-column text-success text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Tracker</span>
                 </a>
             </li>
+        {% endif %}
 
-            {% elif request.user.employee.role.role_type == 'Staff' %}
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#hatcheryPages" class="nav-link" aria-controls="hatcheryPages" role="button" aria-expanded="false">
-                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-warehouse text-success text-sm opacity-10"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Hatchery</span>
-                </a>
-                <div class="collapse collapsible-sidenav" id="hatcheryPages">
-                    <ul class="nav ms-4">
-                        <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'hatchery_list' %}">
-                              <span class="sidenav-mini-icon"> B </span>
-                              <span class="sidenav-normal"> Hatchery <b class="caret"></b></span>
-                            </a>
-                        </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'egg_setting_list' %}">
-                              <span class="sidenav-mini-icon"> ES </span>
-                              <span class="sidenav-normal"> Egg Setting <b class="caret"></b></span>
-                            </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'incubation_list' %}">
-                              <span class="sidenav-mini-icon"> IB </span>
-                              <span class="sidenav-normal"> Incubation <b class="caret"></b></span>
-                            </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'candling_list' %}">
-                              <span class="sidenav-mini-icon"> CA </span>
-                              <span class="sidenav-normal"> Candlings <b class="caret"></b></span>
-                            </a>
-                          </li> 
-                          <li class="nav-item ">
-                            <a class="nav-link " href="{% url 'hatching_list' %}">
-                              <span class="sidenav-mini-icon"> HT </span>
-                              <span class="sidenav-normal"> Hatchings <b class="caret"></b></span>
-                            </a>
-                          </li> 
-                    </ul>
-                </div>
-            </li>
-            {% endif %}
-            {% endif %}
+            <!-- Hatchery Department -->
+{% if request.user.employee.department.name == 'Hatchery' %}
+{% if request.user.employee.role.role_type == 'Manager' %}
+    <li class="nav-item">
+        <a data-bs-toggle="collapse" href="#hrPages" class="nav-link {% if request.path == '/human_resource/employees/' %}active{% endif %}" aria-controls="hrPages" role="button" aria-expanded="{% if request.path == '/human_resource/employees/' %}true{% else %}false{% endif %}">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                <i class="fa-solid fa-user-tie text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Human Resource</span>
+        </a>
+        <div class="collapse collapsible-sidenav {% if request.path == '/human_resource/employees/' %}show{% endif %}" id="hrPages">
+            <ul class="nav ms-4">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/human_resource/employees/' %}active{% endif %}" href="{% url 'employee_list' %}">
+                        <span class="sidenav-mini-icon"> E </span>
+                        <span class="sidenav-normal"> Employees </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a data-bs-toggle="collapse" href="#hatcheryPages" class="nav-link {% if request.path == '/hatchery/' or request.path == '/egg-settings/' or request.path == '/incubations/' or request.path == '/candlings/' or request.path == '/hatchings/' %}active{% endif %}" aria-controls="hatcheryPages" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                <i class="fa-solid fa-warehouse text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Hatchery</span>
+        </a>
+        <div class="collapse collapsible-sidenav" id="hatcheryPages">
+            <ul class="nav ms-4">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/hatchery/' %}active{% endif %}" href="{% url 'hatchery_list' %}">
+                        <span class="sidenav-mini-icon"> B </span>
+                        <span class="sidenav-normal"> Hatchery </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/egg-settings/' %}active{% endif %}" href="{% url 'egg_setting_list' %}">
+                        <span class="sidenav-mini-icon"> ES </span>
+                        <span class="sidenav-normal"> Egg Setting </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/incubations/' %}active{% endif %}" href="{% url 'incubation_list' %}">
+                        <span class="sidenav-mini-icon"> IB </span>
+                        <span class="sidenav-normal"> Incubation </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/candlings/' %}active{% endif %}" href="{% url 'candling_list' %}">
+                        <span class="sidenav-mini-icon"> CA </span>
+                        <span class="sidenav-normal"> Candlings </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/hatchings/' %}active{% endif %}" href="{% url 'hatching_list' %}">
+                        <span class="sidenav-mini-icon"> HT </span>
+                        <span class="sidenav-normal"> Hatchings </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a href="{% url 'tracker_list' %}" class="nav-link {% if request.path == '/tracker/list/' %}active{% endif %}">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                <i class="fa-solid fa-chart-column text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Tracker</span>
+        </a>
+    </li>
+
+{% elif request.user.employee.role.role_type == 'Staff' %}
+    <li class="nav-item">
+        <a data-bs-toggle="collapse" href="#hatcheryPages" class="nav-link {% if request.path == '/hatchery/' or request.path == '/egg-settings/' or request.path == '/incubations/' or request.path == '/candlings/' or request.path == '/hatchings/' %}active{% endif %}" aria-controls="hatcheryPages" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                <i class="fa-solid fa-warehouse text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Hatchery</span>
+        </a>
+        <div class="collapse collapsible-sidenav" id="hatcheryPages">
+            <ul class="nav ms-4">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/hatchery/' %}active{% endif %}" href="{% url 'hatchery_list' %}">
+                        <span class="sidenav-mini-icon"> B </span>
+                        <span class="sidenav-normal"> Hatchery </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/egg-settings/' %}active{% endif %}" href="{% url 'egg_setting_list' %}">
+                        <span class="sidenav-mini-icon"> ES </span>
+                        <span class="sidenav-normal"> Egg Setting </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/incubations/' %}active{% endif %}" href="{% url 'incubation_list' %}">
+                        <span class="sidenav-mini-icon"> IB </span>
+                        <span class="sidenav-normal"> Incubation </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/candlings/' %}active{% endif %}" href="{% url 'candling_list' %}">
+                        <span class="sidenav-mini-icon"> CA </span>
+                        <span class="sidenav-normal"> Candlings </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/hatchings/' %}active{% endif %}" href="{% url 'hatching_list' %}">
+                        <span class="sidenav-mini-icon"> HT </span>
+                        <span class="sidenav-normal"> Hatchings </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+{% endif %}
+{% endif %}
 
             <!-- Breeders manager department-->
             {% if request.user.employee and request.user.employee.department.name == 'Breeders Manager' %}
             {% if request.user.employee.role.role_type == 'Manager' %}
             <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#hrPages" class="nav-link" aria-controls="hrPages" role="button" aria-expanded="false">
+                <a data-bs-toggle="collapse" href="#hrPages" class="nav-link {% if request.path == '/human_resource/employees/' %}active{% endif %}" aria-controls="hrPages" role="button" aria-expanded="{% if request.path == '/human_resource/employees/' %}true{% else %}false{% endif %}">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                         <i class="fa-solid fa-user-tie text-success text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Human Resource</span>
                 </a>
-                <div class="collapse collapsible-sidenav" id="hrPages">
+                <div class="collapse collapsible-sidenav {% if request.path == '/human_resource/employees/' %}show{% endif %}" id="hrPages">
                     <ul class="nav ms-4">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'employee_list' %}">
+                            <a class="nav-link {% if request.path == '/human_resource/employees/' %}active{% endif %}" href="{% url 'employee_list' %}">
                                 <span class="sidenav-mini-icon"> E </span>
                                 <span class="sidenav-normal"> Employees </span>
                             </a>
@@ -406,16 +420,16 @@
             {% if request.user.employee.department.name == 'Inventory Manager' %}
             {% if request.user.employee.role.role_type == 'Manager' %}
             <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#hrPages" class="nav-link" aria-controls="hrPages" role="button" aria-expanded="false">
+                <a data-bs-toggle="collapse" href="#hrPages" class="nav-link {% if request.path == '/human_resource/employees/' %}active{% endif %}" aria-controls="hrPages" role="button" aria-expanded="{% if request.path == '/human_resource/employees/' %}true{% else %}false{% endif %}">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                         <i class="fa-solid fa-user-tie text-success text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Human Resource</span>
                 </a>
-                <div class="collapse collapsible-sidenav" id="hrPages">
+                <div class="collapse collapsible-sidenav {% if request.path == '/human_resource/employees/' %}show{% endif %}" id="hrPages">
                     <ul class="nav ms-4">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'employee_list' %}">
+                            <a class="nav-link {% if request.path == '/human_resource/employees/' %}active{% endif %}" href="{% url 'employee_list' %}">
                                 <span class="sidenav-mini-icon"> E </span>
                                 <span class="sidenav-normal"> Employees </span>
                             </a>
