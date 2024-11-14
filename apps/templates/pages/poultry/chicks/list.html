@@ -20,8 +20,7 @@
                             <th scope="col">ID</th>
                             <th scope="col">Batch Number</th>
                             <th scope="col">Source</th>
-                            <th scope="col">Customer</th>
-                            <th scope="col">Hatching Code</th>
+                            <th scope="col">Name/Hatching Code</th>
                             <th scope="col">Item Code</th>
                             <th scope="col">Breed</th>
                             <th scope="col">Age</th>
@@ -54,15 +53,7 @@
                                 {% if chick.customer %}
                                   {{ chick.customer.full_name }}
                                 {% else %}
-                                  -
-                                {% endif %}</span>
-                            </td>
-                            <td class="font-weight-bold">
-                                <span class="my-2 text-xs">
-                                {% if chick.hatching %}
-                                  {{ chick.hatching.hatchingcode }}
-                                {% else %}
-                                  -
+                                    {{ chick.hatching.hatchingcode }}
                                 {% endif %}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
