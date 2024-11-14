@@ -11,8 +11,6 @@ from apps.chicks.models import Chicks
 from apps.hatchery.models import Incubators
 from .models import ItemType, Item, ItemRequest
 from apps.hatchery.models import EggSetting
-import requests
-import os
 
 @login_required
 def item_type_list(request):
@@ -157,59 +155,32 @@ def item_create(request):
         )
         item.save()
         
-        is_minted = mint_item(item)
+    
+        redirect_url = ''
+        if item.item_type.type_name == 'Egg':
+            redirect_url = reverse('eggs_create')
+        elif item.item_type.type_name in ['Chicks', 'Chick']:
+            redirect_url = reverse('chicks_create')
+        elif item.item_type.type_name == 'Incubator':
+            redirect_url = reverse('incubator_create')
+        else:
+            redirect_url = reverse('item_list')
+            
+        request.session['item_data'] = {
+                'id': item.id,
+                'code': item.code,
+                'item_type': item.item_type.type_name,
+                'quantity': item.quantity,
+                'created_at': item.created_at.isoformat(),
+            }
 
-        if is_minted:
-            redirect_url = ''
-            if item.item_type.type_name == 'Egg':
-                redirect_url = reverse('eggs_create')
-            elif item.item_type.type_name in ['Chicks', 'Chick']:
-                redirect_url = reverse('chicks_create')
-            elif item.item_type.type_name == 'Incubator':
-                redirect_url = reverse('incubator_create')
-            else:
-                redirect_url = reverse('item_list')
-                
-            request.session['item_data'] = {
-                    'id': item.id,
-                    'code': item.code,
-                    'item_type': item.item_type.type_name,
-                    'quantity': item.quantity,
-                    'created_at': item.created_at.isoformat(),
-                }
-
-            return JsonResponse({'redirect_url': redirect_url})
+        return JsonResponse({'redirect_url': redirect_url})
 
     context = {
         'item_types': ItemType.objects.all(),
     }
     return render(request, 'pages/inventory/item/create.html', context)
 
-def mint_item(item):
-
-        try:
-            api_data = {
-                    "tokenName": item.code,
-                    "blockfrostKey": os.getenv('blockfrostKey'),
-                    "secretSeed": os.getenv('secretSeed'),
-                    "cborHex": os.getenv('cborHex')
-                }
-
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
-            response_data = response.json()
-
-            if response.status_code == 200 and 'status' in response_data:
-                item.txHash = response_data['txHash']
-                item.policyId = response_data['policyId']
-                item.save()
-                return True
-            else:
-                return JsonResponse({'error': 'Unexpected API response'}, status=400)
-        
-        except requests.exceptions.RequestException as e:
-            print(f"API request failed: {e}")
-            return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
-        
 
 @login_required
 def item_delete(request, code):

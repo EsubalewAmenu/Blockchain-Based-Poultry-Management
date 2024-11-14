@@ -1,5 +1,6 @@
 # views.py
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.gis.geos import Point
 from django.core.paginator import Paginator
@@ -11,6 +12,8 @@ from .models import *
 from .forms import EggsForm
 from apps.chicks.models import Chicks
 from apps.accounts.validators import validate_email
+import requests
+import os
 
 @login_required
 def customer_list(request):
@@ -307,10 +310,14 @@ def eggs_create(request):
                 breed_id=breed_id,
                 photo=photo,
                 brought=brought,
-                returned=returned            )
-            egg.save()
+                returned=returned)
+                
+            is_minted = mint_egg_item(item, customer, chicks, source , breed_id, photo, brought, returned)
             
-            messages.success(request, "Egg Created Successfully", extra_tags="success")
+            if is_minted:
+                egg.save()
+                
+                messages.success(request, "Egg Created Successfully", extra_tags="success")
         except Exception as e:
             messages.error(request, "Error creating egg: " + str(e), extra_tags='danger')
             
@@ -319,6 +326,33 @@ def eggs_create(request):
         return redirect('eggs_list')
 
     return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items, 'item_data':item_data})
+
+def mint_egg_item(item, customer, chicks, source , breed_id, photo, brought, returned):
+
+        try:
+            api_data = {
+                    "tokenName": item.code,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response_data = response.json()
+
+            if response.status_code == 200 and 'status' in response_data:
+                print(response_data)
+                item.txHash = response_data['txHash']
+                item.policyId = response_data['policyId']
+                item.save()
+                return True
+            else:
+                return JsonResponse({'error': 'Unexpected API response'}, status=400)
+        
+        except requests.exceptions.RequestException as e:
+            print(f"API request failed: {e}")
+            return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+        
 
 # Update an existing egg
 @login_required
