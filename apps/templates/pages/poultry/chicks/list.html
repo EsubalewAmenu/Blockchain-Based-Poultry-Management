@@ -73,15 +73,22 @@
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <div class="d-flex justify-content-left align-items-left">
+
+                                    <a href="https://preprod.cardanoscan.io/transaction/{{ chick.item.txHash }}" class="btn btn-link text-secondary" target="_blank"><i class="fas fa-cube"></i></a>
+
                                     <a href="{% url 'chicks_detail' chick.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                                       <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{% url 'chicks_update' chick.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Chick">
-                                      <i class="fas fa-user-edit"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'chicks_delete' chick.batchnumber %}">
-                                      <i class="fas fa-trash"></i>
-                                    </a>
+
+                                    {% comment %}
+                                        <a href="{% url 'chicks_update' chick.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Chick">
+                                        <i class="fas fa-user-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'chicks_delete' chick.batchnumber %}">
+                                        <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endcomment %}
+
                                 </div>
                             </td>
                         </tr>
