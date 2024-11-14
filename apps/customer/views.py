@@ -327,11 +327,26 @@ def eggs_create(request):
 
     return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items, 'item_data':item_data})
 
-def mint_egg_item(item, customer, chicks, source , breed_id, photo, brought, returned):
+def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, returned):
+
 
         try:
+            if source == 'farm':
+                name_or_chicks = chicks.batchnumber
+            elif source == 'customer':
+                name_or_chicks = customer.full_name
+
+
             api_data = {
                     "tokenName": item.code,
+                    "metadata": {
+                        # "item_type": item.item_type,
+                        "source": source,
+                        source: name_or_chicks,
+                        "breed": breed_id,
+                        "brought": brought,
+                        "returned": returned,
+                        },
                     "blockfrostKey": os.getenv('blockfrostKey'),
                     "secretSeed": os.getenv('secretSeed'),
                     "cborHex": os.getenv('cborHex')
