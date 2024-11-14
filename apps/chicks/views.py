@@ -9,6 +9,8 @@ from apps.hatchery.models import Hatching
 from .models import Chicks
 from apps.inventory.models import Item
 import datetime
+import requests
+import os
 
 @login_required
 def chicks_list(request):
@@ -134,13 +136,63 @@ def chicks_create(request):
             chick_photo=chick_photo,
             number=number
         )
-        chick.save()
-        messages.success(request, "Chicks Created Successfully", extra_tags="success")
+
+        is_minted = mint_chicks_item(item, source, breed_id, customer, hatching, age, description, chick_photo, number)
+        
+        if is_minted:
+            chick.save()
+            messages.success(request, "Chicks Created Successfully", extra_tags="success")
         if 'item_data' in request.session:
             request.session.pop('item_data')
         return redirect('chicks_list') 
 
     return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items, 'item_data':item_data, 'customers':customers, 'hatchings': hatchings})
+
+
+def mint_chicks_item(item, source, breed_id, customer, hatching, age, description, chick_photo, number):
+
+
+        try:
+            if source == 'hatching':
+                name_or_chicks = hatching.hatchingcode
+            elif source == 'customer':
+                name_or_chicks = customer.full_name
+
+            breed = Breed.objects.get(pk=breed_id)
+
+            api_data = {
+                    "tokenName": item.code,
+                    "metadata": {
+                        "item_type": item.item_type.type_name,
+                        "source": source,
+                        source: name_or_chicks,
+                        "breed": breed.code,
+                        "breed_type": breed.breed,
+                        "age": age,
+                        "description": description,
+                        "number": number
+                        },
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response_data = response.json()
+
+            if response.status_code == 200 and 'status' in response_data:
+                print(response_data)
+                item.txHash = response_data['txHash']
+                item.policyId = response_data['policyId']
+                item.save()
+                return True
+            else:
+                return JsonResponse({'error': 'Unexpected API response'}, status=400)
+        
+        except requests.exceptions.RequestException as e:
+            print(f"API request failed: {e}")
+            return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+        
 
 @login_required
 def chicks_update(request, batchnumber):
