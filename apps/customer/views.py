@@ -163,10 +163,9 @@ def customer_delete(request, full_name):
 # Eggs
 
 # List all eggs
-# List all eggs
 @login_required
 def eggs_list(request):
-    eggs = Eggs.objects.all()
+    eggs = Eggs.objects.all().order_by('-created')
     items = Item.objects.all()
     paginator = Paginator(eggs, 10)  # Show 10 eggs per page
     
