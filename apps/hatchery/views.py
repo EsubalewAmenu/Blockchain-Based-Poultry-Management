@@ -14,7 +14,10 @@ from apps.breeders.models import *
 from apps.chicks.models import Chicks
 from apps.inventory.models import ItemType, Item
 from apps.dashboard.models import Tracker
+from django.http import JsonResponse
 from .models import *
+import requests
+import os
 
 # Create your views here.
 @login_required
@@ -197,6 +200,7 @@ def incubator_create(request):
         model = request.POST['model']
         year = request.POST['year']
         item_id = request.POST['item']
+        manufacturer_details = request.POST['manufacturer_details']
         
         item = Item.objects.get(pk=item_id)
         if 'item_data' in request.session:
@@ -209,9 +213,13 @@ def incubator_create(request):
             year=year,
             item=item
         )
-        incubator.save()
+
         item.quantity = 1
-        item.save()
+        is_minted = mint_incubators_item(hatchery, incubatortype, manufacturer, model, year, manufacturer_details, item)
+        
+        if is_minted:
+            incubator.save()
+            item.save()
         messages.success(request, "Incubator created successfully", extra_tags='success')
         if 'item_data' in request.session:
             request.session.pop('item_data')
@@ -219,6 +227,42 @@ def incubator_create(request):
     
     return render(request, 'pages/poultry/incubators/create.html', {'hatcheries': hatcheries, 'items':items, 'item_data':item_data})
 
+
+def mint_incubators_item(hatchery, incubatortype, manufacturer, model, year, manufacturer_details, item):
+        try:
+
+            api_data = {
+                    "tokenName": item.code,
+                    "metadata": {
+                        "item_type": item.item_type.type_name,
+                        "hatchery_name": hatchery.name,
+                        "incubatortype": incubatortype,
+                        "manufacturer": manufacturer,
+                        "model": model,
+                        "year": year,
+                        "manufacturer_details": manufacturer_details
+                        },
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response_data = response.json()
+
+            if response.status_code == 200 and 'status' in response_data:
+                print(response_data)
+                item.txHash = response_data['txHash']
+                item.policyId = response_data['policyId']
+                item.save()
+                return True
+            else:
+                return JsonResponse({'error': 'Unexpected API response'}, status=400)
+        
+        except requests.exceptions.RequestException as e:
+            print(f"API request failed: {e}")
+            return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+        
 @login_required
 def incubator_detail(request, code):
     incubator = get_object_or_404(Incubators, code=code)
