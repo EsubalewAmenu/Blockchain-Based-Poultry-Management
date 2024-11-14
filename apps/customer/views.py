@@ -340,12 +340,13 @@ def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, retu
             api_data = {
                     "tokenName": item.code,
                     "metadata": {
-                        # "item_type": item.item_type,
+                        "item_type": item.item_type.type_name,
                         "source": source,
                         source: name_or_chicks,
                         "breed": breed_id,
-                        "brought": brought,
-                        "returned": returned,
+                        "brought": int(brought),
+                        "returned": int(returned),
+                        "received": int(brought) - int(returned)
                         },
                     "blockfrostKey": os.getenv('blockfrostKey'),
                     "secretSeed": os.getenv('secretSeed'),
