@@ -16,8 +16,8 @@
           <thead class="thead-light">
               <tr>
                   <th scope="col">Batch Number</th>
-                  <th scope="col">Customer</th>
-                  <th scope="col">Chicks</th>
+                  <th scope="col">Source</th>
+                  <th scope="col">Name/Batch</th>
                   <th scope="col">Breed</th>
                   <th scope="col">Item code</th>
                   <th scope="col">Brought</th>
@@ -43,9 +43,9 @@
                   <td class="font-weight-bold">
                       <span class="my-2 text-xs">
                       {% if egg.customer.full_name %}
-                        {{ egg.customer.full_name }}
+                        Customer
                       {% else %}
-                        -
+                        Chicks
                       {% endif %}</span>
                   </td>
                   <td class="font-weight-bold">
@@ -53,7 +53,7 @@
                       {% if egg.chicks %}
                         {{ egg.chicks }}
                       {% else %}
-                        -
+                      {{ egg.customer.full_name }}
                       {% endif %}</span>
                   </td>
                   <td class="font-weight-bold">
