@@ -336,6 +336,7 @@ def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, retu
             elif source == 'customer':
                 name_or_chicks = customer.full_name
 
+            breed = Breed.objects.get(pk=breed_id)
 
             api_data = {
                     "tokenName": item.code,
@@ -343,7 +344,8 @@ def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, retu
                         "item_type": item.item_type.type_name,
                         "source": source,
                         source: name_or_chicks,
-                        "breed": breed_id,
+                        "breed": breed.code,
+                        "breed_type": breed.breed,
                         "brought": int(brought),
                         "returned": int(returned),
                         "received": int(brought) - int(returned)
