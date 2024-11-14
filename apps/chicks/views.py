@@ -14,7 +14,7 @@ import os
 
 @login_required
 def chicks_list(request):
-    chicks = Chicks.objects.all()
+    chicks = Chicks.objects.all().order_by('-created')
     breeds = Breed.objects.all()
     eggs = Eggs.objects.all()
     paginator = Paginator(chicks, 10)
