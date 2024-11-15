@@ -101,9 +101,12 @@
                                     <a href="{% url 'egg_setting_detail' egg_setting.settingcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                                       <i class="fas fa-eye"></i>
                                     </a>
+                                    {% comment %}
                                     <a href="{% url 'egg_setting_update' egg_setting.settingcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Egg Setting">
                                       <i class="fas fa-user-edit"></i>
                                     </a>
+                                    {% endcomment %}
+
                                     <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'egg_setting_delete' egg_setting.settingcode %}">
                                       <i class="fas fa-trash"></i>
                                     </a>
