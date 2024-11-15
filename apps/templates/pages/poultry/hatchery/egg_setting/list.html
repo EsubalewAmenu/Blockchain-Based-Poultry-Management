@@ -95,6 +95,9 @@
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <div class="d-flex justify-content-left align-items-left">
+
+                                    <a href="https://preprod.cardanoscan.io/transaction/{{ egg_setting.txHash }}" class="btn btn-link text-secondary" target="_blank"><i class="fas fa-cube"></i></a>
+
                                     <a href="{% url 'egg_setting_detail' egg_setting.settingcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                                       <i class="fas fa-eye"></i>
                                     </a>
