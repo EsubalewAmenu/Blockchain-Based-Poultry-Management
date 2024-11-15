@@ -568,6 +568,7 @@ def register_history(egg_setting, item):
                         "item_request_code": egg_setting.item_request.code,
                         "item_request_requested_by": egg_setting.item_request.requested_by.first_name,
                         "item_request_quantity": egg_setting.item_request.quantity,
+                        "is_request_approved": egg_setting.is_approved,
 
                         "incubator": egg_setting.incubator.code,
                         "breeders": egg_setting.breeders.batch,
