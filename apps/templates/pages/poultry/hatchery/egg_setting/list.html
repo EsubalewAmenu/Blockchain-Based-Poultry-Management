@@ -35,7 +35,7 @@
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Setting Code</th>
-                            <th scope="col">Item Request</th>
+                            <th scope="col">Item Request (Item)</th>
                             <th scope="col">Egg Batch</th>
                             <th scope="col">Incubator</th>
                             <th scope="col">Breeders</th>
@@ -65,11 +65,8 @@
                             <td class="font-weight-bold">
                                 <span class="my-2 text-xs">
                                     {% if egg_setting.item_request%}
-                                        {{ egg_setting.item_request.code }}
-                                    {% else %}
-                                     -
+                                        {{ egg_setting.item_request.code }} ({{ egg_setting.item_request.item.code }})
                                     {% endif %}
-                                
                                 </span>
                             </td>
                             <td class="text-xs font-weight-bold">
