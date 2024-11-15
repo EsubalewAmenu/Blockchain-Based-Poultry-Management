@@ -520,9 +520,27 @@ def egg_setting_create(request):
             eggs = item_request_quantity,
             available_quantity = item_request_quantity,
         )
+
         egg_setting.save()
-        messages.success(request, 'Egg Setting set successfully.', extra_tags='success')
-        return redirect('egg_setting_list')
+
+        is_registered = register_history(egg_setting, item_request_item)
+
+        if is_registered:
+            messages.success(request, 'Egg Setting set successfully.', extra_tags='success')
+            return redirect('egg_setting_list')
+        else:
+            item_request.delete()
+            egg_setting.delete()
+
+            messages.error(request, "Error registering on blockchain, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/egg_setting/create.html', {
+                'errors': errors,
+                'incubators': Incubators.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all(),
+                'egg': Eggs.objects.all(),
+                'items': Item.objects.filter(item_type__type_name="Egg"),
+            })
 
     incubators = Incubators.objects.all()
     customers = Customer.objects.all()
@@ -539,6 +557,41 @@ def egg_setting_create(request):
         'items': items,
     })
 
+def register_history(egg_setting, item):
+        try:
+
+            api_data = {
+                    "tokenName": item.code,
+                    "code": egg_setting.settingcode,
+                    "metadata": {
+                        "egg_batch": egg_setting.egg.batchnumber,
+                        "item_request_code": egg_setting.item_request.code,
+                        "item_request_requested_by": egg_setting.item_request.requested_by.first_name,
+                        "item_request_quantity": egg_setting.item_request.quantity,
+
+                        "incubator": egg_setting.incubator.code,
+                        "breeders": egg_setting.breeders.batch,
+                        },
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response_data = response.json()
+
+            if response.status_code == 200 and 'status' in response_data:
+                print(response_data)
+                egg_setting.txHash = response_data['txHash']
+                egg_setting.save()
+                return True
+            else:
+                return JsonResponse({'error': 'Unexpected API response'}, status=400)
+        
+        except requests.exceptions.RequestException as e:
+            print(f"API request failed: {e}")
+            return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+        
 @login_required
 def egg_setting_update(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
