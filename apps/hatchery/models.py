@@ -185,6 +185,7 @@ class EggSetting(models.Model):
     eggs=models.IntegerField(null=True,blank=True,max_length=50)
     available_quantity = models.IntegerField(null=True,blank=True,max_length=50)
     is_approved = models.BooleanField(default=False, blank=True, null=True)
+    txHash = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
