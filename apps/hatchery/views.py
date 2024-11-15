@@ -418,7 +418,7 @@ def incubator_capacity_delete(request, id):
 #Egg Settings
 @login_required
 def egg_setting_list(request):
-    egg_settings = EggSetting.objects.all()
+    egg_settings = EggSetting.objects.all().order_by('-created')
     egg= Eggs.objects.all()
     paginator = Paginator(egg_settings, 10)
     
