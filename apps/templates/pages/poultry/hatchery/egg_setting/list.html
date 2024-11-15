@@ -106,10 +106,12 @@
                                       <i class="fas fa-user-edit"></i>
                                     </a>
                                     {% endcomment %}
-
-                                    <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'egg_setting_delete' egg_setting.settingcode %}">
-                                      <i class="fas fa-trash"></i>
-                                    </a>
+ 
+                                    {% if not egg_setting.is_approved %}
+                                        <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'egg_setting_delete' egg_setting.settingcode %}">
+                                        <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endif %}
                                   </div>
                             </td>
                         </tr>
