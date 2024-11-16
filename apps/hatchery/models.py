@@ -359,6 +359,7 @@ class Hatching(models.Model):
     spoilt=models.IntegerField(null=True,blank=True,max_length=50)
     chicks_hatched=models.IntegerField(null=True,blank=True,max_length=50)
     notify_customer=models.BooleanField(null=True,blank=True,max_length=50)
+    txHash = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
