@@ -239,6 +239,7 @@ class Incubation(models.Model):
         related_name="incubation_breeders", blank=True, null=True,
         on_delete=models.SET_NULL)
     eggs=models.IntegerField(null=True,blank=True,max_length=50)
+    txHash = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
