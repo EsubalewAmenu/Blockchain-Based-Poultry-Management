@@ -1015,6 +1015,23 @@ def candling_create(request):
             # Save the Candling record
             candling.save()
 
+
+            is_registered = register_candling_history(candling, incubation)
+
+            if not is_registered:
+                candling.delete()
+
+                messages.error(request, "Error registering on blockchain, Please double-check your entries and try again.", extra_tags="danger")
+                context = {
+                    'incubations': Incubation.objects.filter(eggsetting__is_approved=True).exclude(candling_incubation__isnull=False),
+                    'customers': Customer.objects.all(),
+                    'breeders': Breeders.objects.all(),
+                    "errors": errors,
+                    'today': datetime.datetime.now().date().strftime('%Y-%m-%d'),
+                }
+                return render(request, 'pages/poultry/hatchery/candling/create.html', context=context)
+
+                
             # Fetch the associated Eggs object (ensuring the record exists)
             egg = get_object_or_404(Eggs, id=incubation.eggsetting.egg.id)
             
@@ -1037,6 +1054,38 @@ def candling_create(request):
     }
     return render(request, 'pages/poultry/hatchery/candling/create.html', context)
 
+
+def register_candling_history(candling, incubation):
+    try:
+        api_data = {
+                "tokenName": incubation.eggsetting.item_request.item.code,
+                "policyId": incubation.eggsetting.item_request.item.policyId,
+                "code": candling.candlingcode,
+                "metadata": {
+                    "candled_date": candling.candled_date,
+                    "eggs": incubation.eggs,
+                    "fertile_eggs": int(incubation.eggs) - int(candling.spoilt_eggs),
+                    "incubation": incubation.incubationcode,
+                    "spoilt_eggs": int(candling.spoilt_eggs),
+                    },
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+        response_data = response.json()
+
+        if response.status_code == 200 and 'status' in response_data:
+            candling.txHash = response_data['txHash']
+            candling.save()
+            return True
+        else:
+            return False
+    
+    except requests.exceptions.RequestException as e:
+        return False
+        
 @login_required
 def candling_delete(request, candlingcode):
     """
