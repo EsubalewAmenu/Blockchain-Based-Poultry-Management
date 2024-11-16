@@ -54,6 +54,7 @@ class ItemRequest(models.Model):
     quantity = models.IntegerField(null=True, blank=True)
     is_approved = models.BooleanField(default=False, blank=True)
     requested_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    txHash = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
