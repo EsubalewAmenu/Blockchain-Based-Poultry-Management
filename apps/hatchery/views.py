@@ -1207,6 +1207,24 @@ def hatching_create(request):
             from datetime import datetime
             chick = Chicks(item=item, source='hatching', breed=hatching.breeders.breed, age=datetime.now().date(), hatching=hatching, number=hatching.chicks_hatched)
             chick.save()
+        
+
+            txHash = register_hatching_history(hatching, candling, item, chick)
+
+            if not txHash:
+                hatching.delete()
+                item.delete()
+                chick.delete()
+        
+                messages.error(request, "Error registering on blockchain: Please double-check your entries and try again.", extra_tags="danger")
+                context = {
+                    'candlings': Candling.objects.exclude(hatching_candling__isnull=False),
+                    'customers': Customer.objects.all(),
+                    'breeders': Breeders.objects.all(),
+                    'errors': errors,
+                }
+                return render(request, 'pages/poultry/hatchery/hatching/create.html', context=context)
+
             messages.success(request, 'Hatching record created successfully.', extra_tags="success")
         except Exception as e:
             messages.error(request, f"Creating hatching failed: {str(e)}.", extra_tags="danger")
@@ -1219,6 +1237,40 @@ def hatching_create(request):
     }
     return render(request, 'pages/poultry/hatchery/hatching/create.html', context)
 
+def register_hatching_history(hatching, candling, new_item, new_chick):
+    try:
+        api_data = {
+                "tokenName": candling.incubation.eggsetting.item_request.item.code,
+                "policyId": candling.incubation.eggsetting.item_request.item.policyId,
+                "code": hatching.hatchingcode,
+                "metadata": {
+                    "breeders": hatching.breeders.batch,
+                    "hatched": hatching.hatched,
+                    "deformed": int(hatching.deformed),
+                    "spoilt_eggs": int(hatching.spoilt),
+                    "chicks_hatched": int(hatching.hatched) - int(hatching.deformed) - int(hatching.spoilt),
+                    "new_chicks_batchnumber": new_chick.batchnumber,
+                    "new_item_code": new_item.code,
+                    },
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+        response_data = response.json()
+
+        if response.status_code == 200 and 'status' in response_data:
+            hatching.txHash = response_data['txHash']
+            hatching.save()
+
+            return True
+        else:
+            return False
+    
+    except requests.exceptions.RequestException as e:
+        return False
+        
 @login_required
 def hatching_delete(request, hatchingcode):
     """
