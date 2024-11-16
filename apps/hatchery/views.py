@@ -566,6 +566,7 @@ def register_history(egg_setting, item):
                     "code": egg_setting.settingcode,
                     "metadata": {
                         "egg_batch": egg_setting.egg.batchnumber,
+                        "item_code": item.code,
                         "item_request_code": egg_setting.item_request.code,
                         "item_request_requested_by": egg_setting.item_request.requested_by.first_name,
                         "item_request_quantity": egg_setting.item_request.quantity,
@@ -579,11 +580,10 @@ def register_history(egg_setting, item):
                     "cborHex": os.getenv('cborHex')
                 }
 
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
             response_data = response.json()
-
+                        
             if response.status_code == 200 and 'status' in response_data:
-                print(response_data)
                 egg_setting.txHash = response_data['txHash']
                 egg_setting.save()
                 return True
