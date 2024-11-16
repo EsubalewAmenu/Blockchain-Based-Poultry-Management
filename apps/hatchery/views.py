@@ -588,11 +588,10 @@ def register_history(egg_setting, item):
                 egg_setting.save()
                 return True
             else:
-                return JsonResponse({'error': 'Unexpected API response'}, status=400)
+                return False
         
         except requests.exceptions.RequestException as e:
-            print(f"API request failed: {e}")
-            return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+            return False
         
 @login_required
 def egg_setting_update(request, settingcode):
@@ -765,6 +764,15 @@ def incubation_create(request):
         incubation.save()
         eggsetting.available_quantity -= int(eggs)
         eggsetting.save()
+
+        is_registered = register_history(incubation, eggsetting)
+
+        if not is_registered:
+            eggsetting.available_quantity += int(eggs)
+            eggsetting.save()
+            messages.error(request, "Recording on blockchain failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/incubation/create.html', context)
+
         messages.success(request, "Incubation saved successfully", extra_tags='success')
         return redirect('incubation_list')
 
@@ -776,6 +784,34 @@ def incubation_create(request):
 
     return render(request, 'pages/poultry/hatchery/incubation/create.html', context)
 
+def register_history(incubation, eggsetting):
+    try:
+        api_data = {
+                "tokenName": eggsetting.item_request.item.code,
+                "policyId": eggsetting.item_request.item.policyId,
+                "code": incubation.incubationcode,
+                "metadata": {
+                    "eggsetting": eggsetting.settingcode,
+                    "eggs_quantity": incubation.eggs,
+                    },
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+        response_data = response.json()
+
+        if response.status_code == 200 and 'status' in response_data:
+            incubation.txHash = response_data['txHash']
+            incubation.save()
+            return True
+        else:
+            return False
+    
+    except requests.exceptions.RequestException as e:
+        return False
+        
 ## Update View
 @login_required
 def incubation_update(request, incubationcode):
