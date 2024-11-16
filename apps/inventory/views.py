@@ -391,7 +391,6 @@ def register_history(item_request):
             response_data = response.json()
 
             if response.status_code == 200 and 'status' in response_data:
-                print(response_data)
                 item_request.txHash = response_data['txHash']
                 item_request.save()
                 return True
