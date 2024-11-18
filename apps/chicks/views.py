@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from apps.breeders.models import Breed
 from apps.customer.models import Eggs, Customer
+from apps.hatchery.models import Hatching
 from django.http import HttpResponse
 from django.contrib import messages
-from apps.hatchery.models import Hatching
+from django.http import JsonResponse
 from .models import Chicks
 from apps.inventory.models import Item
 import datetime
