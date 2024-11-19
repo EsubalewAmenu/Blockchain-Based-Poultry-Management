@@ -188,11 +188,10 @@ def mint_chicks_item(item, source, breed_id, customer, hatching, age, descriptio
                 item.save()
                 return True
             else:
-                return JsonResponse({'error': 'Unexpected API response'}, status=400)
+                return False
         
         except requests.exceptions.RequestException as e:
-            print(f"API request failed: {e}")
-            return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+            return False
         
 
 @login_required
