@@ -12,11 +12,13 @@ from weasyprint import HTML
 from apps.accounts.validators import validate_email
 from apps.breeders.models import *
 from apps.chicks.models import Chicks
+from apps.chicks.views import mint_chicks_item
 from apps.inventory.models import ItemType, Item
 from apps.dashboard.models import Tracker
 from django.http import JsonResponse
 from .models import *
 import requests
+import time
 import os
 
 # Create your views here.
@@ -1210,8 +1212,18 @@ def hatching_create(request):
         
 
             txHash = register_hatching_history(hatching, candling, item, chick)
+            
+            chick_txHash = None
+            utxo = None
+            
+            if txHash:
+                utxo = check_utxo_status(txHash)
 
-            if not txHash:
+            if utxo:
+                chick_txHash = mint_chicks_item(item, 'hatching', hatching.breeders.id, None, hatching, str(chick.age), '', chick.chick_photo, chick.number)
+
+
+            if not txHash or not chick_txHash:
                 hatching.delete()
                 item.delete()
                 chick.delete()
@@ -1237,6 +1249,39 @@ def hatching_create(request):
     }
     return render(request, 'pages/poultry/hatchery/hatching/create.html', context)
 
+
+def check_utxo_status(txHash, retries=10, wait_time=5):
+    for attempt in range(retries):
+        try:
+
+            api_data = {
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "txHash": txHash,
+                }
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'utxo-status', json=api_data)
+
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("status") == "ready":
+                    print("UTxO is ready for the next transaction.")
+                    
+                    time.sleep(wait_time)
+                    return True
+                else:
+                    print(f"Attempt {attempt + 1}/{retries}: UTxO is not ready. Retrying in {wait_time} seconds...")
+            else:
+                print(f"Error {response.status_code}: {response.text}")
+                return None
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        
+        time.sleep(wait_time)
+
+    print("UTxO is still not ready after maximum retries.")
+    return None
+
+
 def register_hatching_history(hatching, candling, new_item, new_chick):
     try:
         api_data = {
@@ -1245,10 +1290,10 @@ def register_hatching_history(hatching, candling, new_item, new_chick):
                 "code": hatching.hatchingcode,
                 "metadata": {
                     "breeders": hatching.breeders.batch,
-                    "hatched": hatching.hatched,
-                    "deformed": int(hatching.deformed),
-                    "spoilt_eggs": int(hatching.spoilt),
-                    "chicks_hatched": int(hatching.hatched) - int(hatching.deformed) - int(hatching.spoilt),
+                    "hatched": str(hatching.hatched),
+                    "deformed": str(hatching.deformed),
+                    "spoilt_eggs": str(hatching.spoilt),
+                    "chicks_hatched": str(int(hatching.hatched) - int(hatching.deformed) - int(hatching.spoilt)),
                     "new_chicks_batchnumber": new_chick.batchnumber,
                     "new_item_code": new_item.code,
                     },
@@ -1263,8 +1308,7 @@ def register_hatching_history(hatching, candling, new_item, new_chick):
         if response.status_code == 200 and 'status' in response_data:
             hatching.txHash = response_data['txHash']
             hatching.save()
-
-            return True
+            return response_data['txHash']
         else:
             return False
     
