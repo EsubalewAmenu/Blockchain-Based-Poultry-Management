@@ -89,6 +89,8 @@ class Breeders(models.Model):
     current_number = models.IntegerField(null=True,blank=True,max_length=50)
     hens_photo = ProcessedImageField(upload_to='breeders_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
     cocks_photo = ProcessedImageField(upload_to='breeders_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
+    txHash = models.CharField(max_length=100, blank=True)
+    policyId = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
