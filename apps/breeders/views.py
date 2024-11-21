@@ -7,6 +7,8 @@ from django.contrib import messages
 from .models import *
 from django.urls import reverse
 from .forms import BreedersForm
+import requests
+import os
 
 @login_required
 def breed_list(request):
@@ -140,6 +142,16 @@ def breed_create(request):
                 back_photo=back_photo
             )
             breed.save()
+
+            is_minted = mint_breed(breed)
+            
+            if not is_minted:
+                breed.delete()
+
+                messages.error(request, f"Creating breed failed: Please double-check your entries and try again.", extra_tags='danger')
+                return render(request, 'pages/poultry/breeds/create.html', {'errors': errors})
+
+
             messages.success(request, 'Breed has been created successfully', extra_tags='success')
         except IntegrityError as e:
             messages.error(request, f'Error creating breed: {str(e)}', extra_tags='danger')
@@ -153,6 +165,42 @@ def breed_create(request):
         return redirect('breed_list')
     
     return render(request, 'pages/poultry/breeds/create.html')
+
+
+def mint_breed(breed):
+    try:
+        api_data = {
+                "tokenName": breed.code,
+                "metadata": {
+                    "poultry_type": breed.poultry_type,
+                    "breed": breed.breed,
+                    "purpose": breed.purpose,
+                    "eggs_year": breed.eggs_year,
+                    "adult_weight": breed.adult_weight,
+                    "description": breed.description,
+                    },
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+        response_data = response.json()
+        print(response_data)
+        if response.status_code == 200 and 'status' in response_data:
+            print(response_data['txHash'])
+            breed.txHash = response_data['txHash']
+            breed.policyId = response_data['policyId']
+            breed.save()
+            return True
+        else:
+            return JsonResponse({'error': 'Unexpected API response'}, status=400)
+    
+    except requests.exceptions.RequestException as e:
+        print(f"API request failed: {e}")
+        return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+        
+
 
 @login_required
 def breed_update(request, code):
