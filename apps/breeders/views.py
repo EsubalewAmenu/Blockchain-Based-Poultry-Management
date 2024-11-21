@@ -74,7 +74,7 @@ def breed_detail(request, code):
             return redirect('breed_update')
         return redirect('breed_list')
     
-    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
+    return render(request, 'pages/poultry/breeds/details.html', {'breed': breed})
 
 @login_required
 def breed_create(request):
