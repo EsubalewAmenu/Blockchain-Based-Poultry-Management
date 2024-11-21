@@ -1220,7 +1220,19 @@ def hatching_create(request):
                 utxo = check_utxo_status(txHash)
 
             if utxo:
-                chick_txHash = mint_chicks_item(item, 'hatching', hatching.breeders.id, None, hatching, str(chick.age), '', chick.chick_photo, chick.number)
+                metadata = {
+                    "item_type": item.item_type.type_name,
+                    "batchnumber": chick.batchnumber,
+                    "source": chick.source,
+                    "hatching_code": hatching.hatchingcode,
+                    "breed": chick.breed.code,
+                    "breed_type": chick.breed.breed,
+                    "quantity": str(hatching.chicks_hatched),
+                    "old_item_code": candling.incubation.eggsetting.item_request.item.code,
+                    "old_item_policyID": candling.incubation.eggsetting.item_request.item.policyId,
+                    "old_item_txHash": candling.incubation.eggsetting.item_request.item.txHash,
+                    }
+                chick_txHash = mint_chicks_item(item, metadata)
 
 
             if not txHash or not chick_txHash:
@@ -1250,7 +1262,7 @@ def hatching_create(request):
     return render(request, 'pages/poultry/hatchery/hatching/create.html', context)
 
 
-def check_utxo_status(txHash, retries=10, wait_time=5):
+def check_utxo_status(txHash, retries=10, wait_time=10):
     for attempt in range(retries):
         try:
 
