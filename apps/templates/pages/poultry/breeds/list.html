@@ -56,12 +56,14 @@
                                     <a href="{% url 'breed_detail' breed.code %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{% url 'breed_edit' breed.code %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit breed">
-                                        <i class="fas fa-user-edit"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'breed_delete' breed.code %}">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                    {% comment %}
+                                        <a href="{% url 'breed_edit' breed.code %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit breed">
+                                            <i class="fas fa-user-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'breed_delete' breed.code %}">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endcomment %}
                                 </div>
                             </td>
                         </tr>

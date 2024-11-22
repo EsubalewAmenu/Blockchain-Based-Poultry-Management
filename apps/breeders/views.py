@@ -74,7 +74,7 @@ def breed_detail(request, code):
             return redirect('breed_update')
         return redirect('breed_list')
     
-    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
+    return render(request, 'pages/poultry/breeds/details.html', {'breed': breed})
 
 @login_required
 def breed_create(request):
@@ -430,6 +430,15 @@ def breeders_create(request):
             )
             
             breeder.save()
+
+            is_minted = mint_breeders(breeder)
+            
+            if not is_minted:
+                breeder.delete()
+
+                messages.error(request, f"Creating breeder failed: Please double-check your entries and try again.", extra_tags='danger')
+                return render(request, 'pages/poultry/breeds/create.html', {'errors': errors})
+
             messages.success(request, 'Breeder created successfully.', extra_tags='success')
         except Exception as e:
             messages.error(request, f'Error creating breeder: {str(e)}', extra_tags='danger')
@@ -438,6 +447,38 @@ def breeders_create(request):
     return render(request, 'pages/poultry/breeders/create.html', {'breeds': breeds, 'errors': errors})
 
 
+def mint_breeders(breeder):
+    try:
+        api_data = {
+                "tokenName": breeder.batch,
+                "metadata": {
+                    "breed": breeder.breed.code,
+                    "hens": breeder.hens,
+                    "cocks": breeder.cocks,
+                    "mortality": breeder.mortality,
+                    "butchered": breeder.butchered,
+                    "sold": breeder.sold,
+                    "current_number": breeder.current_number,
+                    },
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+        response_data = response.json()
+        if response.status_code == 200 and 'status' in response_data:
+            breeder.txHash = response_data['txHash']
+            breeder.policyId = response_data['policyId']
+            breeder.save()
+            return True
+        else:
+            return JsonResponse({'error': 'Unexpected API response'}, status=400)
+    
+    except requests.exceptions.RequestException as e:
+        print(f"API request failed: {e}")
+        return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+        
 # Update View
 @login_required
 def breeders_update(request, batch):
