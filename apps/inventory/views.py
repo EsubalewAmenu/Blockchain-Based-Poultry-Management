@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -331,7 +332,7 @@ def item_request_approve(request, code):
     item_request.is_approved = True
     item_request.save()
 
-    is_registered = register_history(item_request)
+    is_registered = register_item_request_approval_history(item_request)
 
     if not is_registered:
         item_request.item.quantity += item_request.quantity
@@ -371,21 +372,29 @@ def item_request_approve(request, code):
     return redirect('item_request_list')
 
 
-def register_history(item_request):
+def register_item_request_approval_history(item_request):
         try:
 
             api_data = {
                     "tokenName": item_request.item.code,
                     "policyId": item_request.item.policyId,
                     "code": item_request.code,
-                    "metadata": {
-                        "item_request_quantity": item_request.quantity,
-                        "is_request_approved": str(item_request.is_approved),
-                        },
                     "blockfrostKey": os.getenv('blockfrostKey'),
                     "secretSeed": os.getenv('secretSeed'),
                     "cborHex": os.getenv('cborHex')
                 }
+
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "item_request_quantity": split_string(encrypt_data(str(item_request.quantity)), "item_request_quantity"),
+                    "is_request_approved": split_string(encrypt_data(str(item_request.is_approved)), "is_request_approved"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                    "item_request_quantity": item_request.quantity,
+                    "is_request_approved": str(item_request.is_approved),
+                    }
 
             response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
             response_data = response.json()

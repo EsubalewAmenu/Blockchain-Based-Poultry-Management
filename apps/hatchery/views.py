@@ -540,7 +540,7 @@ def egg_setting_create(request):
 
         egg_setting.save()
 
-        is_registered = register_history(egg_setting, item_request_item)
+        is_registered = register_egg_settings_history(egg_setting, item_request_item)
 
         if is_registered:
             messages.success(request, 'Egg Setting set successfully.', extra_tags='success')
@@ -574,14 +574,33 @@ def egg_setting_create(request):
         'items': items,
     })
 
-def register_history(egg_setting, item):
+def register_egg_settings_history(egg_setting, item):
         try:
 
             api_data = {
                     "tokenName": item.code,
                     "policyId": item.policyId,
                     "code": egg_setting.settingcode,
-                    "metadata": {
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "egg_batch": split_string(encrypt_data(egg_setting.egg.batchnumber), "egg_batch"),
+                    "item_code": split_string(encrypt_data(item.code), "item_code"),
+                    "item_request_code": split_string(encrypt_data(egg_setting.item_request.code), "item_request_code"),
+                    "item_request_requested_by": split_string(encrypt_data(egg_setting.item_request.requested_by.first_name), "item_request_requested_by"),
+                    "item_request_quantity": split_string(encrypt_data(egg_setting.item_request.quantity), "item_request_quantity"),
+                    "is_request_approved": split_string(encrypt_data(str(egg_setting.is_approved)), "is_request_approved"),
+
+                    "incubator": split_string(encrypt_data(egg_setting.incubator.code), "incubator"),
+                    "breeders": split_string(encrypt_data(egg_setting.breeders.batch), "breeders"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
                         "egg_batch": egg_setting.egg.batchnumber,
                         "item_code": item.code,
                         "item_request_code": egg_setting.item_request.code,
@@ -591,11 +610,7 @@ def register_history(egg_setting, item):
 
                         "incubator": egg_setting.incubator.code,
                         "breeders": egg_setting.breeders.batch,
-                        },
-                    "blockfrostKey": os.getenv('blockfrostKey'),
-                    "secretSeed": os.getenv('secretSeed'),
-                    "cborHex": os.getenv('cborHex')
-                }
+                        }
 
             response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
             response_data = response.json()
@@ -680,7 +695,7 @@ def egg_setting_delete(request, settingcode):
 
 @login_required
 def incubation_list(request):
-    incubations = Incubation.objects.all()
+    incubations = Incubation.objects.all().order_by('-created')
     paginator = Paginator(incubations, 10)
     
     page_number = request.GET.get('page')
@@ -782,7 +797,7 @@ def incubation_create(request):
         eggsetting.available_quantity -= int(eggs)
         eggsetting.save()
 
-        is_registered = register_history(incubation, eggsetting)
+        is_registered = register_incubation_history(incubation, eggsetting)
 
         if not is_registered:
             eggsetting.available_quantity += int(eggs)
@@ -801,21 +816,29 @@ def incubation_create(request):
 
     return render(request, 'pages/poultry/hatchery/incubation/create.html', context)
 
-def register_history(incubation, eggsetting):
+def register_incubation_history(incubation, eggsetting):
     try:
         api_data = {
                 "tokenName": eggsetting.item_request.item.code,
                 "policyId": eggsetting.item_request.item.policyId,
                 "code": incubation.incubationcode,
-                "metadata": {
-                    "eggsetting": eggsetting.settingcode,
-                    "eggs_quantity": incubation.eggs,
-                    },
                 "blockfrostKey": os.getenv('blockfrostKey'),
                 "secretSeed": os.getenv('secretSeed'),
                 "cborHex": os.getenv('cborHex')
             }
 
+
+        if os.getenv('data_encryption', 'False') == 'True':
+            offchain_data = {
+                "eggsetting": split_string(encrypt_data(eggsetting.settingcode), "eggsetting"),
+                "eggs_quantity": split_string(encrypt_data(str(incubation.eggs)), "eggs_quantity"), 
+            }
+            api_data['metadata'] = offchain_data
+        else:
+            api_data['metadata'] = {
+                "eggsetting": eggsetting.settingcode,
+                "eggs_quantity": incubation.eggs,
+                }
         response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
         response_data = response.json()
 
@@ -1078,17 +1101,28 @@ def register_candling_history(candling, incubation):
                 "tokenName": incubation.eggsetting.item_request.item.code,
                 "policyId": incubation.eggsetting.item_request.item.policyId,
                 "code": candling.candlingcode,
-                "metadata": {
-                    "candled_date": candling.candled_date,
-                    "eggs": incubation.eggs,
-                    "fertile_eggs": int(incubation.eggs) - int(candling.spoilt_eggs),
-                    "incubation": incubation.incubationcode,
-                    "spoilt_eggs": int(candling.spoilt_eggs),
-                    },
                 "blockfrostKey": os.getenv('blockfrostKey'),
                 "secretSeed": os.getenv('secretSeed'),
                 "cborHex": os.getenv('cborHex')
             }
+
+        if os.getenv('data_encryption', 'False') == 'True':
+            offchain_data = {
+                "candled_date": split_string(encrypt_data(candling.candled_date), "candled_date"),
+                "eggs": split_string(encrypt_data(str(incubation.eggs)), "eggs"),
+                "fertile_eggs": split_string(encrypt_data(str(int(incubation.eggs) - int(candling.spoilt_eggs))), "fertile_eggs"),
+                "incubation": split_string(encrypt_data(incubation.incubationcode), "incubation"),
+                "spoilt_eggs": split_string(encrypt_data(str(candling.spoilt_eggs)), "spoilt_eggs"),
+            }
+            api_data['metadata'] = offchain_data
+        else:
+            api_data['metadata'] = {
+                "candled_date": candling.candled_date,
+                "eggs": incubation.eggs,
+                "fertile_eggs": int(incubation.eggs) - int(candling.spoilt_eggs),
+                "incubation": incubation.incubationcode,
+                "spoilt_eggs": int(candling.spoilt_eggs),
+                }
 
         response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
         response_data = response.json()
@@ -1329,19 +1363,33 @@ def register_hatching_history(hatching, candling, new_item, new_chick):
                 "tokenName": candling.incubation.eggsetting.item_request.item.code,
                 "policyId": candling.incubation.eggsetting.item_request.item.policyId,
                 "code": hatching.hatchingcode,
-                "metadata": {
-                    "breeders": hatching.breeders.batch,
-                    "hatched": str(hatching.hatched),
-                    "deformed": str(hatching.deformed),
-                    "spoilt_eggs": str(hatching.spoilt),
-                    "chicks_hatched": str(int(hatching.hatched) - int(hatching.deformed) - int(hatching.spoilt)),
-                    "new_chicks_batchnumber": new_chick.batchnumber,
-                    "new_item_code": new_item.code,
-                    },
                 "blockfrostKey": os.getenv('blockfrostKey'),
                 "secretSeed": os.getenv('secretSeed'),
                 "cborHex": os.getenv('cborHex')
             }
+
+
+        if os.getenv('data_encryption', 'False') == 'True':
+            offchain_data = {
+                "breeders": split_string(encrypt_data(hatching.breeders.batch), "breeders"),
+                "hatched": split_string(encrypt_data(str(hatching.hatched)), "hatched"),
+                "deformed": split_string(encrypt_data(str(hatching.deformed)), "deformed"),
+                "spoilt_eggs": split_string(encrypt_data(str(hatching.spoilt)), "spoilt_eggs"),
+                "chicks_hatched": split_string(encrypt_data(str(int(hatching.hatched) - int(hatching.deformed) - int(hatching.spoilt))), "chicks_hatched"),
+                "new_chicks_batchnumber": split_string(encrypt_data(str(new_chick.batchnumber)), "new_chicks_batchnumber"),
+                "new_item_code": split_string(encrypt_data(new_item.code), "new_item_code"),
+            }
+            api_data['metadata'] = offchain_data
+        else:
+            api_data['metadata'] = {
+                "breeders": hatching.breeders.batch,
+                "hatched": str(hatching.hatched),
+                "deformed": str(hatching.deformed),
+                "spoilt_eggs": str(hatching.spoilt),
+                "chicks_hatched": str(int(hatching.hatched) - int(hatching.deformed) - int(hatching.spoilt)),
+                "new_chicks_batchnumber": new_chick.batchnumber,
+                "new_item_code": new_item.code,
+                }
 
         response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
         response_data = response.json()
