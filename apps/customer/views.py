@@ -12,6 +12,7 @@ from .models import *
 from .forms import EggsForm
 from apps.chicks.models import Chicks
 from apps.accounts.validators import validate_email
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
 import requests
 import os
 
@@ -339,19 +340,33 @@ def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, retu
 
             api_data = {
                     "tokenName": item.code,
-                    "metadata": {
-                        "item_type": item.item_type.type_name,
-                        "source": source,
-                        source: name_or_chicks,
-                        "breed": breed.code,
-                        "breed_type": breed.breed,
-                        "brought": int(brought),
-                        "returned": int(returned),
-                        "received": int(brought) - int(returned)
-                        },
                     "blockfrostKey": os.getenv('blockfrostKey'),
                     "secretSeed": os.getenv('secretSeed'),
                     "cborHex": os.getenv('cborHex')
+                }
+                
+            if os.getenv('data_encryption'):
+                offchain_data = {
+                    "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+                    "source": split_string(encrypt_data(source), "source"),
+                    "customer": split_string(encrypt_data(name_or_chicks), "customer"),
+                    "breed": split_string(encrypt_data(breed.code), "breed"),
+                    "breed_type": split_string(encrypt_data(breed.breed), "breed_type"),
+                    "brought": split_string(encrypt_data(brought), "brought"),
+                    "returned": split_string(encrypt_data(returned), "returned"),
+                    "received": split_string(encrypt_data(str(int(brought) - int(returned))), "received"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                    "item_type": item.item_type.type_name,
+                    "source": source,
+                    "customer": name_or_chicks,
+                    "breed": breed.code,
+                    "breed_type": breed.breed,
+                    "brought": int(brought),
+                    "returned": int(returned),
+                    "received": int(brought) - int(returned)
                 }
 
             response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
@@ -364,11 +379,10 @@ def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, retu
                 item.save()
                 return True
             else:
-                return JsonResponse({'error': 'Unexpected API response'}, status=400)
+                return False
         
         except requests.exceptions.RequestException as e:
-            print(f"API request failed: {e}")
-            return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+            return False
         
 
 # Update an existing egg
