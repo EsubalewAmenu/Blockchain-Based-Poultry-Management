@@ -1,3 +1,4 @@
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
 from django.db import DataError, IntegrityError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -12,7 +13,7 @@ import os
 
 @login_required
 def breed_list(request):
-    breeds_list = Breed.objects.all()
+    breeds_list = Breed.objects.all().order_by('-created')
     paginator = Paginator(breeds_list, 10)
     
     page_number = request.GET.get('page')
@@ -171,18 +172,29 @@ def mint_breed(breed):
     try:
         api_data = {
                 "tokenName": breed.code,
-                "metadata": {
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+        if os.getenv('data_encryption', 'False') == 'True':
+            offchain_data = {
+                "poultry_type": split_string(encrypt_data(breed.poultry_type), "poultry_type"),
+                "breed": split_string(encrypt_data(breed.breed), "breed"),
+                "purpose": split_string(encrypt_data(breed.purpose), "purpose"),
+                "eggs_year": split_string(encrypt_data(str(breed.eggs_year)), "eggs_year"),
+                "adult_weight": split_string(encrypt_data(str(breed.adult_weight)), "adult_weight"),
+                "description": split_string(encrypt_data(breed.description), "description"),
+            }
+            api_data['metadata'] = offchain_data
+        else:
+            api_data['metadata'] = {
                     "poultry_type": breed.poultry_type,
                     "breed": breed.breed,
                     "purpose": breed.purpose,
                     "eggs_year": breed.eggs_year,
                     "adult_weight": breed.adult_weight,
                     "description": breed.description,
-                    },
-                "blockfrostKey": os.getenv('blockfrostKey'),
-                "secretSeed": os.getenv('secretSeed'),
-                "cborHex": os.getenv('cborHex')
-            }
+                    }
 
         response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
         response_data = response.json()
@@ -272,7 +284,7 @@ def breed_delete(request, code):
 # List View
 @login_required
 def breeders_list(request):
-    breeders_list = Breeders.objects.all()
+    breeders_list = Breeders.objects.all().order_by('-created')
     paginator = Paginator(breeders_list, 10)
     
     page_number = request.GET.get('page')
@@ -451,7 +463,24 @@ def mint_breeders(breeder):
     try:
         api_data = {
                 "tokenName": breeder.batch,
-                "metadata": {
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+            
+        if os.getenv('data_encryption', 'False') == 'True':
+            offchain_data = {
+                "breed": split_string(encrypt_data(breeder.breed.code), "breed"),
+                "hens": split_string(encrypt_data(str(breeder.hens)), "hens"),
+                "cocks": split_string(encrypt_data(str(breeder.cocks)), "cocks"),
+                "mortality": split_string(encrypt_data(str(breeder.mortality)), "mortality"),
+                "butchered": split_string(encrypt_data(str(breeder.butchered)), "butchered"),
+                "sold": split_string(encrypt_data(str(breeder.sold)), "sold"),
+                "current_number": split_string(encrypt_data(str(breeder.current_number)), "current_number"),
+            }
+            api_data['metadata'] = offchain_data
+        else:
+            api_data['metadata'] = {
                     "breed": breeder.breed.code,
                     "hens": breeder.hens,
                     "cocks": breeder.cocks,
@@ -459,11 +488,7 @@ def mint_breeders(breeder):
                     "butchered": breeder.butchered,
                     "sold": breeder.sold,
                     "current_number": breeder.current_number,
-                    },
-                "blockfrostKey": os.getenv('blockfrostKey'),
-                "secretSeed": os.getenv('secretSeed'),
-                "cborHex": os.getenv('cborHex')
-            }
+                    }
 
         response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
         response_data = response.json()

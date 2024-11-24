@@ -62,15 +62,20 @@
                   </td>
                   <td>
                       <div class="d-flex align-items-center">
+
+                        <a href="https://preprod.cardanoscan.io/transaction/{{ incubator.item.txHash }}" class="btn btn-link text-secondary" target="_blank"><i class="fas fa-cube"></i></a>
+
                         <a href="{% url 'incubator_detail' incubator.code %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                           <i class="fas fa-eye"></i>
                         </a>
+                        {% comment %}
                           <a href="{% url 'incubator_update' incubator.code %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit">
-                              <i class="fas fa-user-edit"></i>
-                          </a>
-                          <a href="#" class="btn btn-link text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'incubator_delete' incubator.code %}">
-                              <i class="fas fa-trash"></i>
-                          </a>
+                                <i class="fas fa-user-edit"></i>
+                            </a>
+                            <a href="#" class="btn btn-link text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'incubator_delete' incubator.code %}">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                          {% endcomment %}
                       </div>
                   </td>
               </tr>

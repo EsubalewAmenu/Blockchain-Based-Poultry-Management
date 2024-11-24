@@ -345,7 +345,7 @@ def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, retu
                     "cborHex": os.getenv('cborHex')
                 }
                 
-            if os.getenv('data_encryption'):
+            if os.getenv('data_encryption', 'False') == 'True':
                 offchain_data = {
                     "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
                     "source": split_string(encrypt_data(source), "source"),

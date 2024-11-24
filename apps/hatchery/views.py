@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -181,7 +182,7 @@ def hatchery_delete(request, name):
   
 @login_required  
 def incubator_list(request):
-    incubators = Incubators.objects.all().select_related('hatchery') 
+    incubators = Incubators.objects.all().select_related('hatchery').order_by('-created')
     paginator = Paginator(incubators, 10)
     
     page_number = request.GET.get('page')
@@ -235,7 +236,25 @@ def mint_incubators_item(hatchery, incubatortype, manufacturer, model, year, man
 
             api_data = {
                     "tokenName": item.code,
-                    "metadata": {
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+                    "hatchery_name": split_string(encrypt_data(hatchery.name), "hatchery_name"),
+                    "incubatortype": split_string(encrypt_data(incubatortype), "incubatortype"),
+                    "manufacturer": split_string(encrypt_data(manufacturer), "manufacturer"),
+                    "model": split_string(encrypt_data(model), "model"),
+                    "year": split_string(encrypt_data(year), "year"),
+                    "manufacturer_details": split_string(encrypt_data(manufacturer_details), "manufacturer_details"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
                         "item_type": item.item_type.type_name,
                         "hatchery_name": hatchery.name,
                         "incubatortype": incubatortype,
@@ -243,11 +262,7 @@ def mint_incubators_item(hatchery, incubatortype, manufacturer, model, year, man
                         "model": model,
                         "year": year,
                         "manufacturer_details": manufacturer_details
-                        },
-                    "blockfrostKey": os.getenv('blockfrostKey'),
-                    "secretSeed": os.getenv('secretSeed'),
-                    "cborHex": os.getenv('cborHex')
-                }
+                        }
 
             response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
             response_data = response.json()
@@ -1220,18 +1235,32 @@ def hatching_create(request):
                 utxo = check_utxo_status(txHash)
 
             if utxo:
-                metadata = {
-                    "item_type": item.item_type.type_name,
-                    "batchnumber": chick.batchnumber,
-                    "source": chick.source,
-                    "hatching_code": hatching.hatchingcode,
-                    "breed": chick.breed.code,
-                    "breed_type": chick.breed.breed,
-                    "quantity": str(hatching.chicks_hatched),
-                    "old_item_code": candling.incubation.eggsetting.item_request.item.code,
-                    "old_item_policyID": candling.incubation.eggsetting.item_request.item.policyId,
-                    "old_item_txHash": candling.incubation.eggsetting.item_request.item.txHash,
-                    }
+                if os.getenv('data_encryption', 'False') == 'True':
+                    metadata = {
+                        "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+                        "batchnumber": split_string(encrypt_data(chick.batchnumber), "batchnumber"),
+                        "source": split_string(encrypt_data(chick.source), "source"),
+                        "hatching_code": split_string(encrypt_data(hatching.hatchingcode), "hatching_code"),
+                        "breed": split_string(encrypt_data(chick.breed.code), "breed"),
+                        "breed_type": split_string(encrypt_data(chick.breed.breed), "breed_type"),
+                        "quantity": split_string(encrypt_data(str(hatching.chicks_hatched)), "quantity"),
+                        "old_item_code": split_string(encrypt_data(candling.incubation.eggsetting.item_request.item.code), "old_item_code"),
+                        "old_item_policyID": split_string(encrypt_data(candling.incubation.eggsetting.item_request.item.policyId), "old_item_policyID"),
+                        "old_item_txHash": split_string(encrypt_data(candling.incubation.eggsetting.item_request.item.txHash), "old_item_txHash"),
+                        }
+                else:
+                    metadata = {
+                        "item_type": item.item_type.type_name,
+                        "batchnumber": chick.batchnumber,
+                        "source": chick.source,
+                        "hatching_code": hatching.hatchingcode,
+                        "breed": chick.breed.code,
+                        "breed_type": chick.breed.breed,
+                        "quantity": str(hatching.chicks_hatched),
+                        "old_item_code": candling.incubation.eggsetting.item_request.item.code,
+                        "old_item_policyID": candling.incubation.eggsetting.item_request.item.policyId,
+                        "old_item_txHash": candling.incubation.eggsetting.item_request.item.txHash,
+                        }
                 chick_txHash = mint_chicks_item(item, metadata)
 
 

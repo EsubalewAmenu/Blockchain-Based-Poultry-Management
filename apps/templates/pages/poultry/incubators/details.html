@@ -11,8 +11,10 @@
           <p class="text-white opacity-8">Make changes to the incubator details below.</p>
         </div>
         <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
-          <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
-        </div>
+          {% if request.resolver_match.url_name == 'incubator_update' %}
+            <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
+          {% endif %}
+          </div>
       </div>
   
       <div class="row mt-4">
@@ -71,9 +73,6 @@
       <!-- Footer with Delete Option -->
       <div class="row mt-4">
         <div class="col-lg-12 text-right">
-          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'incubator_delete' incubator.code %}">
-            Delete this Incubator
-          </button>
         </div>
       </div>
     </form>

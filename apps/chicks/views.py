@@ -1,3 +1,4 @@
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -145,16 +146,28 @@ def chicks_create(request):
 
         breed = Breed.objects.get(pk=breed_id)
 
-        metadata = {
-                "item_type": item.item_type.type_name,
-                "source": source,
-                source: name_or_chicks,
-                "breed": breed.code,
-                "breed_type": breed.breed,
-                "age": age,
-                "description": description,
-                "number": number
-                }
+        if os.getenv('data_encryption', 'False') == 'True':
+            metadata = {
+                    "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+                    "source": split_string(encrypt_data(source), "source"),
+                    source: split_string(encrypt_data(name_or_chicks), source),
+                    "breed": split_string(encrypt_data(breed.code), "breed"),
+                    "breed_type": split_string(encrypt_data(breed.breed), "breed_type"),
+                    "age": split_string(encrypt_data(age), "age"),
+                    "description": split_string(encrypt_data(description), "description"),
+                    "number": split_string(encrypt_data(str(number)), "number"),
+                    }
+        else:
+            metadata = {
+                    "item_type": item.item_type.type_name,
+                    "source": source,
+                    source: name_or_chicks,
+                    "breed": breed.code,
+                    "breed_type": breed.breed,
+                    "age": age,
+                    "description": description,
+                    "number": number
+                    }
         is_minted = mint_chicks_item(item, metadata)
         
         if is_minted:
