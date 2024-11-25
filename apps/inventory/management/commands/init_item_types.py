@@ -23,14 +23,14 @@ class Command(BaseCommand):
             {'item_type_name': 'Incubator'},
         ]
 
-        for data in items_data:
-            item_type = ItemType.objects.get(type_name=data['item_type_name'])
-            if Item.objects.filter(item_type=item_type).exists():
-                self.stdout.write(self.style.WARNING(f"Item Already Exists for type {item_type.type_name}"))
-                continue
-            item = Item.objects.create(
-                item_type=item_type
-            )
-            item.save()
-            self.stdout.write(self.style.SUCCESS(f"Item Created Successfully for type {item_type.type_name}"))
+        # for data in items_data:
+        #     item_type = ItemType.objects.get(type_name=data['item_type_name'])
+        #     if Item.objects.filter(item_type=item_type).exists():
+        #         self.stdout.write(self.style.WARNING(f"Item Already Exists for type {item_type.type_name}"))
+        #         continue
+        #     item = Item.objects.create(
+        #         item_type=item_type
+        #     )
+        #     item.save()
+        #     self.stdout.write(self.style.SUCCESS(f"Item Created Successfully for type {item_type.type_name}"))
             

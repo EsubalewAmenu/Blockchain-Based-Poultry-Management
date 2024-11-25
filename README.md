@@ -89,6 +89,26 @@ To get started with PoultryTrack, follow these instructions:
    cd Blockchain-Based-Poultry-Management
    ```
 2. **Create `.env` file**Set up your environment variables by creating a `.env` file in the project root and include the configurations mentioned above.
+
+3. **Seed data**
+
+If you need see data change `command` section to this
+   ```bash
+    command: >
+     bash -c "python manage.py collectstatic --noinput &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py seed_hrms &&
+             python manage.py init_item_types &&
+             python manage.py init_breeders &&
+             python manage.py create_customers &&
+             python manage.py create_chicks &&
+             python manage.py create_eggs &&
+             python manage.py create_hatchery &&
+             python manage.py create_incubators &&
+             python manage.py runserver 0.0.0.0:11000"
+   ```
+
 3. **Build the Docker images:**
 
    ```bash
