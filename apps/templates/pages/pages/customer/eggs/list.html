@@ -16,8 +16,8 @@
           <thead class="thead-light">
               <tr>
                   <th scope="col">Batch Number</th>
-                  <th scope="col">Customer</th>
-                  <th scope="col">Chicks</th>
+                  <th scope="col">Source</th>
+                  <th scope="col">Name/Batch</th>
                   <th scope="col">Breed</th>
                   <th scope="col">Item code</th>
                   <th scope="col">Brought</th>
@@ -43,9 +43,9 @@
                   <td class="font-weight-bold">
                       <span class="my-2 text-xs">
                       {% if egg.customer.full_name %}
-                        {{ egg.customer.full_name }}
+                        Customer
                       {% else %}
-                        -
+                        Chicks
                       {% endif %}</span>
                   </td>
                   <td class="font-weight-bold">
@@ -53,7 +53,7 @@
                       {% if egg.chicks %}
                         {{ egg.chicks }}
                       {% else %}
-                        -
+                      {{ egg.customer.full_name }}
                       {% endif %}</span>
                   </td>
                   <td class="font-weight-bold">
@@ -76,21 +76,29 @@
                   </td>
                   <td class="text-sm">
                     <div class="d-flex justify-content-left align-items-left">
-                      <a href="{% url 'eggs_update' egg.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
+                      
+                      <a href="https://preprod.cardanoscan.io/transaction/{{ egg.item.txHash }}" class="btn btn-link text-secondary" target="_blank"><i class="fas fa-cube"></i></a>
+                                    
+
+                      <a href="{% url 'eggs_detail' egg.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                         <i class="fas fa-eye"></i>
                       </a>
+
+                      {% comment %}
                       <a href="{% url 'eggs_update' egg.batchnumber %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Egg">
                         <i class="fas fa-user-edit"></i>
                       </a>
                       <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'eggs_delete' egg.batchnumber %}">
                         <i class="fas fa-trash"></i>
                       </a>
+                      {% endcomment %}
+
                     </div>
                   </td>
               </tr>
               {% endfor %}
           </tbody>
-
+          {% comment %}
           <!-- Delete Confirmation Modal -->
           <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered" role="document">
@@ -112,6 +120,8 @@
                 </div>
               </div>
             </div>
+            {% endcomment %}
+
         </table>
       
       <!-- Pagination Section -->

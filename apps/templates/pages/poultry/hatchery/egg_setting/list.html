@@ -35,14 +35,14 @@
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Setting Code</th>
-                            <th scope="col">Item Request</th>
+                            <th scope="col">Item Request (Item)</th>
                             <th scope="col">Egg Batch</th>
                             <th scope="col">Incubator</th>
-                            <th scope="col">Customer</th>
                             <th scope="col">Breeders</th>
                             <th scope="col">Number of Eggs</th>
                             <th scope="col">Available Eggs</th>
                             <th scope="col">Created</th>
+                            <th scope="col">Is Approved</th>
                             <th scope="col">Actions</th> <!-- New Actions Column -->
                         </tr>
                     </thead>
@@ -65,11 +65,8 @@
                             <td class="font-weight-bold">
                                 <span class="my-2 text-xs">
                                     {% if egg_setting.item_request%}
-                                        {{ egg_setting.item_request.code }}
-                                    {% else %}
-                                     -
+                                        {{ egg_setting.item_request.code }} ({{ egg_setting.item_request.item.code }})
                                     {% endif %}
-                                
                                 </span>
                             </td>
                             <td class="text-xs font-weight-bold">
@@ -77,9 +74,6 @@
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span>{{ egg_setting.incubator.code }}</span>
-                            </td>
-                            <td class="text-xs font-weight-bold">
-                                <span>{{ egg_setting.customer.first_name }} {{ egg_setting.customer.last_name }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span>{{ egg_setting.breeders.batch }}</span>
@@ -94,16 +88,27 @@
                                 <span class="my-2 text-xs">{{ egg_setting.created|date:"Y-m-d H:i" }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
+                                <span>{{ egg_setting.is_approved }}</span>
+                            </td>
+                            <td class="text-xs font-weight-bold">
                                 <div class="d-flex justify-content-left align-items-left">
+
+                                    <a href="https://preprod.cardanoscan.io/transaction/{{ egg_setting.txHash }}" class="btn btn-link text-secondary" target="_blank"><i class="fas fa-cube"></i></a>
+
                                     <a href="{% url 'egg_setting_detail' egg_setting.settingcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                                       <i class="fas fa-eye"></i>
                                     </a>
+                                    {% comment %}
                                     <a href="{% url 'egg_setting_update' egg_setting.settingcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Egg Setting">
                                       <i class="fas fa-user-edit"></i>
                                     </a>
-                                    <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'egg_setting_delete' egg_setting.settingcode %}">
-                                      <i class="fas fa-trash"></i>
-                                    </a>
+                                    {% endcomment %}
+ 
+                                    {% if not egg_setting.is_approved %}
+                                        <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'egg_setting_delete' egg_setting.settingcode %}">
+                                        <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endif %}
                                   </div>
                             </td>
                         </tr>

@@ -1,3 +1,4 @@
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
 from django.db import DataError, IntegrityError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -7,10 +8,12 @@ from django.contrib import messages
 from .models import *
 from django.urls import reverse
 from .forms import BreedersForm
+import requests
+import os
 
 @login_required
 def breed_list(request):
-    breeds_list = Breed.objects.all()
+    breeds_list = Breed.objects.all().order_by('-created')
     paginator = Paginator(breeds_list, 10)
     
     page_number = request.GET.get('page')
@@ -72,7 +75,7 @@ def breed_detail(request, code):
             return redirect('breed_update')
         return redirect('breed_list')
     
-    return render(request, 'pages/poultry/breeds/edit.html', {'breed': breed})
+    return render(request, 'pages/poultry/breeds/details.html', {'breed': breed})
 
 @login_required
 def breed_create(request):
@@ -140,6 +143,16 @@ def breed_create(request):
                 back_photo=back_photo
             )
             breed.save()
+
+            is_minted = mint_breed(breed)
+            
+            if not is_minted:
+                breed.delete()
+
+                messages.error(request, f"Creating breed failed: Please double-check your entries and try again.", extra_tags='danger')
+                return render(request, 'pages/poultry/breeds/create.html', {'errors': errors})
+
+
             messages.success(request, 'Breed has been created successfully', extra_tags='success')
         except IntegrityError as e:
             messages.error(request, f'Error creating breed: {str(e)}', extra_tags='danger')
@@ -153,6 +166,53 @@ def breed_create(request):
         return redirect('breed_list')
     
     return render(request, 'pages/poultry/breeds/create.html')
+
+
+def mint_breed(breed):
+    try:
+        api_data = {
+                "tokenName": breed.code,
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+        if os.getenv('data_encryption', 'False') == 'True':
+            offchain_data = {
+                "poultry_type": split_string(encrypt_data(breed.poultry_type), "poultry_type"),
+                "breed": split_string(encrypt_data(breed.breed), "breed"),
+                "purpose": split_string(encrypt_data(breed.purpose), "purpose"),
+                "eggs_year": split_string(encrypt_data(str(breed.eggs_year)), "eggs_year"),
+                "adult_weight": split_string(encrypt_data(str(breed.adult_weight)), "adult_weight"),
+                "description": split_string(encrypt_data(breed.description), "description"),
+            }
+            api_data['metadata'] = offchain_data
+        else:
+            api_data['metadata'] = {
+                    "poultry_type": breed.poultry_type,
+                    "breed": breed.breed,
+                    "purpose": breed.purpose,
+                    "eggs_year": breed.eggs_year,
+                    "adult_weight": breed.adult_weight,
+                    "description": breed.description,
+                    }
+
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+        response_data = response.json()
+        print(response_data)
+        if response.status_code == 200 and 'status' in response_data:
+            print(response_data['txHash'])
+            breed.txHash = response_data['txHash']
+            breed.policyId = response_data['policyId']
+            breed.save()
+            return True
+        else:
+            return JsonResponse({'error': 'Unexpected API response'}, status=400)
+    
+    except requests.exceptions.RequestException as e:
+        print(f"API request failed: {e}")
+        return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+        
+
 
 @login_required
 def breed_update(request, code):
@@ -224,7 +284,7 @@ def breed_delete(request, code):
 # List View
 @login_required
 def breeders_list(request):
-    breeders_list = Breeders.objects.all()
+    breeders_list = Breeders.objects.all().order_by('-created')
     paginator = Paginator(breeders_list, 10)
     
     page_number = request.GET.get('page')
@@ -382,6 +442,15 @@ def breeders_create(request):
             )
             
             breeder.save()
+
+            is_minted = mint_breeders(breeder)
+            
+            if not is_minted:
+                breeder.delete()
+
+                messages.error(request, f"Creating breeder failed: Please double-check your entries and try again.", extra_tags='danger')
+                return render(request, 'pages/poultry/breeds/create.html', {'errors': errors})
+
             messages.success(request, 'Breeder created successfully.', extra_tags='success')
         except Exception as e:
             messages.error(request, f'Error creating breeder: {str(e)}', extra_tags='danger')
@@ -390,6 +459,51 @@ def breeders_create(request):
     return render(request, 'pages/poultry/breeders/create.html', {'breeds': breeds, 'errors': errors})
 
 
+def mint_breeders(breeder):
+    try:
+        api_data = {
+                "tokenName": breeder.batch,
+                "blockfrostKey": os.getenv('blockfrostKey'),
+                "secretSeed": os.getenv('secretSeed'),
+                "cborHex": os.getenv('cborHex')
+            }
+            
+        if os.getenv('data_encryption', 'False') == 'True':
+            offchain_data = {
+                "breed": split_string(encrypt_data(breeder.breed.code), "breed"),
+                "hens": split_string(encrypt_data(str(breeder.hens)), "hens"),
+                "cocks": split_string(encrypt_data(str(breeder.cocks)), "cocks"),
+                "mortality": split_string(encrypt_data(str(breeder.mortality)), "mortality"),
+                "butchered": split_string(encrypt_data(str(breeder.butchered)), "butchered"),
+                "sold": split_string(encrypt_data(str(breeder.sold)), "sold"),
+                "current_number": split_string(encrypt_data(str(breeder.current_number)), "current_number"),
+            }
+            api_data['metadata'] = offchain_data
+        else:
+            api_data['metadata'] = {
+                    "breed": breeder.breed.code,
+                    "hens": breeder.hens,
+                    "cocks": breeder.cocks,
+                    "mortality": breeder.mortality,
+                    "butchered": breeder.butchered,
+                    "sold": breeder.sold,
+                    "current_number": breeder.current_number,
+                    }
+
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+        response_data = response.json()
+        if response.status_code == 200 and 'status' in response_data:
+            breeder.txHash = response_data['txHash']
+            breeder.policyId = response_data['policyId']
+            breeder.save()
+            return True
+        else:
+            return JsonResponse({'error': 'Unexpected API response'}, status=400)
+    
+    except requests.exceptions.RequestException as e:
+        print(f"API request failed: {e}")
+        return JsonResponse({'error': 'Failed to communicate with the external API'}, status=500)
+        
 # Update View
 @login_required
 def breeders_update(request, batch):

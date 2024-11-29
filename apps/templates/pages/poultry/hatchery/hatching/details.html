@@ -11,7 +11,9 @@
                 <p class="text-white opacity-8">View and update the hatching information below.</p>
             </div>
             <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
-                <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
+                {% if request.resolver_match.url_name == 'hatching_update' %}
+                    <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
+                {% endif %}
             </div>
         </div>
 

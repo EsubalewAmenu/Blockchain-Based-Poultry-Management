@@ -1,5 +1,6 @@
 # views.py
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.gis.geos import Point
 from django.core.paginator import Paginator
@@ -11,6 +12,9 @@ from .models import *
 from .forms import EggsForm
 from apps.chicks.models import Chicks
 from apps.accounts.validators import validate_email
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
+import requests
+import os
 
 @login_required
 def customer_list(request):
@@ -160,10 +164,9 @@ def customer_delete(request, full_name):
 # Eggs
 
 # List all eggs
-# List all eggs
 @login_required
 def eggs_list(request):
-    eggs = Eggs.objects.all()
+    eggs = Eggs.objects.all().order_by('-created')
     items = Item.objects.all()
     paginator = Paginator(eggs, 10)  # Show 10 eggs per page
     
@@ -307,10 +310,14 @@ def eggs_create(request):
                 breed_id=breed_id,
                 photo=photo,
                 brought=brought,
-                returned=returned            )
-            egg.save()
+                returned=returned)
+                
+            is_minted = mint_egg_item(item, customer, chicks, source , breed_id, photo, brought, returned)
             
-            messages.success(request, "Egg Created Successfully", extra_tags="success")
+            if is_minted:
+                egg.save()
+                
+                messages.success(request, "Egg Created Successfully", extra_tags="success")
         except Exception as e:
             messages.error(request, "Error creating egg: " + str(e), extra_tags='danger')
             
@@ -319,6 +326,64 @@ def eggs_create(request):
         return redirect('eggs_list')
 
     return render(request, 'pages/pages/customer/eggs/create.html', {'customers': customers, 'breeds': breeds, 'chicks': chicks, 'items':items, 'item_data':item_data})
+
+def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, returned):
+
+
+        try:
+            if source == 'farm':
+                name_or_chicks = chicks.batchnumber
+            elif source == 'customer':
+                name_or_chicks = customer.full_name
+
+            breed = Breed.objects.get(pk=breed_id)
+
+            api_data = {
+                    "tokenName": item.code,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+                
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+                    "source": split_string(encrypt_data(source), "source"),
+                    "customer": split_string(encrypt_data(name_or_chicks), "customer"),
+                    "breed": split_string(encrypt_data(breed.code), "breed"),
+                    "breed_type": split_string(encrypt_data(breed.breed), "breed_type"),
+                    "brought": split_string(encrypt_data(brought), "brought"),
+                    "returned": split_string(encrypt_data(returned), "returned"),
+                    "received": split_string(encrypt_data(str(int(brought) - int(returned))), "received"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                    "item_type": item.item_type.type_name,
+                    "source": source,
+                    "customer": name_or_chicks,
+                    "breed": breed.code,
+                    "breed_type": breed.breed,
+                    "brought": int(brought),
+                    "returned": int(returned),
+                    "received": int(brought) - int(returned)
+                }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response_data = response.json()
+
+            if response.status_code == 200 and 'status' in response_data:
+                print(response_data)
+                item.txHash = response_data['txHash']
+                item.policyId = response_data['policyId']
+                item.save()
+                return True
+            else:
+                return False
+        
+        except requests.exceptions.RequestException as e:
+            return False
+        
 
 # Update an existing egg
 @login_required

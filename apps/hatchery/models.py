@@ -185,6 +185,7 @@ class EggSetting(models.Model):
     eggs=models.IntegerField(null=True,blank=True,max_length=50)
     available_quantity = models.IntegerField(null=True,blank=True,max_length=50)
     is_approved = models.BooleanField(default=False, blank=True, null=True)
+    txHash = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -238,6 +239,7 @@ class Incubation(models.Model):
         related_name="incubation_breeders", blank=True, null=True,
         on_delete=models.SET_NULL)
     eggs=models.IntegerField(null=True,blank=True,max_length=50)
+    txHash = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -295,6 +297,7 @@ class Candling(models.Model):
     candled_date=models.DateTimeField(null=True,blank=True)
     spoilt_eggs=models.IntegerField(null=True,blank=True,max_length=50)
     fertile_eggs=models.IntegerField(null=True,blank=True,max_length=50)
+    txHash = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -356,6 +359,7 @@ class Hatching(models.Model):
     spoilt=models.IntegerField(null=True,blank=True,max_length=50)
     chicks_hatched=models.IntegerField(null=True,blank=True,max_length=50)
     notify_customer=models.BooleanField(null=True,blank=True,max_length=50)
+    txHash = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

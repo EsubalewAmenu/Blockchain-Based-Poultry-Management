@@ -1,18 +1,22 @@
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from apps.breeders.models import Breed
 from apps.customer.models import Eggs, Customer
+from apps.hatchery.models import Hatching
 from django.http import HttpResponse
 from django.contrib import messages
-from apps.hatchery.models import Hatching
+from django.http import JsonResponse
 from .models import Chicks
 from apps.inventory.models import Item
 import datetime
+import requests
+import os
 
 @login_required
 def chicks_list(request):
-    chicks = Chicks.objects.all()
+    chicks = Chicks.objects.all().order_by('-created')
     breeds = Breed.objects.all()
     eggs = Eggs.objects.all()
     paginator = Paginator(chicks, 10)
@@ -134,13 +138,77 @@ def chicks_create(request):
             chick_photo=chick_photo,
             number=number
         )
-        chick.save()
-        messages.success(request, "Chicks Created Successfully", extra_tags="success")
+
+        if source == 'hatching':
+            name_or_chicks = hatching.hatchingcode
+        elif source == 'customer':
+            name_or_chicks = customer.full_name
+
+        breed = Breed.objects.get(pk=breed_id)
+
+        if os.getenv('data_encryption', 'False') == 'True':
+            metadata = {
+                    "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+                    "source": split_string(encrypt_data(source), "source"),
+                    source: split_string(encrypt_data(name_or_chicks), source),
+                    "breed": split_string(encrypt_data(breed.code), "breed"),
+                    "breed_type": split_string(encrypt_data(breed.breed), "breed_type"),
+                    "age": split_string(encrypt_data(age), "age"),
+                    "description": split_string(encrypt_data(description), "description"),
+                    "number": split_string(encrypt_data(str(number)), "number"),
+                    }
+        else:
+            metadata = {
+                    "item_type": item.item_type.type_name,
+                    "source": source,
+                    source: name_or_chicks,
+                    "breed": breed.code,
+                    "breed_type": breed.breed,
+                    "age": age,
+                    "description": description,
+                    "number": number
+                    }
+        is_minted = mint_chicks_item(item, metadata)
+        
+        if is_minted:
+            chick.save()
+            messages.success(request, "Chicks Created Successfully", extra_tags="success")
         if 'item_data' in request.session:
             request.session.pop('item_data')
         return redirect('chicks_list') 
 
     return render(request, 'pages/poultry/chicks/create.html', context={'breeds': breeds, 'eggs': eggs,'items':items, 'item_data':item_data, 'customers':customers, 'hatchings': hatchings})
+
+
+def mint_chicks_item(item, metadata):
+
+
+        try:
+
+
+            api_data = {
+                    "tokenName": item.code,
+                    "metadata": metadata,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response_data = response.json()
+
+            if response.status_code == 200 and 'status' in response_data:
+                print(response_data)
+                item.txHash = response_data['txHash']
+                item.policyId = response_data['policyId']
+                item.save()
+                return True
+            else:
+                return False
+        
+        except requests.exceptions.RequestException as e:
+            return False
+        
 
 @login_required
 def chicks_update(request, batchnumber):

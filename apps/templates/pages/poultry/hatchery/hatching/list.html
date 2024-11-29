@@ -63,15 +63,19 @@
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <div class="d-flex justify-content-left align-items-left">
+                                    <a href="https://preprod.cardanoscan.io/transaction/{{ hatching.txHash }}" class="btn btn-link text-secondary" target="_blank"><i class="fas fa-cube"></i></a>
+
                                     <a href="{% url 'hatching_detail' hatching.hatchingcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="View details">
                                       <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{% url 'hatching_update' hatching.hatchingcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Hatching">
-                                      <i class="fas fa-user-edit"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'hatching_delete' hatching.hatchingcode %}">
-                                      <i class="fas fa-trash"></i>
-                                    </a>
+                                    {% comment %}
+                                        <a href="{% url 'hatching_update' hatching.hatchingcode %}" class="btn btn-link text-secondary" data-bs-toggle="tooltip" data-bs-original-title="Edit Hatching">
+                                        <i class="fas fa-user-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'hatching_delete' hatching.hatchingcode %}">
+                                        <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endcomment %}
                                   </div>
                             </td>
                         </tr>

@@ -29,6 +29,8 @@ class Item(models.Model):
     code = models.CharField(max_length=50, blank=True, unique=True)
     item_type = models.ForeignKey(ItemType, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True, blank=True)
+    txHash = models.CharField(max_length=100, blank=True)
+    policyId = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -52,6 +54,7 @@ class ItemRequest(models.Model):
     quantity = models.IntegerField(null=True, blank=True)
     is_approved = models.BooleanField(default=False, blank=True)
     requested_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    txHash = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

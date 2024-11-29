@@ -23,9 +23,9 @@
 </p>
         </div>
         <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
-          {% comment %} {% if request.resolver_match.url_name == 'breeders_update' %} {% endcomment %}
+          {% if request.resolver_match.url_name == 'breeders_update' %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
-          {% comment %} {% endif %} {% endcomment %}
+          {% endif %}
           {% if request.resolver_match.url_name == 'breeders_delete' %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Confirm Delete</button>
           {% endif %}

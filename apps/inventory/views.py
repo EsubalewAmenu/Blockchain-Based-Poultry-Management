@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from apps.dashboard.utils import encrypt_data, decrypt_data, split_string
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -11,6 +12,8 @@ from apps.chicks.models import Chicks
 from apps.hatchery.models import Incubators
 from .models import ItemType, Item, ItemRequest
 from apps.hatchery.models import EggSetting
+import requests
+import os
 
 @login_required
 def item_type_list(request):
@@ -155,6 +158,7 @@ def item_create(request):
         )
         item.save()
         
+    
         redirect_url = ''
         if item.item_type.type_name == 'Egg':
             redirect_url = reverse('eggs_create')
@@ -179,6 +183,7 @@ def item_create(request):
         'item_types': ItemType.objects.all(),
     }
     return render(request, 'pages/inventory/item/create.html', context)
+
 
 @login_required
 def item_delete(request, code):
@@ -327,6 +332,19 @@ def item_request_approve(request, code):
     item_request.is_approved = True
     item_request.save()
 
+    is_registered = register_item_request_approval_history(item_request)
+
+    if not is_registered:
+        item_request.item.quantity += item_request.quantity
+        item_request.item.save()
+
+        item_request.is_approved = False
+        item_request.save()
+
+        messages.error(request, "Cannot register on blockchain, please try again.", extra_tags='danger')
+        return redirect('item_request_list')
+
+
     # Handle egg setting approval logic, if applicable
     egg_setting = EggSetting.objects.filter(item_request=item_request).first()
     if egg_setting:
@@ -352,3 +370,42 @@ def item_request_approve(request, code):
     
     messages.success(request, 'Item request approved successfully.', extra_tags='success')
     return redirect('item_request_list')
+
+
+def register_item_request_approval_history(item_request):
+        try:
+
+            api_data = {
+                    "tokenName": item_request.item.code,
+                    "policyId": item_request.item.policyId,
+                    "code": item_request.code,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "item_request_quantity": split_string(encrypt_data(str(item_request.quantity)), "item_request_quantity"),
+                    "is_request_approved": split_string(encrypt_data(str(item_request.is_approved)), "is_request_approved"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                    "item_request_quantity": item_request.quantity,
+                    "is_request_approved": str(item_request.is_approved),
+                    }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+            response_data = response.json()
+
+            if response.status_code == 200 and 'status' in response_data:
+                item_request.txHash = response_data['txHash']
+                item_request.save()
+                return True
+            else:
+                return False
+        
+        except requests.exceptions.RequestException as e:
+            return False
+        

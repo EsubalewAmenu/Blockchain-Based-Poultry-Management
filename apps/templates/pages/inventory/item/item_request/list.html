@@ -64,9 +64,12 @@
                             <td class="my-2 text-xs">
                                 <div class="d-flex justify-content-left align-items-left">
                                     {% if item_request.is_approved %}
-                                    <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'item_request_delete' item_request.code %}">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                        {% comment %}
+                                            <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'item_request_delete' item_request.code %}">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        {% endcomment %}
+                                    <a href="https://preprod.cardanoscan.io/transaction/{{ item_request.txHash }}" class="btn btn-link text-secondary" target="_blank"><i class="fas fa-cube"></i></a>
                                     {% else %}
                                     <a href="#" class="btn btn-link text-secondary mx-0" data-bs-toggle="modal" data-bs-target="#approveModal" data-url="{% url 'item_request_approve' item_request.code %}">
                                         <i class="fas fa-check"></i>
