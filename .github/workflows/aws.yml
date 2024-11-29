@@ -80,12 +80,27 @@ jobs:
 
     - name: Replace env values in task definition
       run: |
-        sed -i 's|REPLACE_ME_DEBUG|${{ secrets.DEBUG }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_ALLOWED_HOSTS|*|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_SECRET_KEY|${{ secrets.SECRET_KEY }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_COM_ID|${{ secrets.COM_ID }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_EXTERNAL_USER_API_URL|${{ secrets.STAGINGREP_USER_API_URL }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_X_API_KEY|${{ secrets.X_API_KEY }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMAIL_USE_TLS|${{ secrets.EMAIL_USE_TLS }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMAIL_HOST|${{ secrets.EMAIL_HOST }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMAIL_PORT|${{ secrets.EMAIL_PORT }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMAIL_HOST_USER|${{ secrets.EMAIL_HOST_USER }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMAIL_HOST_PASSWORD|${{ secrets.EMAIL_HOST_PASSWORD }}|g' .aws/task-definition.json
+
+        sed -i 's|REPLACE_ME_DB_NAME|${{ secrets.DB_NAME }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_DB_HOST|${{ secrets.DB_HOST }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_DB_PASSWORD|${{ secrets.DB_PASSWORD }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_DB_PORT|${{ secrets.DB_PORT }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_DB_USER|${{ secrets.DB_USER }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_BASE_URL|${{ secrets.BASE_URL }}|g' .aws/task-definition.json
+
+        sed -i 's|REPLACE_ME_OFFCHAIN_BASE_URL|${{ secrets.OFFCHAIN_BASE_URL }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_blockfrostKey|${{ secrets.blockfrostKey }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_secretSeed|${{ secrets.secretSeed }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_cborHex|${{ secrets.cborHex }}|g' .aws/task-definition.json
+
+        sed -i 's|REPLACE_ME_data_encryption|${{ secrets.data_encryption }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_encryption_key|${{ secrets.encryption_key }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_IPFS_BLOCKFROST|${{ secrets.IPFS_BLOCKFROST }}|g' .aws/task-definition.json
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
