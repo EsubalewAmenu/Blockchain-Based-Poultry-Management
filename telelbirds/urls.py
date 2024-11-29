@@ -26,9 +26,11 @@ from apps.hatchery import urls as HatcheryUrls
 from apps.customer import urls as CustomerUrls
 from apps.chicks import urls as ChicksUrls
 from apps.inventory import urls as InventoryUrls
+from apps.core.views import health_check
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('health/', health_check),  
     path('', include(BreederUrls)),
     path('', include(HatcheryUrls)),
     path('', include(CustomerUrls)),
