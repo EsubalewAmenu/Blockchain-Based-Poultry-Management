@@ -103,10 +103,6 @@ jobs:
         sed -i 's|REPLACE_ME_IPFS_BLOCKFROST|${{ secrets.IPFS_BLOCKFROST }}|g' .aws/task-definition.json
 
 
-    - name: Debug Task Definition
-      run: |
-        cat .aws/task-definition.json
-
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
