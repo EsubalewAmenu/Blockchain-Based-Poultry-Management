@@ -60,7 +60,7 @@ jobs:
         sed -i 's|REPLACE_ME_EMAIL_HOST|${{ secrets.EMAIL_HOST }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_EMAIL_PORT|${{ secrets.EMAIL_PORT }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_EMAIL_HOST_USER|${{ secrets.USER_EML }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_EMAIL_HOST_PASSWORD|${{ secrets.USER_EM_PWD }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMA_PWS|${{ secrets.USER_EM_PWD }}|g' .aws/task-definition.json
 
         sed -i 's|REPLACE_ME_DB_NAME|${{ secrets.DB_NAME }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_DB_HOST|${{ secrets.DB_HOST }}|g' .aws/task-definition.json
