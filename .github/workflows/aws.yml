@@ -54,35 +54,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Replace env values in task definition
-      run: |
-        sed -i 's|REPLACE_ME_EMAIL_USE_TLS|${{ secrets.EMAIL_USE_TLS }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_EMAIL_HOST|${{ secrets.EMAIL_HOST }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_EMAIL_PORT|${{ secrets.EMAIL_PORT }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_EM_USR|${{ secrets.USER_EML }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_EM_HOST_PWD|${{ secrets.USER_EM_PWD }}|g' .aws/task-definition.json
-
-        sed -i 's|REPLACE_ME_DB_NAME|${{ secrets.DB_NAME }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_DB_HOST|${{ secrets.DB_HOST }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_DB_PASSWORD|${{ secrets.DB_PASSWORD }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_DB_PORT|${{ secrets.DB_PORT }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_DB_USER|${{ secrets.DB_USER }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_BASE_URL|${{ secrets.BASE_URL }}|g' .aws/task-definition.json
-
-        sed -i 's|REPLACE_ME_OFFCHAIN_BASE_URL|${{ secrets.OFFCHAIN_BASE_URL }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_blockfrostKey|${{ secrets.blockfrostKey }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_secretSeed|${{ secrets.secretSeed }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_cborHex|${{ secrets.cborHex }}|g' .aws/task-definition.json
-
-        sed -i 's|REPLACE_ME_data_encryption|${{ secrets.data_encryption }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_encryption_key|${{ secrets.encryption_key }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_IPFS_BLOCKFROST|${{ secrets.IPFS_BLOCKFROST }}|g' .aws/task-definition.json
-
-
-    - name: Debug Task Definition
-      run: |
-        cat .aws/task-definition.json
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -112,8 +83,8 @@ jobs:
         sed -i 's|REPLACE_ME_EMAIL_USE_TLS|${{ secrets.EMAIL_USE_TLS }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_EMAIL_HOST|${{ secrets.EMAIL_HOST }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_EMAIL_PORT|${{ secrets.EMAIL_PORT }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_EMAIL_HOST_USER|${{ secrets.USER_EML }}|g' .aws/task-definition.json
-        sed -i 's|REPLACE_ME_EMAIL_HOST_PASSWORD|${{ secrets.USER_EM_PWD }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EM_USR|${{ secrets.USER_EML }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMA_PWS|${{ secrets.USER_EM_PWD }}|g' .aws/task-definition.json
 
         sed -i 's|REPLACE_ME_DB_NAME|${{ secrets.DB_NAME }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_DB_HOST|${{ secrets.DB_HOST }}|g' .aws/task-definition.json
