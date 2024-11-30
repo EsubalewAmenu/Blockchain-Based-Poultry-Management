@@ -83,6 +83,8 @@ jobs:
         sed -i 's|REPLACE_ME_EMAIL_USE_TLS|${{ secrets.EMAIL_USE_TLS }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_EMAIL_HOST|${{ secrets.EMAIL_HOST }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_EMAIL_PORT|${{ secrets.EMAIL_PORT }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMAIL_HOST_USER|${{ secrets.EMAIL_HOST_USER }}|g' .aws/task-definition.json
+        sed -i 's|REPLACE_ME_EMAIL_HOST_PASSWORD|${{ secrets.EMAIL_HOST_PASSWORD }}|g' .aws/task-definition.json
 
         sed -i 's|REPLACE_ME_DB_NAME|${{ secrets.DB_NAME }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_DB_HOST|${{ secrets.DB_HOST }}|g' .aws/task-definition.json
@@ -99,6 +101,11 @@ jobs:
         sed -i 's|REPLACE_ME_data_encryption|${{ secrets.data_encryption }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_encryption_key|${{ secrets.encryption_key }}|g' .aws/task-definition.json
         sed -i 's|REPLACE_ME_IPFS_BLOCKFROST|${{ secrets.IPFS_BLOCKFROST }}|g' .aws/task-definition.json
+
+        
+    - name: Debug Task Definition
+      run: |
+        cat .aws/task-definition.json
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
