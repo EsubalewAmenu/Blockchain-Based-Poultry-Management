@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def create_customers(self):
         customer_data = [
-            {'first_name': 'Esuablew', 'last_name': 'Amenu', 'email': 'esuablew@gmail.com', 'phone': '+251900123456', 'address': 'Addis Ababa, Ethiopia', 'notification_sms': True, 'delivery': True, 'followup': True},
+            {'first_name': 'Henok', 'last_name': 'Alemu', 'email': 'henokalemu@gmail.com', 'phone': '+251900123456', 'address': 'Addis Ababa, Ethiopia', 'notification_sms': True, 'delivery': True, 'followup': True},
         ]
 
         for data in customer_data:

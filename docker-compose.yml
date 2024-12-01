@@ -37,6 +37,7 @@ services:
              python manage.py migrate &&
              python manage.py seed_hrms &&
              python manage.py init_item_types &&
+             python manage.py create_customers &&
              python manage.py runserver 0.0.0.0:11000"
     ports:
       - 11000:11000
