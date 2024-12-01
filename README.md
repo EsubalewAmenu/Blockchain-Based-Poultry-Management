@@ -78,6 +78,19 @@ DB_USER=your_database_user  # Database username
 BASE_URL=http://localhost:11000
 ```
 
+#### General Blockchain feature configuration
+
+```env
+OFFCHAIN_BASE_URL=https://NFT-mint-base-url-here/
+blockfrostKey=preprodX0JeYlBHufTkZ8nBz7C....
+secretSeed=cotton resemble audit ring gown wool since ....
+cborHex=5909065909030100003233223322323232323232323232.....
+
+data_encryption=False
+encryption_key=L6TVPXtUQBfISfPNcPtI7CW3aT..... # You can generate using key = Fernet.generate_key()
+
+```
+
 ### Setup
 
 To get started with PoultryTrack, follow these instructions:
