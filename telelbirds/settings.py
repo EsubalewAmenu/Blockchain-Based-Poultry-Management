@@ -89,6 +89,8 @@ MIDDLEWARE = [
 
 CSRF_TRUSTED_ORIGINS = [
     'https://hatchtrack.awura.tech',
+    'https://poultry.datascienceplc.com',
+    '*'
 ]
 
 ROOT_URLCONF = 'telelbirds.urls'
