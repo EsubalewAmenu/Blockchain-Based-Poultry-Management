@@ -264,7 +264,7 @@ def mint_incubators_item(hatchery, incubatortype, manufacturer, model, year, man
                         "manufacturer_details": manufacturer_details
                         }
 
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
             response_data = response.json()
 
             if response.status_code == 200 and 'status' in response_data:
@@ -612,7 +612,7 @@ def register_egg_settings_history(egg_setting, item):
                         "breeders": egg_setting.breeders.batch,
                         }
 
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
             response_data = response.json()
                         
             if response.status_code == 200 and 'status' in response_data:
@@ -839,7 +839,7 @@ def register_incubation_history(incubation, eggsetting):
                 "eggsetting": eggsetting.settingcode,
                 "eggs_quantity": incubation.eggs,
                 }
-        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
         response_data = response.json()
 
         if response.status_code == 200 and 'status' in response_data:
@@ -1124,7 +1124,7 @@ def register_candling_history(candling, incubation):
                 "spoilt_eggs": int(candling.spoilt_eggs),
                 }
 
-        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
         response_data = response.json()
 
         if response.status_code == 200 and 'status' in response_data:
@@ -1334,7 +1334,7 @@ def check_utxo_status(txHash, retries=10, wait_time=10):
                     "secretSeed": os.getenv('secretSeed'),
                     "txHash": txHash,
                 }
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'utxo-status', json=api_data)
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'utxo-status', json=api_data, verify=False)
 
             if response.status_code == 200:
                 data = response.json()
@@ -1391,7 +1391,7 @@ def register_hatching_history(hatching, candling, new_item, new_chick):
                 "new_item_code": new_item.code,
                 }
 
-        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
         response_data = response.json()
 
         if response.status_code == 200 and 'status' in response_data:

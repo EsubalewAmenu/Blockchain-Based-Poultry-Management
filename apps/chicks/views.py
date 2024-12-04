@@ -194,7 +194,7 @@ def mint_chicks_item(item, metadata):
                     "cborHex": os.getenv('cborHex')
                 }
 
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
             response_data = response.json()
 
             if response.status_code == 200 and 'status' in response_data:

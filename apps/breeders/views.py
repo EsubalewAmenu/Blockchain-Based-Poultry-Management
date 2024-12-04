@@ -196,7 +196,7 @@ def mint_breed(breed):
                     "description": breed.description,
                     }
 
-        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
         response_data = response.json()
         print(response_data)
         if response.status_code == 200 and 'status' in response_data:
@@ -490,7 +490,7 @@ def mint_breeders(breeder):
                     "current_number": breeder.current_number,
                     }
 
-        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+        response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
         response_data = response.json()
         if response.status_code == 200 and 'status' in response_data:
             breeder.txHash = response_data['txHash']

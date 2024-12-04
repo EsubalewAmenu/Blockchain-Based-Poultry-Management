@@ -369,7 +369,7 @@ def mint_egg_item(item, customer, chicks, source, breed_id, photo, brought, retu
                     "received": int(brought) - int(returned)
                 }
 
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data)
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
             response_data = response.json()
 
             if response.status_code == 200 and 'status' in response_data:

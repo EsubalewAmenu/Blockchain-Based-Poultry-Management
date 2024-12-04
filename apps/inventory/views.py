@@ -396,7 +396,7 @@ def register_item_request_approval_history(item_request):
                     "is_request_approved": str(item_request.is_approved),
                     }
 
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data)
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
             response_data = response.json()
 
             if response.status_code == 200 and 'status' in response_data:
