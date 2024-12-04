@@ -140,7 +140,7 @@ If you need see data change `command` section to this
 6. **Create the administrator user**
 
    ```
-   docker compose exec -it app bash
+   docker exec -it app bash
 
    and run the folloeing command 
 
