@@ -27,7 +27,7 @@ def vendor_list(request):
 
 @login_required
 def vendor_detail(request, full_name):
-    vendor = get_object_or_404(vendor, full_name=full_name)
+    vendor = get_object_or_404(Vendor, full_name=full_name)
     return render(request, 'pages/pages/vendor/details.html', {'vendor': vendor})
 
 @login_required
