@@ -91,7 +91,7 @@ def vendor_create(request):
 
 @login_required
 def vendor_update(request, full_name):
-    vendor = get_object_or_404(vendor, full_name=full_name)
+    vendor = get_object_or_404(Vendor, full_name=full_name)
     errors = {}
     if request.method == 'POST':
         # Retrieve data from the form
@@ -111,7 +111,7 @@ def vendor_update(request, full_name):
         
             
         if request.POST.get('email'):
-            if vendor.objects.filter(email=request.POST.get('email')).exclude(full_name=full_name).exists():
+            if Vendor.objects.filter(email=request.POST.get('email')).exclude(full_name=full_name).exists():
                 errors['email'] = "This email address is already registered."
             if not validate_email(request.POST.get('email')):
                 errors['email'] = "This email address is not valid."
