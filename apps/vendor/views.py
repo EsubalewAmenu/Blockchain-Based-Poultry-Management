@@ -151,11 +151,11 @@ def vendor_update_notifications(request, full_name):
 
 @login_required
 def vendor_delete(request, full_name):
-    vendor = get_object_or_404(vendor, full_name=full_name)
+    vendor = get_object_or_404(Vendor, full_name=full_name)
     if request.method == 'POST':
-        if feeds.objects.filter(vendor=vendor).exists() or Chicks.objects.filter(vendor=vendor).exists():
-            messages.error(request, "Cannot delete vendor associated with feeds or chicks.", extra_tags='danger')
-            return redirect('vendor_detail', full_name=vendor.full_name)
+        # if feeds.objects.filter(vendor=vendor).exists(): # or Chicks.objects.filter(vendor=vendor).exists():
+        #     messages.error(request, "Cannot delete vendor associated with feeds or chicks.", extra_tags='danger')
+        #     return redirect('vendor_detail', full_name=vendor.full_name)
         vendor.delete()
         return redirect('vendor_list')
     else:
