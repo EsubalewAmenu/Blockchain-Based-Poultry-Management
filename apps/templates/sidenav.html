@@ -181,6 +181,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/vendor/' %}active{% endif %}" href="{% url 'vendor_list' %}">
+                                <span class="sidenav-mini-icon"> C </span>
+                                <span class="sidenav-normal"> Vendors <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {% if request.path == '/chicks/' %}active{% endif %}" href="{% url 'chicks_list' %}">
                                 <span class="sidenav-mini-icon"> C </span>
                                 <span class="sidenav-normal"> Chicks <b class="caret"></b></span>
