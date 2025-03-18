@@ -1,0 +1,115 @@
+{% extends 'dashboard.html' %}
+{% block main %}
+<div class="row mb-5">
+  <div class="col-12">
+    <div class="multisteps-form mb-5">
+      <!-- Progress bar -->
+      <div class="row">
+        <div class="col-12 col-lg-8 mx-auto my-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="multisteps-form__progress">
+                <button class="multisteps-form__progress-btn js-active" type="button" title="Feed Info">
+                  <span>Feed Info</span>
+                </button>
+                <button class="multisteps-form__progress-btn" type="button" title="Breed Info">Breed Info</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Form panels -->
+      <div class="row">
+        <div class="col-12 col-lg-8 m-auto">
+          <form class="multisteps-form__form mb-8" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Feed Info Panel -->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+              <h5 class="font-weight-bolder mb-0">Feed Info</h5>
+              <p class="mb-0 text-sm">Mandatory information</p>
+              <div class="multisteps-form__content">
+                  <div class="row mt-3">
+                      <div class="col-12 col-sm-6">
+                          <label>Item</label>
+                          <select class="multisteps-form__input form-control" name="item">
+                              {% comment %} <option value="">Select an Item</option> {% endcomment %}
+                              {% if item_data %}
+                                  <option value="{{ item_data.id }}" selected>{{ item_data.code }} - {{ item_data.item_type }} | {{ item_data.created_at }}</option>
+                              {% endif %}
+                              {% for item in items %}
+                                  <option value="{{ item.pk }}">{{ item.code }} - {{ item.item_type.type_name }} | {{item.created_at}}</option>
+                              {% endfor %}
+                          </select>
+                          {% if errors.item %}
+                          <small class="text-danger">{{ errors.item }}</small>
+                          {% endif %}
+                      </div>
+                      <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                          <label for="feedtype" class="form-label">Feed type</label>
+                          <select class="form-control" name="feedtype" id="feedtype">
+                              <option value="" disabled selected>Select a Feedtype</option>
+                              <option value="Starter">Starter Feed</option>
+                              <option value="Grower">Grower Feed</option>
+                              <option value="Finisher">Finisher Feed</option>
+                              <option value="Layer">Layer Feed</option>
+                              <option value="Breeder">Breeder Feed</option>
+                              <option value="Medicated">Medicated Feed</option>
+                              <option value="Organic_Natural">Organic/Natural Feed</option>
+                              <option value="Scratch">Scratch Feed</option>
+                          </select>
+                          {% if errors.feedtype %}
+                          <small class="text-danger">{{ errors.feedtype }}</small>
+                          {% endif %}
+                      </div>
+                  </div>
+                  <div class="row mt-3">
+                      <div class="col-12 col-sm-6">
+                          <label>Photo</label>
+                          <input class="multisteps-form__input form-control" type="file" name="photo" accept="image/*" />
+                          {% if errors.photo %}
+                          <small class="text-danger">{{ errors.photo }}</small>
+                          {% endif %}
+                      </div>
+                      <div class="col-12 col-sm-6" id="vendorField">
+                          <label>Vendor</label>
+                          <select class="multisteps-form__input form-control" name="vendor">
+                              <option value="">Select a Vendor</option>
+                              {% for vendor in vendors %}
+                                  <option value="{{ vendor.id }}">{{ vendor.full_name }}</option>
+                              {% endfor %}
+                          </select>
+                          {% if errors.vendor %}
+                          <small class="text-danger">{{ errors.vendor }}</small>
+                          {% endif %}
+                      </div>
+                  </div>
+                  <div class="row mt-3">
+                      <div class="col-12 col-sm-6">
+                          <label>Brought (per kg)</label>
+                          <input class="multisteps-form__input form-control" type="number" name="brought" placeholder="eg. 1000" />
+                          {% if errors.brought %}
+                          <small class="text-danger">{{ errors.brought }}</small>
+                          {% endif %}
+                      </div>
+                      <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                          <label>Returned</label>
+                          <input class="multisteps-form__input form-control" type="number" name="returned" placeholder="eg. 50" value="0"/>
+                          {% if errors.returned %}
+                          <small class="text-danger">{{ errors.returned }}</small>
+                          {% endif %}
+                      </div>
+                  </div>
+                  <div class="button-row d-flex mt-4">
+                      <!-- <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button> -->
+                      <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                  </div>
+              </div>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

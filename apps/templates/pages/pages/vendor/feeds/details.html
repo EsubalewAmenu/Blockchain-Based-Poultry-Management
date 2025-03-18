@@ -1,0 +1,146 @@
+{% extends 'dashboard.html' %}
+
+{% load static %}
+{% block main %}
+<div class="container-fluid py-4">
+    <style>
+        /* Set a fixed height for the images */
+        .swiper-slide img {
+          width: 100%; /* Ensure the image takes the full width of the slide */
+          height: 300px; /* Set a fixed height */
+          object-fit: cover; /* Maintain aspect ratio and cover the area */
+          border-radius: 0.5rem; /* Optional: to match your existing border-radius */
+        }
+      </style>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-lg-6">
+          <h4 class="text-white">Egg Details</h4>
+          <p class="text-white opacity-8">View and update egg information.</p>
+        </div>
+        <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
+          
+          {% if request.resolver_match.url_name == 'eggs_update' %}
+            <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
+          {% endif %}
+
+          {% if request.resolver_match.url_name == 'eggs_delete' %}
+            <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Confirm Delete</button>
+          {% endif %}
+        </div>
+      </div>
+  
+      <div class="row mt-4">
+        <div class="col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="font-weight-bolder text-center">Egg Photos</h5>
+              <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                  <!-- Front Photo Slide -->
+                  <div class="swiper-slide">
+                    <h6>Egg Photo</h6>
+                    {% if egg.photo %}
+                      <img src="{{ egg.photo.url }}" alt="{{ egg.batchnumber }} Egg Photo">
+                    {% else %}
+                      <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
+                    {% endif %}
+                    {% if request.resolver_match.url_name == 'eggs_update' %}
+                      <input type="file" class="form-control mt-3" name="photo">
+                      {% if errors.photo %}
+                      <small class="text-danger">{{ errors.photo }}</small>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                </div>
+                <hr/>
+                <br/>
+                <div class="swiper-pagination"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="col-lg-8 mt-lg-0 mt-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="font-weight-bolder">Egg Information</h5>
+              <div class="row">
+                <div class="col-12 col-sm-6">
+                  <label>Batch Number</label>
+                  <input class="form-control" type="text" name="batchnumber" value="{{ egg.batchnumber }}" readonly>
+                  {% if errors.bacth %}
+                  <small class="text-danger">{{ errors.batch }}</small>
+                  {% endif %}
+                </div>
+                <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                  <label>Customer</label>
+                  <select class="multisteps-form__input form-control" name="customer">
+                    <option value="">{{egg.customer.full_name}}</option>
+                    {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.full_name }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.customer %}
+                <small class="text-danger">{{ errors.customer }}</small>
+                {% endif %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Breed</label>
+                  <select class="multisteps-form__input form-control" name="breed">
+                    <option value="">{{egg.breed.breed}}</option>
+                    {% for breed in breeds %}
+                        <option value="{{ breed.id }}">{{ breed.breed }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.breed %}
+                <small class="text-danger">{{ errors.breed }}</small>
+                {% endif %}
+                </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Item Code</label>
+                  <input class="form-control" type="text" name="item" value="{{ egg.item.code }}" disabled>
+                  {% if errors.item %}
+                  <small class="text-danger">{{ errors.item }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Brought</label>
+                  <input class="form-control" type="number" name="brought" value="{{ egg.brought }}">
+                  {% if errors.brought %}
+                  <small class="text-danger">{{ errors.brought }}</small>
+                  {% endif %}
+                </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Returned</label>
+                  <input class="form-control" type="number" name="returned" value="{{ egg.returned }}">
+                  {% if errors.returned %}
+                  <small class="text-danger">{{ errors.returned }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Received</label>
+                  <input class="form-control" type="number" name="received" value="{{ egg.received }}" readonly>
+                  {% if errors.received %}
+                  <small class="text-danger">{{ errors.received }}</small>
+                  {% endif %}
+                </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  <label>Created</label>
+                  <input class="form-control" type="text" name="created" value="{{ egg.created|date:'Y-m-d H:i:s' }}" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}

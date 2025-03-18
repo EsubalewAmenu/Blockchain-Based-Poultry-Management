@@ -90,68 +90,63 @@ class Vendor(models.Model):
         return '/vendor/{}'.format(self.full_name)
 
 
-# class Feeds(models.Model):
-#     """
-#     feeds Model
-#     """
-#     id = models.AutoField(primary_key=True)
-#     batchnumber = models.CharField(null=True,blank=True,max_length=50, unique=True)
-#     item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
-#     source = models.CharField(max_length=50, null=True, blank=True, choices=[['vendor', 'vendor'], ['farm', 'farm']], default='vendor')
-#     vendor=models.ForeignKey(Vendor,
-#         related_name="feeds_vendor", blank=True, null=True,
-#         on_delete=models.SET_NULL)
-#     chicks = models.CharField(blank=True, null=True, max_length=50)
-#     breed=models.ForeignKey(Breed,
-#         related_name="feeds_breed", blank=True, null=True,
-#         on_delete=models.SET_NULL)
-#     vendorcode = models.CharField(null=True,blank=True,max_length=50)
-#     photo = ProcessedImageField(upload_to='feeds_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
-#     brought = models.IntegerField(null=True,blank=True)
-#     returned = models.IntegerField(null=True,blank=True)
-#     received=models.IntegerField(null=True,blank=True,max_length=50) 
-#     created = models.DateTimeField(auto_now_add=True)
+class Feeds(models.Model):
+    """
+    feeds Model
+    """
+    id = models.AutoField(primary_key=True)
+    batchnumber = models.CharField(null=True,blank=True,max_length=50, unique=True)
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
+    vendor=models.ForeignKey(Vendor,
+        related_name="feeds_vendor", blank=True, null=True,
+        on_delete=models.SET_NULL)
+    feedtype = models.CharField(max_length=50, null=True, blank=True, choices=[['Starter', 'Starter'], ['Grower', 'Grower'], ['Finisher', 'Finisher'], ['Layer', 'Layer'], ['Breeder', 'Breeder'], ['Medicated', 'Medicated'], ['Organic_Natural', 'Organic_Natural'], ['Scratch', 'Scratch']], default='Layer')
+    photo = ProcessedImageField(upload_to='feeds_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70})
+    brought = models.IntegerField(null=True,blank=True)
+    returned = models.IntegerField(null=True,blank=True)
+    received=models.IntegerField(null=True,blank=True,max_length=50) 
+    created = models.DateTimeField(auto_now_add=True)
 
-#     class Meta:
-#         ordering = ['created']
-#         db_table = "feeds"
-#         verbose_name = 'feed'
-#         verbose_name_plural = "feeds"
-#         managed = True
+    class Meta:
+        ordering = ['created']
+        db_table = "feeds"
+        verbose_name = 'feed'
+        verbose_name_plural = "feeds"
+        managed = True
 
-#     def clean(self):
-#         errors = {}
-#         for field in self._meta.get_fields():
-#             if isinstance(field, models.CharField) and field.max_length is not None:
-#                 value = getattr(self, field.name)
-#                 if value and len(value) > field.max_length:
-#                     name = field.attname.replace('_', ' ')
-#                     errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
-#         if errors:
-#             raise ValidationError(errors) 
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
         
-#     def save(self, *args, **kwargs):
-#         if not self.batchnumber:
-#             self.batchnumber = self.generate_unique_batchnumber()
-#         if not self.received:
-#             self.received = int(self.brought) - int(self.returned)
-#         self.item.quantity=self.received
-#         self.item.save()
-#         self.clean()
-#         super(feeds, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if not self.batchnumber:
+            self.batchnumber = self.generate_unique_batchnumber()
+        if not self.received:
+            self.received = int(self.brought) - int(self.returned)
+        self.item.quantity=self.received
+        self.item.save()
+        self.clean()
+        super(Feeds, self).save(*args, **kwargs)
         
-#     def generate_unique_batchnumber(self):
-#         while True:
-#             random_suffix = ''.join(random.choices(string.digits, k=4))
-#             unique_code = f'EG-{random_suffix}'
-#             if not feeds.objects.filter(batchnumber=unique_code).exists():
-#                 return unique_code
+    def generate_unique_batchnumber(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=5))
+            unique_code = f'FD-{random_suffix}'
+            if not Feeds.objects.filter(batchnumber=unique_code).exists():
+                return unique_code
 
-#     def __str__(self):
-#         return self.batchnumber
+    def __str__(self):
+        return self.batchnumber
     
-#     def get_absolute_url(self):
-#         return '/vendor_feeds/{}'.format(self.batchnumber)
+    def get_absolute_url(self):
+        return '/vendor_feeds/{}'.format(self.batchnumber)
 
 
 # class vendorRequest(models.Model):

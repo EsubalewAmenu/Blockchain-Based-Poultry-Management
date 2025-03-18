@@ -166,7 +166,7 @@ def vendor_delete(request, full_name):
 # List all feeds
 @login_required
 def feeds_list(request):
-    feeds = feeds.objects.all().order_by('-created')
+    feeds = Feeds.objects.all().order_by('-created')
     items = Item.objects.all()
     paginator = Paginator(feeds, 10)  # Show 10 feeds per page
     
@@ -177,8 +177,8 @@ def feeds_list(request):
 # Detail view for a specific feed
 @login_required
 def feeds_detail(request, batch_number):
-    feed = get_object_or_404(feeds, batchnumber=batch_number)
-    vendors = vendor.objects.all()
+    feed = get_object_or_404(Feeds, batchnumber=batch_number)
+    vendors = Vendor.objects.all()
     breeds = Breed.objects.all()
     chicks = Chicks.objects.all()  # Get all chicks for selection
     errors={}
@@ -240,10 +240,8 @@ def feeds_detail(request, batch_number):
 # Create a new feed
 @login_required
 def feeds_create(request):
-    vendors = vendor.objects.all()
-    breeds = Breed.objects.all()
+    vendors = Vendor.objects.all()
     items = Item.objects.filter(item_type__type_name='feed')
-    chicks = Chicks.objects.all()  # Get all chicks for selection
     item_data = None
     errors = {}
     if 'item_data' in request.session:
@@ -252,16 +250,14 @@ def feeds_create(request):
     if request.method == 'POST':
         item_id = request.POST.get('item')
         vendor_id = request.POST.get('vendor')
-        chicks_batch = request.POST.get('chick')
-        source = request.POST.get('source')
-        breed_id = request.POST.get('breed')
+        feedtype = request.POST.get('feedtype')
         photo = request.FILES.get('photo')
         brought = request.POST.get('brought')
         returned = request.POST.get('returned', 0)
         item = Item.objects.get(pk=item_id)
         allowed_image_types = ['image/jpeg', 'image/png']
         
-        required_fields = ['item', 'breed', 'brought', 'source']
+        required_fields = ['item', 'feedtype', 'brought', 'vendor']
         for field in required_fields:
             if not request.POST.get(field):
                 errors[field] = "* This field is required."
@@ -275,49 +271,38 @@ def feeds_create(request):
         if not brought and returned and int(returned) >0:
             errors['returned'] = "* Returned number cannot be provided without brought number."
                 
-        if source:
-            if source == 'farm' and not chicks_batch:
-                errors['chick'] = "* This field is required"
-            elif source == 'vendor' and not vendor_id:
-                errors['vendor'] = "* This field is required"
-
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
                 errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
                 
         vendor = None
         if vendor_id:
-            vendor = get_object_or_404(vendor, id=vendor_id)
+            vendor = get_object_or_404(Vendor, id=vendor_id)
         batch = None
-        if chicks_batch:
-            chicks = get_object_or_404(Chicks, batchnumber=chicks_batch)
-            batch = chicks.batchnumber
             
         if errors:
             messages.error(request, "Creating feed failed: Please double-check your entries and try again.", extra_tags='danger')
-            return render(request, 'pages/pages/vendor/feeds/create.html', {'vendors': vendors, 'breeds': breeds, 'chicks': chicks, 'items': items, 'item_data': item_data, 'errors': errors})
+            return render(request, 'pages/pages/vendor/feeds/create.html', {'vendors': vendors, 'feedtype': feedtype, 'items': items, 'item_data': item_data, 'errors': errors})
                
         if 'item_data' in request.session:
             item_data = request.session['item_data']
         
         # Create and save the feed
         try:
-            feed = feeds(
+            feed = Feeds(
                 item=item,
                 vendor=vendor,
-                chicks=batch,
-                source =source,
-                breed_id=breed_id,
+                feedtype=feedtype,
                 photo=photo,
                 brought=brought,
                 returned=returned)
                 
-            is_minted = mint_feed_item(item, vendor, chicks, source , breed_id, photo, brought, returned)
-            
-            if is_minted:
-                feed.save()
+            # is_minted = mint_feed_item(item, vendor, chicks, source , breed_id, photo, brought, returned)
+             
+            # if is_minted:
+            feed.save()
                 
-                messages.success(request, "feed Created Successfully", extra_tags="success")
+            messages.success(request, "feed Created Successfully", extra_tags="success")
         except Exception as e:
             messages.error(request, "Error creating feed: " + str(e), extra_tags='danger')
             
@@ -325,70 +310,68 @@ def feeds_create(request):
             request.session.pop('item_data')
         return redirect('feeds_list')
 
-    return render(request, 'pages/pages/vendor/feeds/create.html', {'vendors': vendors, 'breeds': breeds, 'chicks': chicks, 'items':items, 'item_data':item_data})
+    return render(request, 'pages/pages/vendor/feeds/create.html', {'vendors': vendors, 'items':items, 'item_data':item_data})
 
-def mint_feed_item(item, vendor, chicks, source, breed_id, photo, brought, returned):
+# def mint_feed_item(item, vendor, chicks, source, breed_id, photo, brought, returned):
+        # try:
+        #     if source == 'farm':
+        #         name_or_chicks = chicks.batchnumber
+        #     elif source == 'vendor':
+        #         name_or_chicks = vendor.full_name
 
+        #     breed = Breed.objects.get(pk=breed_id)
 
-        try:
-            if source == 'farm':
-                name_or_chicks = chicks.batchnumber
-            elif source == 'vendor':
-                name_or_chicks = vendor.full_name
-
-            breed = Breed.objects.get(pk=breed_id)
-
-            api_data = {
-                    "tokenName": item.code,
-                    "blockfrostKey": os.getenv('blockfrostKey'),
-                    "secretSeed": os.getenv('secretSeed'),
-                    "cborHex": os.getenv('cborHex')
-                }
+        #     api_data = {
+        #             "tokenName": item.code,
+        #             "blockfrostKey": os.getenv('blockfrostKey'),
+        #             "secretSeed": os.getenv('secretSeed'),
+        #             "cborHex": os.getenv('cborHex')
+        #         }
                 
-            if os.getenv('data_encryption', 'False') == 'True':
-                offchain_data = {
-                    "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
-                    "source": split_string(encrypt_data(source), "source"),
-                    "vendor": split_string(encrypt_data(name_or_chicks), "vendor"),
-                    "breed": split_string(encrypt_data(breed.code), "breed"),
-                    "breed_type": split_string(encrypt_data(breed.breed), "breed_type"),
-                    "brought": split_string(encrypt_data(brought), "brought"),
-                    "returned": split_string(encrypt_data(returned), "returned"),
-                    "received": split_string(encrypt_data(str(int(brought) - int(returned))), "received"),
-                }
-                api_data['metadata'] = offchain_data
-            else:
-                api_data['metadata'] = {
-                    "item_type": item.item_type.type_name,
-                    "source": source,
-                    "vendor": name_or_chicks,
-                    "breed": breed.code,
-                    "breed_type": breed.breed,
-                    "brought": int(brought),
-                    "returned": int(returned),
-                    "received": int(brought) - int(returned)
-                }
+        #     if os.getenv('data_encryption', 'False') == 'True':
+        #         offchain_data = {
+        #             "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+        #             "source": split_string(encrypt_data(source), "source"),
+        #             "vendor": split_string(encrypt_data(name_or_chicks), "vendor"),
+        #             "breed": split_string(encrypt_data(breed.code), "breed"),
+        #             "breed_type": split_string(encrypt_data(breed.breed), "breed_type"),
+        #             "brought": split_string(encrypt_data(brought), "brought"),
+        #             "returned": split_string(encrypt_data(returned), "returned"),
+        #             "received": split_string(encrypt_data(str(int(brought) - int(returned))), "received"),
+        #         }
+        #         api_data['metadata'] = offchain_data
+        #     else:
+        #         api_data['metadata'] = {
+        #             "item_type": item.item_type.type_name,
+        #             "source": source,
+        #             "vendor": name_or_chicks,
+        #             "breed": breed.code,
+        #             "breed_type": breed.breed,
+        #             "brought": int(brought),
+        #             "returned": int(returned),
+        #             "received": int(brought) - int(returned)
+        #         }
 
-            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
-            response_data = response.json()
+        #     response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
+        #     response_data = response.json()
 
-            if response.status_code == 200 and 'status' in response_data:
-                print(response_data)
-                item.txHash = response_data['txHash']
-                item.policyId = response_data['policyId']
-                item.save()
-                return True
-            else:
-                return False
+        #     if response.status_code == 200 and 'status' in response_data:
+        #         print(response_data)
+        #         item.txHash = response_data['txHash']
+        #         item.policyId = response_data['policyId']
+        #         item.save()
+        #         return True
+        #     else:
+        #         return False
         
-        except requests.exceptions.RequestException as e:
-            return False
+        # except requests.exceptions.RequestException as e:
+        #     return False
         
 
 # Update an existing feed
 @login_required
 def feeds_update(request, batch_number):
-    feed = get_object_or_404(feeds, batchnumber=batch_number)
+    feed = get_object_or_404(Feeds, batchnumber=batch_number)
     vendors = vendor.objects.all()
     breeds = Breed.objects.all()
     chicks = Chicks.objects.all()  # Get all chicks for selection
@@ -451,12 +434,12 @@ def feeds_update(request, batch_number):
 # Delete an feed
 @login_required
 def feeds_delete(request, batch_number):
-    feed = get_object_or_404(feeds, batchnumber=batch_number)
+    feed = get_object_or_404(Feeds, batchnumber=batch_number)
     if request.method == 'POST':
         if ItemRequest.objects.filter(item=feed.item).exists():
             messages.error(request, "Cannot delete feed because it has associated item requests.", extra_tags='danger')
             return redirect('feeds_list', batch_number=feed.batchnumber)
-        if feedSetting.objects.filter(feed=feed).exists():
+        if FeedSetting.objects.filter(feed=feed).exists():
             messages.error(request, "Cannot delete feed because it has associated feed settings.", extra_tags='danger')
             return redirect('feeds_list', batch_number=feed.batchnumber)
         feed.delete()
@@ -481,20 +464,20 @@ def vendor_request_detail(request, requestcode):
 def vendor_request_create(request):
     if request.method == 'POST':
         feeds_id = request.POST.get('feeds')
-        feeds_instance = get_object_or_404(feeds, id=feeds_id) if feeds_id else None
+        feeds_instance = get_object_or_404(Feeds, id=feeds_id) if feeds_id else None
 
         vendor_request = vendorRequest(feeds=feeds_instance)
         vendor_request.save()
         return redirect('vendor_request_list')
 
-    feeds = feeds.objects.all()
+    feeds = Feeds.objects.all()
     return render(request, 'pages/pages/vendor/vendor_requests/create.html', {'feeds': feeds})
 
 def vendor_request_update(request, requestcode):
-    vendor_request = get_object_or_404(vendorRequest, requestcode=requestcode)
+    vendor_request = get_object_or_404(VendorRequest, requestcode=requestcode)
     if request.method == 'POST':
         feeds_id = request.POST.get('feeds')  # Get the new feeds ID
-        vendor_request.feeds = get_object_or_404(feeds, id=feeds_id) if feeds_id else vendor_request.feeds
+        vendor_request.feeds = get_object_or_404(Feeds, id=feeds_id) if feeds_id else vendor_request.feeds
 
         vendor_request.save()  # Save the updated instance
         return redirect('vendor_request_detail', requestcode=vendor_request.requestcode)
@@ -503,7 +486,7 @@ def vendor_request_update(request, requestcode):
     return render(request, 'pages/pages/vendor/vendor_requests/details.html', {'vendor_request': vendor_request, 'feeds': feeds})
 
 def vendor_request_delete(request, requestcode):
-    vendor_request = get_object_or_404(vendorRequest, requestcode=requestcode)
+    vendor_request = get_object_or_404(VendorRequest, requestcode=requestcode)
     if request.method == 'POST':
         vendor_request.delete()  # Delete the instance
         return redirect('vendor_request_list')  # Redirect to the list view
