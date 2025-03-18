@@ -37,8 +37,6 @@
                             <th scope="col">Setting Code</th>
                             <th scope="col">Item Request (Item)</th>
                             <th scope="col">Feed Batch</th>
-                            <th scope="col">Incubator</th>
-                            <th scope="col">Breeders</th>
                             <th scope="col">Number of feeds</th>
                             <th scope="col">Available feeds</th>
                             <th scope="col">Created</th>
@@ -71,12 +69,6 @@
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span>{{ feed_setting.feed.batchnumber }}</span>
-                            </td>
-                            <td class="text-xs font-weight-bold">
-                                <span>{{ feed_setting.incubator.code }}</span>
-                            </td>
-                            <td class="text-xs font-weight-bold">
-                                <span>{{ feed_setting.breeders.batch }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span class="my-2 text-xs">{{ feed_setting.feeds|default:"0" }}</span>
