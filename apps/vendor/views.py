@@ -179,14 +179,10 @@ def feeds_list(request):
 def feeds_detail(request, batch_number):
     feed = get_object_or_404(Feeds, batchnumber=batch_number)
     vendors = Vendor.objects.all()
-    breeds = Breed.objects.all()
-    chicks = Chicks.objects.all()  # Get all chicks for selection
     errors={}
     if request.method == 'POST':
         feed.batchnumber = request.POST.get('batchnumber', feed.batchnumber)
         vendor_id = request.POST.get('vendor')
-        breed_id = request.POST.get('breed')
-        chick_id = request.POST.get('chick')  # Get selected chick ID
         allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
 
         if request.FILES.get('photo'):
@@ -198,10 +194,6 @@ def feeds_detail(request, batch_number):
         # Update foreign keys only if they are provided
         if vendor_id:
             feed.vendor_id = vendor_id
-        if breed_id:
-            feed.breed_id = breed_id
-        if chick_id:
-            feed.chick_id = chick_id  # Update the chick association
 
         feed.brought = request.POST.get('brought', feed.brought)
         feed.returned = request.POST.get('returned', feed.returned)
@@ -218,8 +210,6 @@ def feeds_detail(request, batch_number):
             return render(request, 'pages/pages/vendor/feeds/details.html', {
                 'feed': feed,
                 'vendors': vendors,
-                'breeds': breeds,
-                'chicks': chicks,
                 'errors': errors
             })
         try:    
@@ -233,8 +223,6 @@ def feeds_detail(request, batch_number):
     return render(request, 'pages/pages/vendor/feeds/details.html', {
         'feed': feed,
         'vendors': vendors,
-        'breeds': breeds,
-        'chicks': chicks
     })
 
 # Create a new feed
