@@ -49,6 +49,13 @@ urlpatterns = [
     path('tracker/public/<str:tracker_code>/', tracker_public_view, name='tracker_public'),
     path('tracker/<str:tracker_code>/barcode', tracker_barcode_image_view, name='tracker_barcode_image'),
     path('tracker/<str:tracker_code>/qrcode', tracker_qrcode_image_view, name='tracker_qr_code'),
+
+    path('feed-settings/create/', feed_setting_create, name='feed_setting_create'),    
+    path('feed-settings/', feed_setting_list, name='feed_setting_list'),
+    path('feed-settings/<str:settingcode>/', feed_setting_detail, name='feed_setting_detail'),
+    path('feed-settings/<str:settingcode>/update/', feed_setting_update, name='feed_setting_update'),
+    path('feed-settings/<str:settingcode>/delete/', feed_setting_delete, name='feed_setting_delete'),
+
 ]
 
 

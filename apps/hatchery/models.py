@@ -24,6 +24,7 @@ import string
 from telelbirds import settings
 from apps.breeders.models import Breeders
 from apps.customer.models import Customer, Eggs
+from apps.vendor.models import Vendor, Feeds
 from apps.inventory.models import Item, ItemRequest
 import uuid
 from django.core.files import File
@@ -220,6 +221,54 @@ class EggSetting(models.Model):
             random_suffix = ''.join(random.choices(string.digits, k=4))
             unique_code = f'EG-STG-{random_suffix}'
             if not EggSetting.objects.filter(settingcode=unique_code).exists():
+                return unique_code
+
+class FeedSetting(models.Model):
+    """
+    FeedSetting Model
+    """
+    id = models.AutoField(primary_key=True)
+    settingcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
+    feed = models.ForeignKey(Feeds, on_delete=models.SET_NULL, null=True, blank=True)
+    item_request = models.ForeignKey(ItemRequest, on_delete=models.SET_NULL, null=True, blank=True, related_name="feed_setting")
+    feeds=models.IntegerField(null=True,blank=True,max_length=50)
+    available_quantity = models.IntegerField(null=True,blank=True,max_length=50)
+    is_approved = models.BooleanField(default=False, blank=True, null=True)
+    txHash = models.CharField(max_length=100, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created']
+        db_table = "feedsetting"
+        verbose_name = 'feedSetting'
+        verbose_name_plural = "feedSettings"
+        managed = True
+
+    def get_absolute_url(self):
+        return '/feed_setting/{}'.format(self.settingcode)
+    
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
+    def save(self, *args, **kwargs):
+        if not self.settingcode:
+            self.settingcode = self.generate_unique_code()
+        self.clean()
+        super(FeedSetting, self).save(*args, **kwargs)
+
+    def generate_unique_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'EG-STG-{random_suffix}'
+            if not FeedSetting.objects.filter(settingcode=unique_code).exists():
                 return unique_code
 
 

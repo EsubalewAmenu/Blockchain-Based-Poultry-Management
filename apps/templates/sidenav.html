@@ -125,6 +125,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/feed-settings/' %}active{% endif %}" href="{% url 'feed_setting_list' %}">
+                                <span class="sidenav-mini-icon"> FS </span>
+                                <span class="sidenav-normal"> Feed Setting <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {% if request.path == '/incubations/' %}active{% endif %}" href="{% url 'incubation_list' %}">
                                 <span class="sidenav-mini-icon"> IB </span>
                                 <span class="sidenav-normal"> Incubation <b class="caret"></b></span>
