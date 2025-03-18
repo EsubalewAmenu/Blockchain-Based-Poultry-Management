@@ -501,7 +501,7 @@ def egg_setting_detail(request, settingcode):
 
 @login_required
 def feed_setting_detail(request, settingcode):
-    feed_setting = get_object_or_404(feedSetting, settingcode=settingcode)
+    feed_setting = get_object_or_404(FeedSetting, settingcode=settingcode)
     errors={}
     if request.method == 'POST':
         if feed_setting.is_approved:
@@ -534,14 +534,8 @@ def feed_setting_detail(request, settingcode):
         feed_setting.save()
         return redirect('feed_setting_detail', settingcode=feed_setting.settingcode)
 
-    incubators = Incubators.objects.all()
-    customers = Customer.objects.all()
-    breeders = Breeders.objects.all()
     return render(request, 'pages/poultry/hatchery/feed_setting/details.html', {
         'feed_setting': feed_setting,
-        'incubators': incubators,
-        'customers': customers,
-        'breeders': breeders
     })
 
 @login_required

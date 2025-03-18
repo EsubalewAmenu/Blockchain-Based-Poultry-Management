@@ -267,7 +267,7 @@ class FeedSetting(models.Model):
     def generate_unique_code(self):
         while True:
             random_suffix = ''.join(random.choices(string.digits, k=4))
-            unique_code = f'EG-STG-{random_suffix}'
+            unique_code = f'FD-STG-{random_suffix}'
             if not FeedSetting.objects.filter(settingcode=unique_code).exists():
                 return unique_code
 
