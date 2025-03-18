@@ -16,9 +16,8 @@
           <thead class="thead-light">
               <tr>
                   <th scope="col">Batch Number</th>
-                  <th scope="col">Source</th>
-                  <th scope="col">Name/Batch</th>
-                  <th scope="col">Breed</th>
+                  <th scope="col">Vendor</th>
+                  <th scope="col">Feed type</th>
                   <th scope="col">Item code</th>
                   <th scope="col">Brought</th>
                   <th scope="col">Returned</th>
@@ -41,27 +40,14 @@
                       </div>
                   </td>
                   <td class="font-weight-bold">
-                      <span class="my-2 text-xs">
-                      {% if feed.customer.full_name %}
-                        Customer
-                      {% else %}
-                        Chicks
-                      {% endif %}</span>
-                  </td>
-                  <td class="font-weight-bold">
-                      <span class="my-2 text-xs">
-                      {% if feed.chicks %}
-                        {{ feed.chicks }}
-                      {% else %}
-                      {{ feed.customer.full_name }}
-                      {% endif %}</span>
-                  </td>
-                  <td class="font-weight-bold">
-                      <span class="my-2 text-xs">{{ feed.breed.breed }}</span>
+                      <span class="my-2 text-xs">{{ feed.vendor.full_name }}</span>
                   </td>
                   <td class="text-xs font-weight-bold">
-                    <span class="my-2 text-xs">{{ feed.item.code }}</span>
-                </td>
+                    <span class="my-2 text-xs">{{ feed.feedtype }}</span>
+                  </td>
+                    <td class="text-xs font-weight-bold">
+                      <span class="my-2 text-xs">{{ feed.item.code }}</span>
+                  </td>
                   <td class="font-weight-bold">
                       <span class="my-2 text-xs">{{ feed.brought }}</span>
                   </td>
