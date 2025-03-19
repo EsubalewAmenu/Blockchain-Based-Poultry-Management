@@ -131,6 +131,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/feedings/' %}active{% endif %}" href="{% url 'feeding_list' %}">
+                                <span class="sidenav-mini-icon"> FD </span>
+                                <span class="sidenav-normal"> Feeding <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {% if request.path == '/incubations/' %}active{% endif %}" href="{% url 'incubation_list' %}">
                                 <span class="sidenav-mini-icon"> IB </span>
                                 <span class="sidenav-normal"> Incubation <b class="caret"></b></span>

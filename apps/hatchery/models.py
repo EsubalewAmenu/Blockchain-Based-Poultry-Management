@@ -452,6 +452,58 @@ class Hatching(models.Model):
     def get_absolute_url(self):
         return '/Hatching/{}'.format(self.hatchingcode)
 
+class Feedings(models.Model):
+    """
+    Feedings Model
+    """
+    id = models.AutoField(primary_key=True)
+    feedingcode=models.CharField(null=True,blank=True,max_length=50, unique=True)
+    chicks=models.IntegerField(null=True,blank=True,max_length=50)
+    feedsetting=models.ForeignKey(FeedSetting,
+        related_name="feeding_feedsetting", blank=True, null=True,
+        on_delete=models.SET_NULL)
+    quantity = models.IntegerField(null=True,blank=True,max_length=50)
+    txHash = models.CharField(max_length=100, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created']
+        db_table = "Feedings"
+        verbose_name = 'Feedings'
+        verbose_name_plural = "Feedings"
+        managed = True
+
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
+    def save(self, *args, **kwargs):
+        # Generate a unique feeding code if it is not already set
+        if not self.feedingcode:
+            self.feedingcode = self.generate_unique_feeding_code()
+        self.clean()   
+        super(Feedings, self).save(*args, **kwargs)  # Ensure the correct class is used
+
+    def generate_unique_feeding_code(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=4))
+            unique_code = f'FDG-{random_suffix}'
+            if not Feedings.objects.filter(feedingcode=unique_code).exists():
+                return unique_code
+
+    def get_absolute_url(self):
+        return '/feedings/{}'.format(self.feedingcode)
+
+    def get_absolute_url(self):
+        return '/feedings/{}'.format(self.feedingcode)
+
 
 class Holding(models.Model):
     """

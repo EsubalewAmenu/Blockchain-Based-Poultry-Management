@@ -1,0 +1,95 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <div class="multisteps-form">
+                    <!-- Progress bar -->
+                    <div class="row">
+                        <div class="col-12 col-lg-8 mx-auto my-4">
+                            <div class="multisteps-form__progress">
+                                <button class="multisteps-form__progress-btn js-active" type="button" title="Feeding Info">
+                                    <span>1. Feeding Info</span>
+                                </button>
+                                <button class="multisteps-form__progress-btn" type="button" title="Finish">2. Finish</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Form panels -->
+                    <form class="multisteps-form__form mb-8" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!-- Feeding Information Panel -->
+                        <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+                            <h5 class="font-weight-bolder">Feeding Information</h5>
+                            <div class="multisteps-form__content">
+                                <div class="row mt-3">
+                                    <div class="col-12 col-sm-6">
+                                        <label class="form-label">Chicks</label>
+                                        <select class="form-control" name="chick_item">
+                                            <option value="" disabled selected>Select a chick batch</option>
+                                            {% for chick_item in chick_items %}
+                                                <option value="{{ chick_item.pk }}">{{ chick_item.batchnumber }} ({{ chick_item.item.code }}) | {{chick_item.created}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% if errors.chick_item %}
+                                            <small class="text-danger">{{ errors.chick_item }}</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <label class="form-label">Feed Setting</label>
+                                        <select class="form-control" name="feedsetting">
+                                            <option value="" disabled selected>Select an feed setting</option>
+                                            {% for setting in feedsettings %}
+                                                <option value="{{ setting.pk }}">{{ setting.settingcode }} ( {{ setting.available_quantity }} Available) | {{setting.created}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% if errors.feedsetting %}
+                                            <small class="text-danger">{{ errors.feedsetting }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+
+                                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                                        <label class="form-label">Feed quantity</label>
+                                        <input class="form-control" type="number" placeholder="e.g., 10" name="feed_quantity"/>
+                                        {% if errors.feed_quantity %}
+                                            <small class="text-danger">{{ errors.feed_quantity }}</small>
+                                        {% endif %}
+                                    </div>
+                                    
+                                </div>
+                                <div class="row mt-3">
+                                    
+                                    
+                                </div>
+                                <div class="button-row d-flex mt-4">
+                                    <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Finish Panel -->
+                        <div class="card multisteps-form__panel p-3 border-radius-xl bg-white" data-animation="FadeIn">
+                            <h5 class="font-weight-bolder">Finish</h5>
+                            <div class="multisteps-form__content mt-3">
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <p class="font-weight-bold">Review your information and click "Submit" to create the new Feeding.</p>
+                                    </div>
+                                </div>
+                                <div class="button-row d-flex mt-4">
+                                    <button class="btn bg-gradient-secondary mb-0 js-btn-prev" type="button" title="Prev">Prev</button>
+                                    <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

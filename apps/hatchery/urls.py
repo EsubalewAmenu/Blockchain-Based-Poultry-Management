@@ -56,6 +56,12 @@ urlpatterns = [
     path('feed-settings/<str:settingcode>/update/', feed_setting_update, name='feed_setting_update'),
     path('feed-settings/<str:settingcode>/delete/', feed_setting_delete, name='feed_setting_delete'),
 
+    path('feeding/', feeding_list, name='feeding_list'),
+    path('feeding/create/', feeding_create, name='feeding_create'),
+    path('feeding/<str:code>/', feeding_detail, name='feeding_detail'),
+    path('feedings/<str:code>/update/', feeding_update, name='feeding_update'),
+    path('feeding/<str:code>/delete', feeding_delete, name='feeding_delete'),
+
 ]
 
 
