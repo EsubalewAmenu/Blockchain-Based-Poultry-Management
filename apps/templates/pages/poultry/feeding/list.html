@@ -18,10 +18,9 @@
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">feeding Code</th>
-                            <th scope="col">Egg Setting</th>
-                            <th scope="col">Customer</th>
-                            <th scope="col">Breeders</th>
-                            <th scope="col">Number of Eggs</th>
+                            <th scope="col">Chicks</th>
+                            <th scope="col">FeedSetting</th>
+                            <th scope="col">Quantity</th>
                             <th scope="col">Created</th>
                             <th scope="col">Actions</th>
                         </tr>
@@ -43,16 +42,13 @@
                                 <span class="my-2 text-xs">{{ feeding.feedingcode }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
-                                <span>{{ feeding.eggsetting.settingcode }}</span>
+                                <span>{{ feeding.chick.batchnumber }} ({{ feeding.chick.item.code }})</span>
                             </td>
                             <td class="text-xs font-weight-bold">
-                                <span>{{ feeding.customer.first_name }} {{ feeding.customer.last_name }}</span>
+                                <span>{{ feeding.feedsetting.settingcode }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
-                                <span>{{ feeding.breeders.batch }}</span>
-                            </td>
-                            <td class="text-xs font-weight-bold">
-                                <span class="my-2 text-xs">{{ feeding.eggs|default:"0" }}</span>
+                                <span>{{ feeding.quantity }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span class="my-2 text-xs">{{ feeding.created|date:"Y-m-d H:i" }}</span>

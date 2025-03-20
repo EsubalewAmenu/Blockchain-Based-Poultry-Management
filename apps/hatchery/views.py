@@ -337,6 +337,9 @@ def incubator_delete(request, code):
 @login_required  
 def feeding_list(request):
     feedings = Feedings.objects.all().order_by('-created')
+    for feeding in feedings:
+        feeding.chick = Chicks.objects.filter(id=feeding.chicks).first()
+
     paginator = Paginator(feedings, 10)
     
     page_number = request.GET.get('page')
