@@ -334,6 +334,128 @@ def incubator_delete(request, code):
     
     return redirect('incubator_list')
 
+@login_required  
+def feeding_list(request):
+    feedings = Feedings.objects.all().order_by('-created')
+    for feeding in feedings:
+        feeding.chick = Chicks.objects.filter(id=feeding.chicks).first()
+
+    paginator = Paginator(feedings, 10)
+    
+    page_number = request.GET.get('page')
+    feedings = paginator.get_page(page_number)
+    return render(request, 'pages/poultry/feeding/list.html', {'feedings': feedings})
+    
+@login_required
+def feeding_create(request):
+    item_data = None
+
+    if 'item_data' in request.session:
+        item_data = request.session['item_data']
+
+    if request.method == 'POST':
+        errors = {}
+        required_fields = ['chick_item', 'feedsetting', 'feed_quantity']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This Field is required"
+
+        if errors:
+            messages.error(request, "Error creating feeding data, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/feeding/create.html', {
+                'errors': errors,
+                'feedsettings':  FeedSetting.objects.filter(is_approved=True, available_quantity__gte=1),
+                'chick_items': Chicks.objects.all().order_by('-created'),
+            })
+
+        chick_item = get_object_or_404(Chicks, pk=request.POST['chick_item'])
+        feedsetting = get_object_or_404(FeedSetting, pk=request.POST['feedsetting'])   
+        feed_quantity = request.POST.get('feed_quantity')
+
+        if feed_quantity and int(feed_quantity) > feedsetting.available_quantity:
+            errors['feed_quantity'] = "Insufficient quantity of feeds available for the slected feedsetting."
+
+
+        feeding = Feedings(
+            chicks=chick_item.pk,
+            feedsetting=feedsetting,
+            quantity=feed_quantity,
+        )
+
+        # is_minted = mint_feedings_item(feedsetting, feedingtype, manufacturer, model, year, manufacturer_details, item)
+        
+        # if is_minted:
+        feeding.save()
+
+        feedsetting.available_quantity = feedsetting.available_quantity - int(feed_quantity)
+        feedsetting.save()
+
+        messages.success(request, "feeding created successfully", extra_tags='success')
+
+        return redirect('feeding_list')
+    
+
+    feedsettings = FeedSetting.objects.filter(is_approved=True, available_quantity__gte=1)
+    chick_items =Chicks.objects.all().order_by('-created')
+    return render(request, 'pages/poultry/feeding/create.html', {'feedsettings': feedsettings, 'chick_items':chick_items, 'item_data':item_data})
+
+@login_required
+def feeding_detail(request, code):
+    feeding = get_object_or_404(Feedings, feedingcode=code)
+    
+    feeding.chick = Chicks.objects.filter(id=feeding.chicks).first()
+
+    if request.method == 'POST':
+        # Update feeding instance with the new data from the request
+        feeding.Feeding = Feeding.objects.get(id=request.POST['Feeding'])
+        feeding.feedingtype = request.POST['feedingtype']
+        feeding.manufacturer = request.POST['manufacturer']
+        feeding.model = request.POST['model']
+        feeding.year = request.POST['year']
+        feeding.code = request.POST['code']
+        feeding.manufacturer_details = request.POST.get('manufacturer_details', '')
+        
+        # Save the updated feeding instance
+        feeding.save()
+        messages.success(request, 'Feeding updated successfully.')
+        return redirect('feeding_detail', code=code)  # Redirect to the feeding detail page after saving
+    
+    return render(request, 'pages/poultry/feeding/details.html', {'feeding': feeding})
+
+@login_required
+def feeding_update(request, code):
+    incubator = get_object_or_404(Incubators, code=code)
+    
+    if request.method == 'POST':
+        # Update incubator instance with the new data from the request
+        incubator.hatchery = Hatchery.objects.get(id=request.POST['hatchery'])
+        incubator.incubatortype = request.POST['incubatortype']
+        incubator.manufacturer = request.POST['manufacturer']
+        incubator.model = request.POST['model']
+        incubator.year = request.POST['year']
+        incubator.code = request.POST['code']
+        incubator.manufacturer_details = request.POST.get('manufacturer_details', '')
+        
+        # Save the updated incubator instance
+        incubator.save()
+        messages.success(request, 'Incubator updated successfully.')
+        return redirect('incubator_detail', code=code)  # Redirect to the incubator detail page after saving
+    
+    # Render the template with the incubator instance
+    return render(request, 'pages/poultry/incubators/details.html', {'incubator': incubator})
+
+@login_required
+def feeding_delete(request, code):
+    incubator = get_object_or_404(Incubators, code=code)
+    
+    if request.method == 'POST':
+        incubator.delete()
+        incubator.item.delete()
+        messages.success(request, 'Incubator deleted successfully.')
+        return redirect('incubator_list')
+    
+    return redirect('incubator_list')
+
 @login_required
 def incubator_capacity_list(request):
     capacity_list = IncubatorCapacity.objects.all()
@@ -443,6 +565,17 @@ def egg_setting_list(request):
     egg_settings = paginator.get_page(page_number)
     return render(request, 'pages/poultry/hatchery/egg_setting/list.html', {'egg_settings': egg_settings, 'egg':egg})
 
+#Feed Settings
+@login_required
+def feed_setting_list(request):
+    feed_settings = FeedSetting.objects.all().order_by('-created')
+    feed= Feeds.objects.all()
+    paginator = Paginator(feed_settings, 10)
+    
+    page_number = request.GET.get('page')
+    feed_settings = paginator.get_page(page_number)
+    return render(request, 'pages/poultry/hatchery/feed_setting/list.html', {'feed_settings': feed_settings, 'feed':feed})
+
 @login_required
 def egg_setting_detail(request, settingcode):
     egg_setting = get_object_or_404(EggSetting, settingcode=settingcode)
@@ -486,6 +619,45 @@ def egg_setting_detail(request, settingcode):
         'incubators': incubators,
         'customers': customers,
         'breeders': breeders
+    })
+
+@login_required
+def feed_setting_detail(request, settingcode):
+    feed_setting = get_object_or_404(FeedSetting, settingcode=settingcode)
+    errors={}
+    if request.method == 'POST':
+        if feed_setting.is_approved:
+            messages.success(request, "feed Setting request is already approved ", extra_tags='danger')
+            return redirect('feed_setting_detail', settingcode=feed_setting.settingcode)
+        feed_setting.settingcode = request.POST.get('settingcode', feed_setting.settingcode)
+        feed_setting.incubator = get_object_or_404(Incubators, id=request.POST.get('incubator'))
+        feed_setting.breeders = get_object_or_404(Breeders, id=request.POST.get('breeders'))
+        if request.POST.get('feeds'):
+            if feed_setting.feeds == int(request.POST.get('feeds')):
+                pass
+            elif feed_setting.item_request.item.quantity < int(request.POST.get('feeds')):
+                errors['feeds'] = "Insufficient quantity of feeds available for the slected feed type."
+                
+            feed_setting.feeds = int(request.POST.get('feeds'))
+            feed_setting.item_request.quantity = int(request.POST.get('feeds'))
+            feed_setting.item_request.save()
+        else:
+            feed_setting.feeds = feed_setting.feeds
+            
+        if errors:
+            messages.error(request, "Updating feed setting failed: Please double-check your entries and try again.", extra_tags="danger")
+            return render(request, 'pages/poultry/hatchery/feed_setting/details.html', {
+                'feed_setting': feed_setting,
+                'errors': errors,
+                'incubators': Incubators.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all()
+            })
+        feed_setting.save()
+        return redirect('feed_setting_detail', settingcode=feed_setting.settingcode)
+
+    return render(request, 'pages/poultry/hatchery/feed_setting/details.html', {
+        'feed_setting': feed_setting,
     })
 
 @login_required
@@ -571,6 +743,70 @@ def egg_setting_create(request):
         'customers': customers,
         'breeders': breeders,
         'egg':eggs,
+        'items': items,
+    })
+
+@login_required
+def feed_setting_create(request):
+    errors = {}
+    if request.method == 'POST':
+        item_request_item_id = request.POST.get('item_request_item')
+        item_request_quantity = request.POST.get('item_request_quantity')
+        
+        required_fields = ['item_request_item', 'item_request_quantity']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This Field is required"
+                
+        if item_request_item_id:
+            item_request_item = get_object_or_404(Item, id=item_request_item_id)
+            feed = Feeds.objects.filter(item=item_request_item).first()
+        
+            if item_request_quantity and int(item_request_quantity)> feed.received:
+                errors['item_request_quantity'] = "Insufficient quantity of feeds available for the slected feed type."
+            
+        if errors:
+            messages.error(request, "Error creating feed setting, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/feed_setting/create.html', {
+                'errors': errors,
+                'items': Item.objects.filter(item_type__type_name="Feed"),
+            })
+        
+        item_request = ItemRequest(item=item_request_item, quantity=item_request_quantity, requested_by=request.user)
+        item_request.save()
+
+        feed_setting = FeedSetting(
+            feed = feed,
+            item_request = item_request,
+            feeds = item_request_quantity,
+            available_quantity = item_request_quantity,
+        )
+
+        feed_setting.save()
+
+        # is_registered = register_feed_settings_history(feed_setting, item_request_item)
+
+        # if is_registered:
+        messages.success(request, 'feed Setting set successfully.', extra_tags='success')
+        return redirect('feed_setting_list')
+        # else:
+        #     item_request.delete()
+        #     feed_setting.delete()
+
+        #     messages.error(request, "Error registering on blockchain, Please double-check your entries and try again.", extra_tags='danger')
+        #     return render(request, 'pages/poultry/hatchery/feed_setting/create.html', {
+        #         'errors': errors,
+        #         'items': items.objects.all(),
+        #         'customers': Customer.objects.all(),
+        #         'breeders': Breeders.objects.all(),
+        #         'feed': feeds.objects.all(),
+        #         'items': Item.objects.filter(item_type__type_name="Feed"),
+        #     })
+
+    items = Item.objects.filter(item_type__type_name="Feed")
+
+    
+    return render(request, 'pages/poultry/hatchery/feed_setting/create.html', {
         'items': items,
     })
 
@@ -669,6 +905,74 @@ def egg_setting_update(request, settingcode):
         'customers': customers,
         'breeders': breeders
     })
+
+@login_required
+def feed_setting_update(request, settingcode):
+    feed_setting = get_object_or_404(feedSetting, settingcode=settingcode)
+    errors={}
+    if request.method == 'POST':
+        if feed_setting.is_approved:
+            messages.success(request, "feed Setting request is already approved ", extra_tags='danger')
+            return redirect('feed_setting_detail', settingcode=feed_setting.settingcode)
+        feed_setting.settingcode = request.POST.get('settingcode', feed_setting.settingcode)
+        feed_setting.incubator = get_object_or_404(Incubators, id=request.POST.get('incubator'))
+        feed_setting.breeders = get_object_or_404(Breeders, id=request.POST.get('breeders'))
+        if request.POST.get('feeds'):
+            if feed_setting.feeds == int(request.POST.get('feeds')):
+                pass
+            elif feed_setting.item_request.item.quantity < int(request.POST.get('feeds')):
+                errors['feeds'] = "Insufficient quantity of feeds available for the slected feed type."
+                
+            feed_setting.feeds = int(request.POST.get('feeds'))
+            feed_setting.item_request.quantity = int(request.POST.get('feeds'))
+            feed_setting.item_request.save()
+        else:
+            feed_setting.feeds = feed_setting.feeds
+            
+        if errors:
+            messages.error(request, "Updating feed setting failed: Please double-check your entries and try again.")
+            return render(request, 'pages/poultry/hatchery/feed_setting/details.html', {
+                'feed_setting': feed_setting,
+                'errors': errors,
+                'incubators': Incubators.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all()
+            })
+        feed_setting.save()
+        return redirect('feed_setting_detail', settingcode=feed_setting.settingcode)
+
+    incubators = Incubators.objects.all()
+    customers = Customer.objects.all()
+    breeders = Breeders.objects.all()
+    return render(request, 'pages/poultry/hatchery/feed_setting/details.html', {
+        'feed_setting': feed_setting,
+        'incubators': incubators,
+        'customers': customers,
+        'breeders': breeders
+    })
+
+@login_required
+def feed_setting_delete(request, settingcode):
+    feed_setting = get_object_or_404(feedSetting, settingcode=settingcode)
+    if request.method == 'POST':
+        if Incubation.objects.filter(feedsetting=feed_setting.id).exists():
+            messages.error(request, "Cannot delete Incubation associated with existing feed Setting.", extra_tags='danger')
+            return redirect('feed_setting_list')
+        feed_setting.delete()
+        item_request = ItemRequest.objects.filter(id=feed_setting.item_request.id).first()
+        item = get_object_or_404(Item, code=item_request.item.code)
+        item.quantity += item_request.quantity
+        item.save()
+        if feeds.objects.filter(item=item_request.item).exists():
+            feeds = feeds.objects.filter(item=item_request.item)
+            for feed in feeds:
+                feed.received += item_request.quantity
+                feed.save()
+        item_request.delete()
+        messages.success(request, 'feed Setting deleted successfully.', extra_tags='success')
+        return redirect('feed_setting_list')
+    return render(request, 'feed_settings/feed_setting_confirm_delete.html', {'feed_setting': feed_setting})
+
 
 @login_required
 def egg_setting_delete(request, settingcode):

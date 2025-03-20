@@ -24,6 +24,7 @@ from apps.breeders import urls as BreederUrls
 from apps.dashboard import urls as DashboardUrls
 from apps.hatchery import urls as HatcheryUrls
 from apps.customer import urls as CustomerUrls
+from apps.vendor import urls as VendorUrls
 from apps.chicks import urls as ChicksUrls
 from apps.inventory import urls as InventoryUrls
 from apps.core.views import health_check
@@ -34,6 +35,7 @@ urlpatterns = [
     path('', include(BreederUrls)),
     path('', include(HatcheryUrls)),
     path('', include(CustomerUrls)),
+    path('', include(VendorUrls)),
     path('', include(ChicksUrls)),
     path('', include(InventoryUrls)),
     path('human_resource/', include('apps.human_resource.urls')),

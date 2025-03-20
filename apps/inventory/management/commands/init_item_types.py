@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = 'Create basic item types with specified details'
     
     def handle(self, *args: Any, **options: Any):
-        item_types = [{"type_name":"Chicks"}, {"type_name":"Egg"}, {"type_name":"Incubator"}]
+        item_types = [{"type_name":"Chicks"}, {"type_name":"Egg"}, {"type_name":"Incubator"}, {"type_name":"Feed"}, {"type_name":"Medicine"}]
         
         for item_type in item_types:
             if ItemType.objects.filter(type_name=item_type['type_name']).exists():
@@ -21,6 +21,8 @@ class Command(BaseCommand):
             {'item_type_name': 'Chicks'},
             {'item_type_name': 'Egg'},
             {'item_type_name': 'Incubator'},
+            {'item_type_name': 'Feed'},
+            {'item_type_name': 'Medicine'},
         ]
 
         # for data in items_data:

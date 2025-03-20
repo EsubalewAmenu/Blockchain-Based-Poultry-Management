@@ -125,6 +125,18 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/feed-settings/' %}active{% endif %}" href="{% url 'feed_setting_list' %}">
+                                <span class="sidenav-mini-icon"> FS </span>
+                                <span class="sidenav-normal"> Feed Setting <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/feedings/' %}active{% endif %}" href="{% url 'feeding_list' %}">
+                                <span class="sidenav-mini-icon"> FD </span>
+                                <span class="sidenav-normal"> Feeding <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {% if request.path == '/incubations/' %}active{% endif %}" href="{% url 'incubation_list' %}">
                                 <span class="sidenav-mini-icon"> IB </span>
                                 <span class="sidenav-normal"> Incubation <b class="caret"></b></span>
@@ -181,6 +193,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/vendor/' %}active{% endif %}" href="{% url 'vendor_list' %}">
+                                <span class="sidenav-mini-icon"> C </span>
+                                <span class="sidenav-normal"> Vendors <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {% if request.path == '/chicks/' %}active{% endif %}" href="{% url 'chicks_list' %}">
                                 <span class="sidenav-mini-icon"> C </span>
                                 <span class="sidenav-normal"> Chicks <b class="caret"></b></span>
@@ -190,6 +208,12 @@
                             <a class="nav-link {% if request.path == '/eggs/' %}active{% endif %}" href="{% url 'eggs_list' %}">
                                 <span class="sidenav-mini-icon"> E </span>
                                 <span class="sidenav-normal"> Eggs <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/feeds/' %}active{% endif %}" href="{% url 'feeds_list' %}">
+                                <span class="sidenav-mini-icon"> E </span>
+                                <span class="sidenav-normal"> Feeds <b class="caret"></b></span>
                             </a>
                         </li>
                         <li class="nav-item">
