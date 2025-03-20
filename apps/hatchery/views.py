@@ -401,23 +401,26 @@ def feeding_create(request):
 
 @login_required
 def feeding_detail(request, code):
-    incubator = get_object_or_404(Incubators, code=code)
-    if request.method == 'POST':
-        # Update incubator instance with the new data from the request
-        incubator.hatchery = Hatchery.objects.get(id=request.POST['hatchery'])
-        incubator.incubatortype = request.POST['incubatortype']
-        incubator.manufacturer = request.POST['manufacturer']
-        incubator.model = request.POST['model']
-        incubator.year = request.POST['year']
-        incubator.code = request.POST['code']
-        incubator.manufacturer_details = request.POST.get('manufacturer_details', '')
-        
-        # Save the updated incubator instance
-        incubator.save()
-        messages.success(request, 'Incubator updated successfully.')
-        return redirect('incubator_detail', code=code)  # Redirect to the incubator detail page after saving
+    feeding = get_object_or_404(Feedings, feedingcode=code)
     
-    return render(request, 'pages/poultry/incubators/details.html', {'incubator': incubator})
+    feeding.chick = Chicks.objects.filter(id=feeding.chicks).first()
+
+    if request.method == 'POST':
+        # Update feeding instance with the new data from the request
+        feeding.Feeding = Feeding.objects.get(id=request.POST['Feeding'])
+        feeding.feedingtype = request.POST['feedingtype']
+        feeding.manufacturer = request.POST['manufacturer']
+        feeding.model = request.POST['model']
+        feeding.year = request.POST['year']
+        feeding.code = request.POST['code']
+        feeding.manufacturer_details = request.POST.get('manufacturer_details', '')
+        
+        # Save the updated feeding instance
+        feeding.save()
+        messages.success(request, 'Feeding updated successfully.')
+        return redirect('feeding_detail', code=code)  # Redirect to the feeding detail page after saving
+    
+    return render(request, 'pages/poultry/feeding/details.html', {'feeding': feeding})
 
 @login_required
 def feeding_update(request, code):
