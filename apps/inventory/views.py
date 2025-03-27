@@ -168,6 +168,8 @@ def item_create(request):
             redirect_url = reverse('incubator_create')
         elif item.item_type.type_name == 'Feed':
             redirect_url = reverse('feeds_create')
+        elif item.item_type.type_name == 'Medicine':
+            redirect_url = reverse('medicines_create')
         else:
             redirect_url = reverse('item_list')
             

@@ -17,10 +17,11 @@ urlpatterns = [
     path('feeds/<str:batch_number>/update/', feeds_update, name='feeds_update'),
     path('feeds/<str:batch_number>/delete/', feeds_delete, name='feeds_delete'),
     
-    # Customer Request
-    # path('customer_requests/', customer_request_list, name='customer_request_list'),
-    # path('customer_requests/create/', customer_request_create, name='customer_request_create'),
-    # path('customer_requests/<str:requestcode>/', customer_request_detail, name='customer_request_detail'),
-    # path('customer_requests/<str:requestcode>/update/', customer_request_update, name='customer_request_update'),
-    # path('customer_requests/<str:requestcode>/delete/', customer_request_delete, name='customer_request_delete'),
+    #Medicines
+    path('medicines/', medicines_list, name='medicines_list'),
+    path('medicines/create/', medicines_create, name='medicines_create'),
+    path('medicines/<str:batch_number>/', medicines_detail, name='medicines_detail'),
+    path('medicines/<str:batch_number>/update/', medicines_update, name='medicines_update'),
+    path('medicines/<str:batch_number>/delete/', medicines_delete, name='medicines_delete'),
+    
 ]
