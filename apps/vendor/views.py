@@ -453,6 +453,8 @@ def medicines_list(request):
 def medicines_create(request):
     vendors = Vendor.objects.all()
     items = Item.objects.filter(item_type__type_name='medicine')
+    medicines = Medicine.objects.all()
+
     item_data = None
     errors = {}
     if 'item_data' in request.session:
@@ -460,27 +462,25 @@ def medicines_create(request):
     
     if request.method == 'POST':
         item_id = request.POST.get('item')
-        vendor_id = request.POST.get('vendor')
         medicinetype = request.POST.get('medicinetype')
+        stock_quantity = request.POST.get('stock_quantity')
+        unit = request.POST.get('unit')
+        price_per_unit = request.POST.get('price_per_unit')
+        vendor_id = request.POST.get('vendor')
+        expiry_date = request.POST.get('expiry_date')
+        purchase_date = request.POST.get('purchase_date')
         photo = request.FILES.get('photo')
-        brought = request.POST.get('brought')
-        returned = request.POST.get('returned', 0)
         item = Item.objects.get(pk=item_id)
+        medicine = Medicine.objects.get(pk=medicinetype)
         allowed_image_types = ['image/jpeg', 'image/png']
         
-        required_fields = ['item', 'medicinetype', 'brought', 'vendor']
+        required_fields = ['item', 'medicinetype', 'stock_quantity', 'unit', 'price_per_unit', 'vendor', 'expiry_date', 'purchase_date']
         for field in required_fields:
             if not request.POST.get(field):
                 errors[field] = "* This field is required."
-        if brought:
-            if int(brought) <= 0:
-                errors['brought'] = "* Please enter a positive number."
-                
-        if brought and returned and int(returned) > int(brought):
-            errors['returned'] = "* Returned number cannot be greater than brought number."
-            
-        if not brought and returned and int(returned) >0:
-            errors['returned'] = "* Returned number cannot be provided without brought number."
+        if price_per_unit:
+            if int(price_per_unit) <= 0:
+                errors['price_per_unit'] = "* Please enter a positive number."
                 
         if request.FILES.get('photo'):
             if request.FILES.get('photo').content_type not in allowed_image_types:
@@ -500,18 +500,21 @@ def medicines_create(request):
         
         # Create and save the medicine
         try:
-            medicine = medicines(
+            medicineInventory = MedicineInventory(
                 item=item,
                 vendor=vendor,
-                medicinetype=medicinetype,
-                photo=photo,
-                brought=brought,
-                returned=returned)
+                medicine=medicine,
+                stock_quantity=stock_quantity,
+                unit=unit,
+                price_per_unit=price_per_unit,
+                expiry_date=expiry_date,
+                purchase_date=purchase_date,
+                photo=photo)
                 
             # is_minted = mint_medicine_item(item, vendor, chicks, source , breed_id, photo, brought, returned)
              
             # if is_minted:
-            medicine.save()
+            medicineInventory.save()
                 
             messages.success(request, "medicine Created Successfully", extra_tags="success")
         except Exception as e:
@@ -521,7 +524,7 @@ def medicines_create(request):
             request.session.pop('item_data')
         return redirect('medicines_list')
 
-    return render(request, 'pages/pages/vendor/medicines/create.html', {'vendors': vendors, 'items':items, 'item_data':item_data})
+    return render(request, 'pages/pages/vendor/medicines/create.html', {'vendors': vendors, 'medicines': medicines, 'items':items, 'item_data':item_data})
 
 # Detail view for a specific medicine
 @login_required

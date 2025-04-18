@@ -162,6 +162,7 @@ class Medicine(models.Model):
         ('Other', 'Other'),
     ]
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True)
     category = models.CharField(max_length=50, choices=MEDICINE_CATEGORIES)
 
@@ -223,20 +224,20 @@ class MedicineInventory(models.Model):
             self.batchnumber = self.generate_unique_batchnumber()
         self.item.save()
         self.clean()
-        super(Medicines, self).save(*args, **kwargs)
+        super(MedicineInventory, self).save(*args, **kwargs)
         
     def generate_unique_batchnumber(self):
         while True:
             random_suffix = ''.join(random.choices(string.digits, k=5))
-            unique_code = f'FD-{random_suffix}'
-            if not Medicines.objects.filter(batchnumber=unique_code).exists():
+            unique_code = f'MI-{random_suffix}'
+            if not MedicineInventory.objects.filter(batchnumber=unique_code).exists():
                 return unique_code
 
     def __str__(self):
         return self.batchnumber
     
     def get_absolute_url(self):
-        return '/vendor_medicines/{}'.format(self.batchnumber)
+        return '/medicine_inventory/{}'.format(self.batchnumber)
 
     def is_expired(self):
         return self.expiry_date < timezone.now().date()
