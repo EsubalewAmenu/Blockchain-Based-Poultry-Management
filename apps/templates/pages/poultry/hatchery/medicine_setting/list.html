@@ -71,10 +71,10 @@
                                 <span>{{ medicine_setting.medicine.batchnumber }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
-                                <span class="my-2 text-xs">{{ medicine_setting.medicines|default:"0" }}</span>
+                                <span class="my-2 text-xs">{{ medicine_setting.medicines|default:"0" }} {{ medicine_setting.medicine.unit }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
-                                <span class="my-2 text-xs">{{ medicine_setting.available_quantity|default:"0" }}</span>
+                                <span class="my-2 text-xs">{{ medicine_setting.available_quantity }}  {{ medicine_setting.medicine.unit }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span class="my-2 text-xs">{{ medicine_setting.created|date:"Y-m-d H:i" }}</span>
