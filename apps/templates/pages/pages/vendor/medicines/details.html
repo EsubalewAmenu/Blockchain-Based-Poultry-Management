@@ -16,16 +16,16 @@
       {% csrf_token %}
       <div class="row">
         <div class="col-lg-6">
-          <h4 class="text-white">Feed Details</h4>
-          <p class="text-white opacity-8">View and update feed information.</p>
+          <h4 class="text-white">Medicine Inventory Details</h4>
+          <p class="text-white opacity-8">View and update medicine information.</p>
         </div>
         <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
           
-          {% if request.resolver_match.url_name == 'feeds_update' %}
+          {% if request.resolver_match.url_name == 'medicines_update' %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Save Changes</button>
           {% endif %}
 
-          {% if request.resolver_match.url_name == 'feeds_delete' %}
+          {% if request.resolver_match.url_name == 'medicines_delete' %}
             <button type="submit" class="btn btn-outline-white mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2">Confirm Delete</button>
           {% endif %}
         </div>
@@ -35,18 +35,18 @@
         <div class="col-lg-4">
           <div class="card h-100">
             <div class="card-body">
-              <h5 class="font-weight-bolder text-center">Feed Photos</h5>
+              <h5 class="font-weight-bolder text-center">Medicine Photos</h5>
               <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
                   <!-- Front Photo Slide -->
                   <div class="swiper-slide">
-                    <h6>Feed Photo</h6>
-                    {% if feed.photo %}
-                      <img src="{{ feed.photo.url }}" alt="{{ feed.batchnumber }} feed Photo">
+                    <h6>medicine Photo</h6>
+                    {% if medicine.photo %}
+                      <img src="{{ medicine.photo.url }}" alt="{{ medicine.batchnumber }} medicine Photo">
                     {% else %}
                       <img src="{% static 'images/default-image.jpg' %}" alt="Default Image">
                     {% endif %}
-                    {% if request.resolver_match.url_name == 'feeds_update' %}
+                    {% if request.resolver_match.url_name == 'medicines_update' %}
                       <input type="file" class="form-control mt-3" name="photo">
                       {% if errors.photo %}
                       <small class="text-danger">{{ errors.photo }}</small>
@@ -65,19 +65,19 @@
         <div class="col-lg-8 mt-lg-0 mt-4">
           <div class="card h-100">
             <div class="card-body">
-              <h5 class="font-weight-bolder">Feed Information</h5>
+              <h5 class="font-weight-bolder">Medicine Information</h5>
               <div class="row">
                 <div class="col-12 col-sm-6">
                   <label>Batch Number</label>
-                  <input class="form-control" type="text" name="batchnumber" value="{{ feed.batchnumber }}" readonly>
+                  <input class="form-control" type="text" name="batchnumber" value="{{ medicine.batchnumber }}" readonly>
                   {% if errors.bacth %}
                   <small class="text-danger">{{ errors.batch }}</small>
                   {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                   <label>Vendor</label>
-                  <select class="multisteps-form__input form-control" name="vendor">
-                    <option value="">{{feed.vendor.full_name}}</option>
+                  <select class="multisteps-form__input form-control" name="vendor" disabled>
+                    <option value="">{{medicine.vendor.full_name}}</option>
                     {% for vendor in vendors %}
                         <option value="{{ vendor.id }}">{{ vendor.full_name }}</option>
                     {% endfor %}
@@ -89,18 +89,18 @@
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
-                  <label>Feed type</label>
-                  <select class="multisteps-form__input form-control" name="feedtype">
-                    <option value="">{{feed.feedtype}}</option>
-                        <option value="{{ feed.feedtype }}">{{ feed.feedtype }}</option>
+                  <label>medicine type</label>
+                  <select class="multisteps-form__input form-control" name="medicinetype" disabled>
+                    <option value="">{{medicine.medicine.name}} ({{medicine.medicine.category}})</option>
+                        <option value="{{ medicine.medicinetype }}">{{ medicine.medicinetype }}</option>
                 </select>
-                {% if errors.feedtype %}
-                <small class="text-danger">{{ errors.feedtype }}</small>
+                {% if errors.medicinetype %}
+                <small class="text-danger">{{ errors.medicinetype }}</small>
                 {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
                   <label>Item Code</label>
-                  <input class="form-control" type="text" name="item" value="{{ feed.item.code }}" disabled>
+                  <input class="form-control" type="text" name="item" value="{{ medicine.item.code }}" disabled>
                   {% if errors.item %}
                   <small class="text-danger">{{ errors.item }}</small>
                   {% endif %}
@@ -108,31 +108,40 @@
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
-                  <label>Brought</label>
-                  <input class="form-control" type="number" name="brought" value="{{ feed.brought }}">
-                  {% if errors.brought %}
-                  <small class="text-danger">{{ errors.brought }}</small>
+                  <label>Stock Quantity</label>
+                  <input class="form-control" type="text" name="stock_quantity" value="{{ medicine.stock_quantity }} {{ medicine.unit }}" disabled>
+                  {% if errors.stock_quantity %}
+                  <small class="text-danger">{{ errors.stock_quantity }}</small>
                   {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
-                  <label>Returned</label>
-                  <input class="form-control" type="number" name="returned" value="{{ feed.returned }}">
-                  {% if errors.returned %}
-                  <small class="text-danger">{{ errors.returned }}</small>
+                  <label>Price per unit</label>
+                  <input class="form-control" type="number" name="price_per_unit" value="{{ medicine.price_per_unit }}" disabled>
+                  {% if errors.price_per_unit %}
+                  <small class="text-danger">{{ errors.price_per_unit }}</small>
                   {% endif %}
                 </div>
               </div>
               <div class="row">
                 <div class="col-12 col-sm-6 mt-3">
-                  <label>Received</label>
-                  <input class="form-control" type="number" name="received" value="{{ feed.received }}" readonly>
-                  {% if errors.received %}
-                  <small class="text-danger">{{ errors.received }}</small>
+                  <label>Expiry date</label>
+                  <input class="form-control" type="text" name="expiry_date" value="{{ medicine.expiry_date }}" readonly>
+                  {% if errors.expiry_date %}
+                  <small class="text-danger">{{ errors.expiry_date }}</small>
                   {% endif %}
                 </div>
                 <div class="col-12 col-sm-6 mt-3">
+                  <label>Purchase date</label>
+                  <input class="form-control" type="date" name="purchase_date" value="{{ medicine.purchase_date|date:'Y-m-d' }}" readonly>
+                  {% if errors.purchase_date %}
+                  <small class="text-danger">{{ errors.purchase_date }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-6 mt-3">
                   <label>Created</label>
-                  <input class="form-control" type="text" name="created" value="{{ feed.created|date:'Y-m-d H:i:s' }}" readonly>
+                  <input class="form-control" type="text" name="created" value="{{ medicine.created|date:'Y-m-d H:i:s' }}" readonly>
                 </div>
               </div>
             </div>

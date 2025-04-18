@@ -529,7 +529,7 @@ def medicines_create(request):
 # Detail view for a specific medicine
 @login_required
 def medicines_detail(request, batch_number):
-    medicine = get_object_or_404(Medicines, batchnumber=batch_number)
+    medicineInventory = get_object_or_404(MedicineInventory, batchnumber=batch_number)
     vendors = Vendor.objects.all()
     errors={}
     if request.method == 'POST':
@@ -573,7 +573,7 @@ def medicines_detail(request, batch_number):
         return redirect('medicines_update', batch_number=medicine.batchnumber)
 
     return render(request, 'pages/pages/vendor/medicines/details.html', {
-        'medicine': medicine,
+        'medicine': medicineInventory,
         'vendors': vendors,
     })
 
