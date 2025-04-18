@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.urls import reverse
 from apps.customer.models import Eggs
 from apps.chicks.models import Chicks
-from apps.hatchery.models import Incubators, FeedSetting
+from apps.hatchery.models import Incubators, FeedSetting, MedicineSetting
 from .models import ItemType, Item, ItemRequest
 from apps.hatchery.models import EggSetting
 import requests
@@ -376,6 +376,11 @@ def item_request_approve(request, code):
     if feed_setting:
         feed_setting.is_approved = True
         feed_setting.save()
+    
+    medicine_setting = MedicineSetting.objects.filter(item_request=item_request).first()
+    if medicine_setting:
+        medicine_setting.is_approved = True
+        medicine_setting.save()
         
     messages.success(request, 'Item request approved successfully.', extra_tags='success')
     return redirect('item_request_list')
