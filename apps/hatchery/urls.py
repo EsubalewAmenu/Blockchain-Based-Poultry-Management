@@ -56,6 +56,12 @@ urlpatterns = [
     path('feed-settings/<str:settingcode>/update/', feed_setting_update, name='feed_setting_update'),
     path('feed-settings/<str:settingcode>/delete/', feed_setting_delete, name='feed_setting_delete'),
 
+    path('medicine-settings/create/', medicine_setting_create, name='medicine_setting_create'),    
+    path('medicine-settings/', medicine_setting_list, name='medicine_setting_list'),
+    path('medicine-settings/<str:settingcode>/', medicine_setting_detail, name='medicine_setting_detail'),
+    path('medicine-settings/<str:settingcode>/update/', medicine_setting_update, name='medicine_setting_update'),
+    path('medicine-settings/<str:settingcode>/delete/', medicine_setting_delete, name='medicine_setting_delete'),
+
     path('feeding/', feeding_list, name='feeding_list'),
     path('feeding/create/', feeding_create, name='feeding_create'),
     path('feeding/<str:code>/', feeding_detail, name='feeding_detail'),

@@ -131,6 +131,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/medicine-settings/' %}active{% endif %}" href="{% url 'medicine_setting_list' %}">
+                                <span class="sidenav-mini-icon"> MS </span>
+                                <span class="sidenav-normal"> Medicine Setting <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {% if request.path == '/feedings/' %}active{% endif %}" href="{% url 'feeding_list' %}">
                                 <span class="sidenav-mini-icon"> FD </span>
                                 <span class="sidenav-normal"> Feeding <b class="caret"></b></span>
