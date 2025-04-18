@@ -222,6 +222,7 @@ class MedicineInventory(models.Model):
     def save(self, *args, **kwargs):
         if not self.batchnumber:
             self.batchnumber = self.generate_unique_batchnumber()
+        self.item.quantity=self.stock_quantity
         self.item.save()
         self.clean()
         super(MedicineInventory, self).save(*args, **kwargs)
