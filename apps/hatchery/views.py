@@ -346,6 +346,133 @@ def feeding_list(request):
     feedings = paginator.get_page(page_number)
     return render(request, 'pages/poultry/feeding/list.html', {'feedings': feedings})
     
+@login_required  
+def medication_list(request):
+    medications = Medications.objects.all().order_by('-created')
+    # for medication in medications:
+    #     medication.chick = Chicks.objects.filter(id=medication.chicks).first()
+
+    paginator = Paginator(medications, 10)
+    
+    page_number = request.GET.get('page')
+    medications = paginator.get_page(page_number)
+    return render(request, 'pages/poultry/medication/list.html', {'medications': medications})
+    
+@login_required
+def medication_create(request):
+    item_data = None
+
+    if 'item_data' in request.session:
+        item_data = request.session['item_data']
+
+    if request.method == 'POST':
+        errors = {}
+        required_fields = ['chick_item', 'medicinesetting', 'medication_quantity']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This Field is required"
+
+        if errors:
+            messages.error(request, "Error creating medication data, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/medication/create.html', {
+                'errors': errors,
+                'medicinesettings':  MedicineSetting.objects.filter(is_approved=True, available_quantity__gte=1),
+                'chick_items': Chicks.objects.all().order_by('-created'),
+            })
+
+        chick_item = get_object_or_404(Chicks, pk=request.POST['chick_item'])
+        medicinesetting = get_object_or_404(MedicineSetting, pk=request.POST['medicinesetting'])   
+        medication_quantity = request.POST.get('medication_quantity')
+
+        if medication_quantity and int(medication_quantity) > medicinesetting.available_quantity:
+            errors['medication_quantity'] = "Insufficient quantity of medicines available for the slected medicine setting."
+            return render(request, 'pages/poultry/medication/create.html', {
+                'errors': errors,
+                'medicinesettings':  MedicineSetting.objects.filter(is_approved=True, available_quantity__gte=1),
+                'chick_items': Chicks.objects.all().order_by('-created'),
+            })
+
+
+        medication = Medications(
+            chicks=chick_item.pk,
+            medicinesetting=medicinesetting,
+            quantity=medication_quantity,
+        )
+
+        # is_minted = mint_medications_item(medicinesetting, medicationtype, manufacturer, model, year, manufacturer_details, item)
+        
+        # if is_minted:
+        medication.save()
+
+        medicinesetting.available_quantity = medicinesetting.available_quantity - int(medication_quantity)
+        medicinesetting.save()
+
+        messages.success(request, "medication created successfully", extra_tags='success')
+
+        return redirect('medication_list')
+    
+
+    medicinesettings = MedicineSetting.objects.filter(is_approved=True, available_quantity__gte=1)
+    chick_items =Chicks.objects.all().order_by('-created')
+    return render(request, 'pages/poultry/medication/create.html', {'medicinesettings': medicinesettings, 'chick_items':chick_items, 'item_data':item_data})
+
+@login_required
+def medication_detail(request, code):
+    medication = get_object_or_404(medications, medicationcode=code)
+    
+    # medication.chick = Chicks.objects.filter(id=medication.chicks).first()
+
+    if request.method == 'POST':
+        # Update medication instance with the new data from the request
+        medication.medication = medication.objects.get(id=request.POST['medication'])
+        medication.medicationtype = request.POST['medicationtype']
+        medication.manufacturer = request.POST['manufacturer']
+        medication.model = request.POST['model']
+        medication.year = request.POST['year']
+        medication.code = request.POST['code']
+        medication.manufacturer_details = request.POST.get('manufacturer_details', '')
+        
+        # Save the updated medication instance
+        medication.save()
+        messages.success(request, 'medication updated successfully.')
+        return redirect('medication_detail', code=code)  # Redirect to the medication detail page after saving
+    
+    return render(request, 'pages/poultry/medication/details.html', {'medication': medication})
+
+@login_required
+def medication_update(request, code):
+    incubator = get_object_or_404(Incubators, code=code)
+    
+    if request.method == 'POST':
+        # Update incubator instance with the new data from the request
+        incubator.hatchery = Hatchery.objects.get(id=request.POST['hatchery'])
+        incubator.incubatortype = request.POST['incubatortype']
+        incubator.manufacturer = request.POST['manufacturer']
+        incubator.model = request.POST['model']
+        incubator.year = request.POST['year']
+        incubator.code = request.POST['code']
+        incubator.manufacturer_details = request.POST.get('manufacturer_details', '')
+        
+        # Save the updated incubator instance
+        incubator.save()
+        messages.success(request, 'Incubator updated successfully.')
+        return redirect('incubator_detail', code=code)  # Redirect to the incubator detail page after saving
+    
+    # Render the template with the incubator instance
+    return render(request, 'pages/poultry/incubators/details.html', {'incubator': incubator})
+
+@login_required
+def medication_delete(request, code):
+    incubator = get_object_or_404(Incubators, code=code)
+    
+    if request.method == 'POST':
+        incubator.delete()
+        incubator.item.delete()
+        messages.success(request, 'Incubator deleted successfully.')
+        return redirect('incubator_list')
+    
+    return redirect('incubator_list')
+
 @login_required
 def feeding_create(request):
     item_data = None

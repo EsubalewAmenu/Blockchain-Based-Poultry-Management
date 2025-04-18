@@ -143,6 +143,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/medications/' %}active{% endif %}" href="{% url 'medication_list' %}">
+                                <span class="sidenav-mini-icon"> MA </span>
+                                <span class="sidenav-normal"> Medication <b class="caret"></b></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {% if request.path == '/incubations/' %}active{% endif %}" href="{% url 'incubation_list' %}">
                                 <span class="sidenav-mini-icon"> IB </span>
                                 <span class="sidenav-normal"> Incubation <b class="caret"></b></span>

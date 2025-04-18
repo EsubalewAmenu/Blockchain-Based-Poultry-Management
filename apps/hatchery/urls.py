@@ -68,6 +68,12 @@ urlpatterns = [
     path('feedings/<str:code>/update/', feeding_update, name='feeding_update'),
     path('feeding/<str:code>/delete', feeding_delete, name='feeding_delete'),
 
+    path('medication/', medication_list, name='medication_list'),
+    path('medication/create/', medication_create, name='medication_create'),
+    path('medication/<str:code>/', medication_detail, name='medication_detail'),
+    path('medications/<str:code>/update/', medication_update, name='medication_update'),
+    path('medication/<str:code>/delete', medication_delete, name='medication_delete'),
+
 ]
 
 
