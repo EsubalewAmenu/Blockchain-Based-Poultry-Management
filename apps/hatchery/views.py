@@ -349,8 +349,8 @@ def feeding_list(request):
 @login_required  
 def medication_list(request):
     medications = Medications.objects.all().order_by('-created')
-    # for medication in medications:
-    #     medication.chick = Chicks.objects.filter(id=medication.chicks).first()
+    for medication in medications:
+        medication.chick = Chicks.objects.filter(id=medication.chicks).first()
 
     paginator = Paginator(medications, 10)
     

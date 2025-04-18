@@ -19,7 +19,7 @@
                             <th scope="col">ID</th>
                             <th scope="col">medication Code</th>
                             <th scope="col">Chicks</th>
-                            <th scope="col">FeedSetting</th>
+                            <th scope="col">Medicine Setting</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Created</th>
                             <th scope="col">Actions</th>
@@ -45,10 +45,10 @@
                                 <span>{{ medication.chick.batchnumber }} ({{ medication.chick.item.code }})</span>
                             </td>
                             <td class="text-xs font-weight-bold">
-                                <span>{{ medication.feedsetting.settingcode }}</span>
+                                <span>{{ medication.medicinesetting.settingcode }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
-                                <span>{{ medication.quantity }}</span>
+                                <span>{{ medication.quantity }} {{ medication.medicinesetting.medicine.unit }}</span>
                             </td>
                             <td class="text-xs font-weight-bold">
                                 <span class="my-2 text-xs">{{ medication.created|date:"Y-m-d H:i" }}</span>
