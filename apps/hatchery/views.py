@@ -418,13 +418,13 @@ def medication_create(request):
 
 @login_required
 def medication_detail(request, code):
-    medication = get_object_or_404(medications, medicationcode=code)
+    medication = get_object_or_404(Medications, medicationcode=code)
     
-    # medication.chick = Chicks.objects.filter(id=medication.chicks).first()
+    medication.chick = Chicks.objects.filter(id=medication.chicks).first()
 
     if request.method == 'POST':
         # Update medication instance with the new data from the request
-        medication.medication = medication.objects.get(id=request.POST['medication'])
+        medication.medication = Medication.objects.get(id=request.POST['medication'])
         medication.medicationtype = request.POST['medicationtype']
         medication.manufacturer = request.POST['manufacturer']
         medication.model = request.POST['model']
