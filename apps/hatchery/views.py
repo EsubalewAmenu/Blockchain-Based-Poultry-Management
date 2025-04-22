@@ -399,23 +399,76 @@ def medication_create(request):
             quantity=medication_quantity,
         )
 
-        # is_minted = mint_medications_item(medicinesetting, medicationtype, manufacturer, model, year, manufacturer_details, item)
-        
-        # if is_minted:
         medication.save()
 
-        medicinesetting.available_quantity = medicinesetting.available_quantity - int(medication_quantity)
-        medicinesetting.save()
+        is_medication_recorded = register_medication_history(medication, medicinesetting, chick_item, medication_quantity)
+        
+        if is_medication_recorded:
+            medicinesetting.available_quantity = medicinesetting.available_quantity - int(medication_quantity)
+            medicinesetting.save()
+            messages.success(request, "Medication created successfully", extra_tags='success')
+            return redirect('medication_list')
 
-        messages.success(request, "medication created successfully", extra_tags='success')
 
-        return redirect('medication_list')
+        else:
+            medication.delete()
+
+            messages.error(request, "Error recording medication, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/medication/create.html', {
+                'medicinesettings': MedicineSetting.objects.filter(is_approved=True, available_quantity__gte=1),
+                'chick_items':Chicks.objects.all().order_by('-created'),
+                'item_data':item_data})
     
 
     medicinesettings = MedicineSetting.objects.filter(is_approved=True, available_quantity__gte=1)
     chick_items =Chicks.objects.all().order_by('-created')
     return render(request, 'pages/poultry/medication/create.html', {'medicinesettings': medicinesettings, 'chick_items':chick_items, 'item_data':item_data})
 
+def register_medication_history(medication, medicinesetting, chick, medication_quantity):
+        try:
+
+            api_data = {
+                    "tokenName": medicinesetting.medicine.item.code,
+                    "policyId": medicinesetting.medicine.item.policyId,
+                    "code": medication.medicationcode,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "type": split_string(encrypt_data("Medication"), "medicationcode"),
+                    "medicationcode": split_string(encrypt_data(medication.medicationcode), "medicationcode"),
+                    "medicine_batch": split_string(encrypt_data(medicinesetting.medicine.batchnumber), "medicine_batch"),
+                    "item_code": split_string(encrypt_data(medicinesetting.medicine.item.code), "item_code"),
+                    "chicks_batchnumber": split_string(encrypt_data(chick.batchnumber), "chicks_batchnumber"),
+                    "medication_quantity": split_string(encrypt_data(medication_quantity), "medication_quantity"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                        "type": "Medication",
+                        "medicationcode": medication.medicationcode,
+                        "medicine_batch": medicinesetting.medicine.batchnumber,
+                        "item_code": medicinesetting.medicine.item.code,
+                        "chicks_batchnumber": chick.batchnumber,
+                        "medication_quantity": medication_quantity,
+                        }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
+            response_data = response.json()
+                        
+            if response.status_code == 200 and 'status' in response_data:
+                medication.txHash = response_data['txHash']
+                medication.save()
+                return True
+            else:
+                return False
+        
+        except requests.exceptions.RequestException as e:
+            return False
+        
 @login_required
 def medication_detail(request, code):
     medication = get_object_or_404(Medications, medicationcode=code)
