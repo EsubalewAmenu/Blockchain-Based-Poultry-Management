@@ -285,12 +285,12 @@ def feeds_create(request):
                 brought=brought,
                 returned=returned)
                 
-            # is_minted = mint_feed_item(item, vendor, chicks, source , breed_id, photo, brought, returned)
+            is_minted = mint_feed_item(item, vendor, feedtype, photo, brought, returned)
              
-            # if is_minted:
-            feed.save()
+            if is_minted:
+                feed.save()
                 
-            messages.success(request, "feed Created Successfully", extra_tags="success")
+                messages.success(request, "feed Created Successfully", extra_tags="success")
         except Exception as e:
             messages.error(request, "Error creating feed: " + str(e), extra_tags='danger')
             
@@ -300,60 +300,49 @@ def feeds_create(request):
 
     return render(request, 'pages/pages/vendor/feeds/create.html', {'vendors': vendors, 'items':items, 'item_data':item_data})
 
-# def mint_feed_item(item, vendor, chicks, source, breed_id, photo, brought, returned):
-        # try:
-        #     if source == 'farm':
-        #         name_or_chicks = chicks.batchnumber
-        #     elif source == 'vendor':
-        #         name_or_chicks = vendor.full_name
-
-        #     breed = Breed.objects.get(pk=breed_id)
-
-        #     api_data = {
-        #             "tokenName": item.code,
-        #             "blockfrostKey": os.getenv('blockfrostKey'),
-        #             "secretSeed": os.getenv('secretSeed'),
-        #             "cborHex": os.getenv('cborHex')
-        #         }
+def mint_feed_item(item, vendor, feedtype, photo, brought, returned):
+        try:
+            api_data = {
+                    "tokenName": item.code,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
                 
-        #     if os.getenv('data_encryption', 'False') == 'True':
-        #         offchain_data = {
-        #             "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
-        #             "source": split_string(encrypt_data(source), "source"),
-        #             "vendor": split_string(encrypt_data(name_or_chicks), "vendor"),
-        #             "breed": split_string(encrypt_data(breed.code), "breed"),
-        #             "breed_type": split_string(encrypt_data(breed.breed), "breed_type"),
-        #             "brought": split_string(encrypt_data(brought), "brought"),
-        #             "returned": split_string(encrypt_data(returned), "returned"),
-        #             "received": split_string(encrypt_data(str(int(brought) - int(returned))), "received"),
-        #         }
-        #         api_data['metadata'] = offchain_data
-        #     else:
-        #         api_data['metadata'] = {
-        #             "item_type": item.item_type.type_name,
-        #             "source": source,
-        #             "vendor": name_or_chicks,
-        #             "breed": breed.code,
-        #             "breed_type": breed.breed,
-        #             "brought": int(brought),
-        #             "returned": int(returned),
-        #             "received": int(brought) - int(returned)
-        #         }
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+                    "vendor": split_string(encrypt_data(vendor.full_name), "vendor"),
+                    "feedtype": split_string(encrypt_data(feedtype), "feedtype"),
+                    "brought": split_string(encrypt_data(brought), "brought"),
+                    "returned": split_string(encrypt_data(returned), "returned"),
+                    "received": split_string(encrypt_data(str(int(brought) - int(returned))), "received"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                    "item_type": item.item_type.type_name,
+                    "vendor": vendor.full_name,
+                    "feedtype": feedtype,
+                    "brought": int(brought),
+                    "returned": int(returned),
+                    "received": int(brought) - int(returned)
+                }
 
-        #     response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
-        #     response_data = response.json()
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
+            response_data = response.json()
 
-        #     if response.status_code == 200 and 'status' in response_data:
-        #         print(response_data)
-        #         item.txHash = response_data['txHash']
-        #         item.policyId = response_data['policyId']
-        #         item.save()
-        #         return True
-        #     else:
-        #         return False
+            if response.status_code == 200 and 'status' in response_data:
+                print(response_data)
+                item.txHash = response_data['txHash']
+                item.policyId = response_data['policyId']
+                item.save()
+                return True
+            else:
+                return False
         
-        # except requests.exceptions.RequestException as e:
-        #     return False
+        except requests.exceptions.RequestException as e:
+            return False
         
 
 # Update an existing feed
