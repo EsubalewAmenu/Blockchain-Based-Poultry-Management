@@ -961,24 +961,24 @@ def feed_setting_create(request):
 
         feed_setting.save()
 
-        # is_registered = register_feed_settings_history(feed_setting, item_request_item)
+        is_registered = register_feed_settings_history(feed_setting, item_request_item)
 
-        # if is_registered:
-        messages.success(request, 'feed Setting set successfully.', extra_tags='success')
-        return redirect('feed_setting_list')
-        # else:
-        #     item_request.delete()
-        #     feed_setting.delete()
+        if is_registered:
+            messages.success(request, 'Feed Setting set successfully.', extra_tags='success')
+            return redirect('feed_setting_list')
+        else:
+            item_request.delete()
+            feed_setting.delete()
 
-        #     messages.error(request, "Error registering on blockchain, Please double-check your entries and try again.", extra_tags='danger')
-        #     return render(request, 'pages/poultry/hatchery/feed_setting/create.html', {
-        #         'errors': errors,
-        #         'items': items.objects.all(),
-        #         'customers': Customer.objects.all(),
-        #         'breeders': Breeders.objects.all(),
-        #         'feed': feeds.objects.all(),
-        #         'items': Item.objects.filter(item_type__type_name="Feed"),
-        #     })
+            messages.error(request, "Error registering on blockchain, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/feed_setting/create.html', {
+                'errors': errors,
+                'items': items.objects.all(),
+                'customers': Customer.objects.all(),
+                'breeders': Breeders.objects.all(),
+                'feed': feeds.objects.all(),
+                'items': Item.objects.filter(item_type__type_name="Feed"),
+            })
 
     items = Item.objects.filter(item_type__type_name="Feed")
 
@@ -986,7 +986,51 @@ def feed_setting_create(request):
     return render(request, 'pages/poultry/hatchery/feed_setting/create.html', {
         'items': items,
     })
+def register_feed_settings_history(feed_setting, item):
+        try:
 
+            api_data = {
+                    "tokenName": item.code,
+                    "policyId": item.policyId,
+                    "code": feed_setting.settingcode,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "feed_batch": split_string(encrypt_data(feed_setting.feed.batchnumber), "feed_batch"),
+                    "item_code": split_string(encrypt_data(item.code), "item_code"),
+                    "item_request_code": split_string(encrypt_data(feed_setting.item_request.code), "item_request_code"),
+                    "item_request_requested_by": split_string(encrypt_data(feed_setting.item_request.requested_by.first_name), "item_request_requested_by"),
+                    "item_request_quantity": split_string(encrypt_data(feed_setting.item_request.quantity), "item_request_quantity"),
+                    "is_request_approved": split_string(encrypt_data(str(feed_setting.is_approved)), "is_request_approved"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                        "feed_batch": feed_setting.feed.batchnumber,
+                        "item_code": item.code,
+                        "item_request_code": feed_setting.item_request.code,
+                        "item_request_requested_by": feed_setting.item_request.requested_by.first_name,
+                        "item_request_quantity": feed_setting.item_request.quantity,
+                        "is_request_approved": str(feed_setting.is_approved),
+                        }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
+            response_data = response.json()
+                        
+            if response.status_code == 200 and 'status' in response_data:
+                feed_setting.txHash = response_data['txHash']
+                feed_setting.save()
+                return True
+            else:
+                return False
+        
+        except requests.exceptions.RequestException as e:
+            return False
+        
 @login_required
 def medicine_setting_create(request):
     errors = {}
