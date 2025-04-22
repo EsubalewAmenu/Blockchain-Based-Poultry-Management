@@ -438,7 +438,7 @@ def register_medication_history(medication, medicinesetting, chick, medication_q
 
             if os.getenv('data_encryption', 'False') == 'True':
                 offchain_data = {
-                    "type": split_string(encrypt_data("Medication"), "medicationcode"),
+                    "type": split_string(encrypt_data("Medication"), "medicationtype"),
                     "medicationcode": split_string(encrypt_data(medication.medicationcode), "medicationcode"),
                     "medicine_batch": split_string(encrypt_data(medicinesetting.medicine.batchnumber), "medicine_batch"),
                     "item_code": split_string(encrypt_data(medicinesetting.medicine.item.code), "item_code"),
@@ -603,7 +603,7 @@ def register_feeding_history(feeding, feedsetting, chick, feed_quantity):
 
             if os.getenv('data_encryption', 'False') == 'True':
                 offchain_data = {
-                    "type": split_string(encrypt_data("Feeding"), "feedingcode"),
+                    "type": split_string(encrypt_data("Feeding"), "feedingtype"),
                     "feedingcode": split_string(encrypt_data(feeding.feedingcode), "feedingcode"),
                     "feed_batch": split_string(encrypt_data(feedsetting.feed.batchnumber), "feed_batch"),
                     "item_code": split_string(encrypt_data(feedsetting.feed.item.code), "item_code"),
