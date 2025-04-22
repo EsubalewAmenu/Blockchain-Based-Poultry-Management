@@ -1124,24 +1124,20 @@ def medicine_setting_create(request):
 
         medicine_setting.save()
 
-        # is_registered = register_medicine_settings_history(medicine_setting, item_request_item)
+        is_registered = register_medicine_settings_history(medicine_setting, item_request_item)
 
-        # if is_registered:
-        messages.success(request, 'medicine Setting set successfully.', extra_tags='success')
-        return redirect('medicine_setting_list')
-        # else:
-        #     item_request.delete()
-        #     medicine_setting.delete()
+        if is_registered:
+            messages.success(request, 'Medicine Setting set successfully.', extra_tags='success')
+            return redirect('medicine_setting_list')
+        else:
+            item_request.delete()
+            medicine_setting.delete()
 
-        #     messages.error(request, "Error registering on blockchain, Please double-check your entries and try again.", extra_tags='danger')
-        #     return render(request, 'pages/poultry/hatchery/medicine_setting/create.html', {
-        #         'errors': errors,
-        #         'items': items.objects.all(),
-        #         'customers': Customer.objects.all(),
-        #         'breeders': Breeders.objects.all(),
-        #         'medicine': medicines.objects.all(),
-        #         'items': Item.objects.filter(item_type__type_name="medicine"),
-        #     })
+            messages.error(request, "Error registering on blockchain, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/hatchery/medicine_setting/create.html', {
+                'errors': errors,
+                'items': Item.objects.filter(item_type__type_name="medicine"),
+            })
 
     items = Item.objects.filter(item_type__type_name="Medicine")
 
@@ -1150,6 +1146,51 @@ def medicine_setting_create(request):
         'items': items,
     })
 
+def register_medicine_settings_history(medicine_setting, item):
+        try:
+
+            api_data = {
+                    "tokenName": item.code,
+                    "policyId": item.policyId,
+                    "code": medicine_setting.settingcode,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "medicine_batch": split_string(encrypt_data(medicine_setting.medicine.batchnumber), "medicine_batch"),
+                    "item_code": split_string(encrypt_data(item.code), "item_code"),
+                    "item_request_code": split_string(encrypt_data(medicine_setting.item_request.code), "item_request_code"),
+                    "item_request_requested_by": split_string(encrypt_data(medicine_setting.item_request.requested_by.first_name), "item_request_requested_by"),
+                    "item_request_quantity": split_string(encrypt_data(medicine_setting.item_request.quantity), "item_request_quantity"),
+                    "is_request_approved": split_string(encrypt_data(str(medicine_setting.is_approved)), "is_request_approved"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                        "medicine_batch": medicine_setting.medicine.batchnumber,
+                        "item_code": item.code,
+                        "item_request_code": medicine_setting.item_request.code,
+                        "item_request_requested_by": medicine_setting.item_request.requested_by.first_name,
+                        "item_request_quantity": medicine_setting.item_request.quantity,
+                        "is_request_approved": str(medicine_setting.is_approved),
+                        }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
+            response_data = response.json()
+                        
+            if response.status_code == 200 and 'status' in response_data:
+                medicine_setting.txHash = response_data['txHash']
+                medicine_setting.save()
+                return True
+            else:
+                return False
+        
+        except requests.exceptions.RequestException as e:
+            return False
+        
 def register_egg_settings_history(egg_setting, item):
         try:
 
