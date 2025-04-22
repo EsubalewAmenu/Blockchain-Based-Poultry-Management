@@ -500,12 +500,12 @@ def medicines_create(request):
                 purchase_date=purchase_date,
                 photo=photo)
                 
-            # is_minted = mint_medicine_item(item, vendor, chicks, source , breed_id, photo, brought, returned)
+            is_minted = mint_medicine_item(item, vendor, medicine, stock_quantity, unit, price_per_unit, expiry_date, purchase_date, photo)
              
-            # if is_minted:
-            medicineInventory.save()
+            if is_minted:
+                medicineInventory.save()                    
+                messages.success(request, "medicine Created Successfully", extra_tags="success")
                 
-            messages.success(request, "medicine Created Successfully", extra_tags="success")
         except Exception as e:
             messages.error(request, "Error creating medicine: " + str(e), extra_tags='danger')
             
@@ -514,6 +514,57 @@ def medicines_create(request):
         return redirect('medicines_list')
 
     return render(request, 'pages/pages/vendor/medicines/create.html', {'vendors': vendors, 'medicines': medicines, 'items':items, 'item_data':item_data})
+
+
+def mint_medicine_item(item, vendor, medicine, stock_quantity, unit, price_per_unit, expiry_date, purchase_date, photo):
+        try:
+            api_data = {
+                    "tokenName": item.code,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+                
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "item_type": split_string(encrypt_data(item.item_type.type_name), "item_type"),
+                    "vendor": split_string(encrypt_data(vendor.full_name), "vendor"),
+                    "medicine": split_string(encrypt_data(medicine.name), "medicine"),
+                    "medicine_category": split_string(encrypt_data(medicine.category), "medicine_category"),
+                    "unit": split_string(encrypt_data(unit), "unit"),
+                    "price_per_unit": split_string(encrypt_data(price_per_unit), "price_per_unit"),
+                    "expiry_date": split_string(encrypt_data(expiry_date), "expiry_date"),
+                    "purchase_date": split_string(encrypt_data(purchase_date), "purchase_date"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                    "item_type": item.item_type.type_name,
+                    "vendor": vendor.full_name,
+                    "medicine": medicine.name,
+                    "medicine_category": medicine.category,
+                    "unit": unit,
+                    "price_per_unit": price_per_unit,
+                    "expiry_date": expiry_date,
+                    "purchase_date": purchase_date
+                }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'mint', json=api_data, verify=False)
+            response_data = response.json()
+
+            if response.status_code == 200 and 'status' in response_data:
+                print(response_data)
+                item.txHash = response_data['txHash']
+                item.policyId = response_data['policyId']
+                item.save()
+                return True
+            else:
+                return False
+        
+        except requests.exceptions.RequestException as e:
+            return False
+        
+
 
 # Detail view for a specific medicine
 @login_required
