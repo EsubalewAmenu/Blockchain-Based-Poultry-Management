@@ -509,23 +509,78 @@ def feeding_create(request):
             quantity=feed_quantity,
         )
 
-        # is_minted = mint_feedings_item(feedsetting, feedingtype, manufacturer, model, year, manufacturer_details, item)
-        
-        # if is_minted:
         feeding.save()
 
-        feedsetting.available_quantity = feedsetting.available_quantity - int(feed_quantity)
-        feedsetting.save()
+        is_feeding_recorded = register_feeding_history(feeding, feedsetting, chick_item, feed_quantity)
+        
+        if is_feeding_recorded:
+            feedsetting.available_quantity = feedsetting.available_quantity - int(feed_quantity)
+            feedsetting.save()
+            messages.success(request, "Feeding created successfully", extra_tags='success')
 
-        messages.success(request, "feeding created successfully", extra_tags='success')
+        else:
+            feeding.delete()
+
+            messages.error(request, "Error recording feeding, Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/poultry/feeding/create.html', {
+                'feedsettings': FeedSetting.objects.filter(is_approved=True, available_quantity__gte=1),
+                'chick_items':Chicks.objects.all().order_by('-created'),
+                'item_data':item_data})
+            
+
 
         return redirect('feeding_list')
     
 
     feedsettings = FeedSetting.objects.filter(is_approved=True, available_quantity__gte=1)
-    chick_items =Chicks.objects.all().order_by('-created')
+    chick_items = Chicks.objects.all().order_by('-created')
     return render(request, 'pages/poultry/feeding/create.html', {'feedsettings': feedsettings, 'chick_items':chick_items, 'item_data':item_data})
 
+def register_feeding_history(feeding, feedsetting, chick, feed_quantity):
+        try:
+
+            api_data = {
+                    "tokenName": feedsetting.feed.item.code,
+                    "policyId": feedsetting.feed.item.policyId,
+                    "code": feeding.feedingcode,
+                    "blockfrostKey": os.getenv('blockfrostKey'),
+                    "secretSeed": os.getenv('secretSeed'),
+                    "cborHex": os.getenv('cborHex')
+                }
+
+            if os.getenv('data_encryption', 'False') == 'True':
+                offchain_data = {
+                    "type": split_string(encrypt_data("Feeding"), "feedingcode"),
+                    "feedingcode": split_string(encrypt_data(feeding.feedingcode), "feedingcode"),
+                    "feed_batch": split_string(encrypt_data(feedsetting.feed.batchnumber), "feed_batch"),
+                    "item_code": split_string(encrypt_data(feedsetting.feed.item.code), "item_code"),
+                    "chicks_batchnumber": split_string(encrypt_data(chick.batchnumber), "chicks_batchnumber"),
+                    "feed_quantity": split_string(encrypt_data(feed_quantity), "feed_quantity"),
+                }
+                api_data['metadata'] = offchain_data
+            else:
+                api_data['metadata'] = {
+                        "type": "Feeding",
+                        "feedingcode": feeding.feedingcode,
+                        "feed_batch": feedsetting.feed.batchnumber,
+                        "item_code": feedsetting.feed.item.code,
+                        "chicks_batchnumber": chick.batchnumber,
+                        "feed_quantity": feed_quantity,
+                        }
+
+            response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
+            response_data = response.json()
+                        
+            if response.status_code == 200 and 'status' in response_data:
+                feeding.txHash = response_data['txHash']
+                feeding.save()
+                return True
+            else:
+                return False
+        
+        except requests.exceptions.RequestException as e:
+            return False
+        
 @login_required
 def feeding_detail(request, code):
     feeding = get_object_or_404(Feedings, feedingcode=code)
