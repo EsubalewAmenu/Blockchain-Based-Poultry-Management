@@ -436,6 +436,228 @@ def feeds_delete(request, batch_number):
         return redirect('feeds_list')  
     return render(request, 'pages/pages/vendor/feeds/delete.html', {'feed': feed})
 
+
+# List all medicines
+@login_required
+def medicines_list(request):
+    medicines = MedicineInventory.objects.all().order_by('-created')
+    items = Item.objects.all()
+    paginator = Paginator(medicines, 10)  # Show 10 medicines per page
+    
+    page_number = request.GET.get('page')
+    medicines = paginator.get_page(page_number)
+    return render(request, 'pages/pages/vendor/medicines/list.html', {'medicines': medicines, 'items':items})
+
+# Create a new medicine
+@login_required
+def medicines_create(request):
+    vendors = Vendor.objects.all()
+    items = Item.objects.filter(item_type__type_name='medicine')
+    medicines = Medicine.objects.all()
+
+    item_data = None
+    errors = {}
+    if 'item_data' in request.session:
+        item_data = request.session['item_data']
+    
+    if request.method == 'POST':
+        item_id = request.POST.get('item')
+        medicinetype = request.POST.get('medicinetype')
+        stock_quantity = request.POST.get('stock_quantity')
+        unit = request.POST.get('unit')
+        price_per_unit = request.POST.get('price_per_unit')
+        vendor_id = request.POST.get('vendor')
+        expiry_date = request.POST.get('expiry_date')
+        purchase_date = request.POST.get('purchase_date')
+        photo = request.FILES.get('photo')
+        item = Item.objects.get(pk=item_id)
+        medicine = Medicine.objects.get(pk=medicinetype)
+        allowed_image_types = ['image/jpeg', 'image/png']
+        
+        required_fields = ['item', 'medicinetype', 'stock_quantity', 'unit', 'price_per_unit', 'vendor', 'expiry_date', 'purchase_date']
+        for field in required_fields:
+            if not request.POST.get(field):
+                errors[field] = "* This field is required."
+        if price_per_unit:
+            if int(price_per_unit) <= 0:
+                errors['price_per_unit'] = "* Please enter a positive number."
+                
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+                
+        vendor = None
+        if vendor_id:
+            vendor = get_object_or_404(Vendor, id=vendor_id)
+        batch = None
+            
+        if errors:
+            messages.error(request, "Creating medicine failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/pages/vendor/medicines/create.html', {'vendors': vendors, 'medicinetype': medicinetype, 'items': items, 'item_data': item_data, 'errors': errors})
+               
+        if 'item_data' in request.session:
+            item_data = request.session['item_data']
+        
+        # Create and save the medicine
+        try:
+            medicineInventory = MedicineInventory(
+                item=item,
+                vendor=vendor,
+                medicine=medicine,
+                stock_quantity=stock_quantity,
+                unit=unit,
+                price_per_unit=price_per_unit,
+                expiry_date=expiry_date,
+                purchase_date=purchase_date,
+                photo=photo)
+                
+            # is_minted = mint_medicine_item(item, vendor, chicks, source , breed_id, photo, brought, returned)
+             
+            # if is_minted:
+            medicineInventory.save()
+                
+            messages.success(request, "medicine Created Successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, "Error creating medicine: " + str(e), extra_tags='danger')
+            
+        if 'item_data' in request.session:
+            request.session.pop('item_data')
+        return redirect('medicines_list')
+
+    return render(request, 'pages/pages/vendor/medicines/create.html', {'vendors': vendors, 'medicines': medicines, 'items':items, 'item_data':item_data})
+
+# Detail view for a specific medicine
+@login_required
+def medicines_detail(request, batch_number):
+    medicineInventory = get_object_or_404(MedicineInventory, batchnumber=batch_number)
+    vendors = Vendor.objects.all()
+    errors={}
+    if request.method == 'POST':
+        medicine.batchnumber = request.POST.get('batchnumber', medicine.batchnumber)
+        vendor_id = request.POST.get('vendor')
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+            else:
+                medicine.photo = request.FILES['photo']
+                
+        # Update foreign keys only if they are provided
+        if vendor_id:
+            medicine.vendor_id = vendor_id
+
+        medicine.brought = request.POST.get('brought', medicine.brought)
+        medicine.returned = request.POST.get('returned', medicine.returned)
+        
+        if request.POST.get('brought') and request.POST.get('returned'):
+            if int(request.POST.get('returned')) > int(request.POST.get('brought')):
+                errors['returned'] = "* Returned number cannot be greater than brought number."
+                
+        if request.POST.get('returned') and int(request.POST.get('returned')) > int(medicine.brought):
+            errors['returned'] = "* Returned number cannot be greater than brought number."
+            
+        if errors:
+            messages.error(request, "Updating medicine failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/pages/vendor/medicines/details.html', {
+                'medicine': medicine,
+                'vendors': vendors,
+                'errors': errors
+            })
+        try:    
+            medicine.save()
+            messages.success(request, "medicine Updated Successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, "Error updating medicine: " + str(e), extra_tags='danger')
+            
+        return redirect('medicines_update', batch_number=medicine.batchnumber)
+
+    return render(request, 'pages/pages/vendor/medicines/details.html', {
+        'medicine': medicineInventory,
+        'vendors': vendors,
+    })
+
+# Update an existing medicine
+@login_required
+def medicines_update(request, batch_number):
+    medicine = get_object_or_404(Medicines, batchnumber=batch_number)
+    vendors = vendor.objects.all()
+    breeds = Breed.objects.all()
+    chicks = Chicks.objects.all()  # Get all chicks for selection
+    errors={}
+    if request.method == 'POST':
+        medicine.batchnumber = request.POST.get('batchnumber', medicine.batchnumber)
+        vendor_id = request.POST.get('vendor')
+        breed_id = request.POST.get('breed')
+        chick_id = request.POST.get('chick')  # Get selected chick ID
+        allowed_image_types = ['image/jpeg', 'image/png']  # Allowed image types
+
+        if request.FILES.get('photo'):
+            if request.FILES.get('photo').content_type not in allowed_image_types:
+                errors['photo'] = "Invalid image format for front photo. Only JPEG or PNG is allowed."
+            else:
+                medicine.photo = request.FILES['photo']
+                
+        # Update foreign keys only if they are provided
+        if vendor_id:
+            medicine.vendor_id = vendor_id
+        if breed_id:
+            medicine.breed_id = breed_id
+        if chick_id:
+            medicine.chick_id = chick_id  # Update the chick association
+
+        medicine.brought = request.POST.get('brought', medicine.brought)
+        medicine.returned = request.POST.get('returned', medicine.returned)
+        
+        if request.POST.get('brought') and request.POST.get('returned'):
+            if int(request.POST.get('returned')) > int(request.POST.get('brought')):
+                errors['returned'] = "* Returned number cannot be greater than brought number."
+                
+        if request.POST.get('returned') and int(request.POST.get('returned')) > int(medicine.brought):
+            errors['returned'] = "* Returned number cannot be greater than brought number."
+            
+        if errors:
+            messages.error(request, "Updating medicine failed: Please double-check your entries and try again.", extra_tags='danger')
+            return render(request, 'pages/pages/vendor/medicines/details.html', {
+                'medicine': medicine,
+                'vendors': vendors,
+                'breeds': breeds,
+                'chicks': chicks,
+                'errors': errors
+            })
+        try:    
+            medicine.save()
+            messages.success(request, "medicine Updated Successfully", extra_tags="success")
+        except Exception as e:
+            messages.error(request, "Error updating medicine: " + str(e), extra_tags='danger')
+            
+        return redirect('medicines_update', batch_number=medicine.batchnumber)
+
+    return render(request, 'pages/pages/vendor/medicines/details.html', {
+        'medicine': medicine,
+        'vendors': vendors,
+        'breeds': breeds,
+        'chicks': chicks
+    })
+
+# Delete an medicine
+@login_required
+def medicines_delete(request, batch_number):
+    medicine = get_object_or_404(medicines, batchnumber=batch_number)
+    if request.method == 'POST':
+        if ItemRequest.objects.filter(item=medicine.item).exists():
+            messages.error(request, "Cannot delete medicine because it has associated item requests.", extra_tags='danger')
+            return redirect('medicines_list', batch_number=medicine.batchnumber)
+        if medicineSetting.objects.filter(medicine=medicine).exists():
+            messages.error(request, "Cannot delete medicine because it has associated medicine settings.", extra_tags='danger')
+            return redirect('medicines_list', batch_number=medicine.batchnumber)
+        medicine.delete()
+        medicine.item.delete()
+        messages.success(request, "medicine Deleted Successfully", extra_tags="success")
+        return redirect('medicines_list')  
+    return render(request, 'pages/pages/vendor/medicines/delete.html', {'medicine': medicine})
+
+
 # vendor Request
 @login_required
 def vendor_request_list(request):
