@@ -56,11 +56,23 @@ urlpatterns = [
     path('feed-settings/<str:settingcode>/update/', feed_setting_update, name='feed_setting_update'),
     path('feed-settings/<str:settingcode>/delete/', feed_setting_delete, name='feed_setting_delete'),
 
+    path('medicine-settings/create/', medicine_setting_create, name='medicine_setting_create'),    
+    path('medicine-settings/', medicine_setting_list, name='medicine_setting_list'),
+    path('medicine-settings/<str:settingcode>/', medicine_setting_detail, name='medicine_setting_detail'),
+    path('medicine-settings/<str:settingcode>/update/', medicine_setting_update, name='medicine_setting_update'),
+    path('medicine-settings/<str:settingcode>/delete/', medicine_setting_delete, name='medicine_setting_delete'),
+
     path('feeding/', feeding_list, name='feeding_list'),
     path('feeding/create/', feeding_create, name='feeding_create'),
     path('feeding/<str:code>/', feeding_detail, name='feeding_detail'),
     path('feedings/<str:code>/update/', feeding_update, name='feeding_update'),
     path('feeding/<str:code>/delete', feeding_delete, name='feeding_delete'),
+
+    path('medication/', medication_list, name='medication_list'),
+    path('medication/create/', medication_create, name='medication_create'),
+    path('medication/<str:code>/', medication_detail, name='medication_detail'),
+    path('medications/<str:code>/update/', medication_update, name='medication_update'),
+    path('medication/<str:code>/delete', medication_delete, name='medication_delete'),
 
 ]
 
