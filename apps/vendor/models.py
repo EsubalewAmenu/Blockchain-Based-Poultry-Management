@@ -149,6 +149,101 @@ class Feeds(models.Model):
         return '/vendor_feeds/{}'.format(self.batchnumber)
 
 
+class Medicine(models.Model):
+    MEDICINE_CATEGORIES = [
+        ('Antibiotic', 'Antibiotic'),
+        ('Vaccine', 'Vaccine'),
+        ('Vitamin & Mineral', 'Vitamin & Mineral'),
+        ('Dewormer', 'Dewormer'),
+        ('Coccidiostat', 'Coccidiostat'),
+        ('Antifungal', 'Antifungal'),
+        ('Antiprotozoal', 'Antiprotozoal'),
+        ('Pain Reliever', 'Pain Reliever'),
+        ('Other', 'Other'),
+    ]
+
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255, unique=True)
+    category = models.CharField(max_length=50, choices=MEDICINE_CATEGORIES)
+
+    def __str__(self):
+        return f"{self.name} - {self.category}"
+
+
+class MedicineInventory(models.Model):
+    """
+    Medicines Model
+    """
+    id = models.AutoField(primary_key=True)
+    batchnumber = models.CharField(null=True,blank=True,max_length=50, unique=True)
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
+    vendor=models.ForeignKey(Vendor,
+        related_name="medicines_vendor", blank=True, null=True,
+        on_delete=models.SET_NULL)
+
+
+    UNITS = [
+        ('ml', 'Milliliters'),
+        ('mg', 'Milligrams'),
+        ('tablet', 'Tablet'),
+        ('g', 'Grams'),
+        ('dose', 'Dose'),
+    ]
+
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    stock_quantity = models.PositiveIntegerField(default=0)
+    unit = models.CharField(max_length=20, choices=UNITS)
+    expiry_date = models.DateField()
+    purchase_date = models.DateField()
+    price_per_unit = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+
+    photo = ProcessedImageField(upload_to='medicines_photos',null=True,blank=True, processors=[ResizeToFit(1280)], format='JPEG', options={'quality': 70}) 
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created']
+        db_table = "medicines"
+        verbose_name = 'medicine'
+        verbose_name_plural = "medicines"
+        managed = True
+
+    def clean(self):
+        errors = {}
+        for field in self._meta.get_fields():
+            if isinstance(field, models.CharField) and field.max_length is not None:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    name = field.attname.replace('_', ' ')
+                    errors[field.name] = f"Field {name.capitalize()} has exceeded it's maximum length ({field.max_length})"
+        if errors:
+            raise ValidationError(errors) 
+        
+    def save(self, *args, **kwargs):
+        if not self.batchnumber:
+            self.batchnumber = self.generate_unique_batchnumber()
+        self.item.quantity=self.stock_quantity
+        self.item.save()
+        self.clean()
+        super(MedicineInventory, self).save(*args, **kwargs)
+        
+    def generate_unique_batchnumber(self):
+        while True:
+            random_suffix = ''.join(random.choices(string.digits, k=5))
+            unique_code = f'MI-{random_suffix}'
+            if not MedicineInventory.objects.filter(batchnumber=unique_code).exists():
+                return unique_code
+
+    def __str__(self):
+        return self.batchnumber
+    
+    def get_absolute_url(self):
+        return '/medicine_inventory/{}'.format(self.batchnumber)
+
+    def is_expired(self):
+        return self.expiry_date < timezone.now().date()
+
+
 # class vendorRequest(models.Model):
 #     """
 #     vendorRequest Model
