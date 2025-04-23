@@ -3,6 +3,7 @@ version: '3.8'
 services:
   db:
     image: postgis/postgis
+    platform: linux/amd64
     env_file:
       - .env
     volumes:
@@ -18,6 +19,7 @@ services:
 
   app:
     build: .
+    platform: linux/amd64
     env_file:
       - .env
     environment:
@@ -38,6 +40,7 @@ services:
              python manage.py seed_hrms &&
              python manage.py init_item_types &&
              python manage.py create_customers &&
+             python manage.py seed_medicine &&
              python manage.py runserver 0.0.0.0:11000"
     ports:
       - 11000:11000
