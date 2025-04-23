@@ -1,0 +1,153 @@
+{% extends 'dashboard.html' %}
+{% block main %}
+<div class="row mb-5">
+  <div class="col-12">
+    <div class="multisteps-form mb-5">
+      <!-- Progress bar -->
+      <div class="row">
+        <div class="col-12 col-lg-8 mx-auto my-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="multisteps-form__progress">
+                <button class="multisteps-form__progress-btn js-active" type="button" title="Medicine Info">
+                  <span>Medicine Info</span>
+                </button>
+                <button class="multisteps-form__progress-btn" type="button" title="Breed Info">Breed Info</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Form panels -->
+      <div class="row">
+        <div class="col-12 col-lg-8 m-auto">
+          <form class="multisteps-form__form mb-8" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- medicine Info Panel -->
+            <div class="card multisteps-form__panel p-3 border-radius-xl bg-white js-active" data-animation="FadeIn">
+              <h5 class="font-weight-bolder mb-0">Medicine Info</h5>
+              <p class="mb-0 text-sm">Mandatory information</p>
+              <div class="multisteps-form__content">
+                  <div class="row mt-3">
+                      <div class="col-12 col-sm-6">
+                          <label>Item</label>
+                          <select class="multisteps-form__input form-control" name="item">
+                              {% comment %} <option value="">Select an Item</option> {% endcomment %}
+                              {% if item_data %}
+                                  <option value="{{ item_data.id }}" selected>{{ item_data.code }} - {{ item_data.item_type }} | {{ item_data.created_at }}</option>
+                              {% endif %}
+                              {% for item in items %}
+                                  <option value="{{ item.pk }}">{{ item.code }} - {{ item.item_type.type_name }} | {{item.created_at}}</option>
+                              {% endfor %}
+                          </select>
+                          {% if errors.item %}
+                          <small class="text-danger">{{ errors.item }}</small>
+                          {% endif %}
+                      </div>
+                      <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                          <label for="medicinetype" class="form-label">Medicine type</label>
+                          <select class="form-control" name="medicinetype" id="medicinetype">
+                              <option value="" disabled selected>Select a medicine type</option>
+
+                              {% for medicine in medicines %}
+                              <option value="{{ medicine.pk }}">{{medicine}}</option>
+                              {% endfor %}
+
+                          </select>
+                          {% if errors.medicinetype %}
+                          <small class="text-danger">{{ errors.medicinetype }}</small>
+                          {% endif %}
+                      </div>
+                  </div>
+
+                  <div class="row mt-3">
+
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                      <label>Quantity</label>
+                      <input class="multisteps-form__input form-control" type="number" name="stock_quantity" placeholder="eg. 50" value="0"/>
+                      {% if errors.stock_quantity %}
+                      <small class="text-danger">{{ errors.stock_quantity }}</small>
+                      {% endif %}
+                  </div>
+                  
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                        <label for="unit" class="form-label">Unit type</label>
+                        <select class="form-control" name="unit" id="unit">
+                            <option value="" disabled selected>Select a unit</option>
+                            <option value="ml">Milliliters</option>
+                            <option value="mg">Milligrams</option>
+                            <option value="tablet">Tablet</option>
+                            <option value="g">Grams</option>
+                            <option value="dose">Dose</option>
+                        </select>
+                        {% if errors.unit %}
+                        <small class="text-danger">{{ errors.unit }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                    <div class="row mt-3">
+
+                      <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                          <label>Price per unit</label>
+                          <input class="multisteps-form__input form-control" type="number" name="price_per_unit" placeholder="eg. 50" value="0"/>
+                          {% if errors.price_per_unit %}
+                          <small class="text-danger">{{ errors.price_per_unit }}</small>
+                          {% endif %}
+                      </div>
+
+                      <div class="col-12 col-sm-6" id="vendorField">
+                        <label>Vendor</label>
+                        <select class="multisteps-form__input form-control" name="vendor">
+                            <option value="">Select a Vendor</option>
+                            {% for vendor in vendors %}
+                                <option value="{{ vendor.id }}">{{ vendor.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if errors.vendor %}
+                        <small class="text-danger">{{ errors.vendor }}</small>
+                        {% endif %}
+                    </div>
+                
+                  </div>
+
+                  <div class="row mt-3">
+                    <div class="col-12 col-sm-6">
+                        <label>Expiry Date</label>
+                        <input class="multisteps-form__input form-control" type="date" name="expiry_date" />
+                        {% if errors.expiry_date %}
+                        <small class="text-danger">{{ errors.expiry_date }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                      <label>Purchase Date</label>
+                      <input class="multisteps-form__input form-control" type="date" name="purchase_date" />
+                      {% if errors.purchase_date %}
+                      <small class="text-danger">{{ errors.purchase_date }}</small>
+                      {% endif %}
+                  </div>
+              
+                </div>
+                  <div class="row mt-3">
+                    <div class="col-12 col-sm-6">
+                        <label>Photo</label>
+                        <input class="multisteps-form__input form-control" type="file" name="photo" accept="image/*" />
+                        {% if errors.photo %}
+                        <small class="text-danger">{{ errors.photo }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                  <div class="button-row d-flex mt-4">
+                      <!-- <button class="btn bg-gradient-dark ms-auto mb-0 js-btn-next" type="button" title="Next">Next</button> -->
+                      <button class="btn bg-gradient-dark ms-auto mb-0" type="submit" title="Submit">Submit</button>
+                  </div>
+              </div>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
