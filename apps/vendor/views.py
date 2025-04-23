@@ -506,6 +506,7 @@ def medicines_create(request):
                 medicineInventory.save()                    
                 messages.success(request, "medicine Created Successfully", extra_tags="success")
                 
+
         except Exception as e:
             messages.error(request, "Error creating medicine: " + str(e), extra_tags='danger')
             
@@ -514,7 +515,6 @@ def medicines_create(request):
         return redirect('medicines_list')
 
     return render(request, 'pages/pages/vendor/medicines/create.html', {'vendors': vendors, 'medicines': medicines, 'items':items, 'item_data':item_data})
-
 
 def mint_medicine_item(item, vendor, medicine, stock_quantity, unit, price_per_unit, expiry_date, purchase_date, photo):
         try:
@@ -564,7 +564,6 @@ def mint_medicine_item(item, vendor, medicine, stock_quantity, unit, price_per_u
         except requests.exceptions.RequestException as e:
             return False
         
-
 
 # Detail view for a specific medicine
 @login_required

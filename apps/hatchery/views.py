@@ -418,6 +418,7 @@ def medication_create(request):
                 'medicinesettings': MedicineSetting.objects.filter(is_approved=True, available_quantity__gte=1),
                 'chick_items':Chicks.objects.all().order_by('-created'),
                 'item_data':item_data})
+
     
 
     medicinesettings = MedicineSetting.objects.filter(is_approved=True, available_quantity__gte=1)
@@ -1126,6 +1127,7 @@ def register_feed_settings_history(feed_setting, item):
                         "is_request_approved": str(feed_setting.is_approved),
                         }
 
+
             response = requests.post(os.getenv('OFFCHAIN_BASE_URL')+'history', json=api_data, verify=False)
             response_data = response.json()
                         
@@ -1191,6 +1193,7 @@ def medicine_setting_create(request):
                 'errors': errors,
                 'items': Item.objects.filter(item_type__type_name="medicine"),
             })
+
 
     items = Item.objects.filter(item_type__type_name="Medicine")
 
