@@ -1,0 +1,189 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="{% static 'assets/img/apple-icon.png'%}">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/egg-logo.png'%}">
+  <title>
+    PoultryTrack
+  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="{% static 'assets/css/nucleo-icons.css'%}" rel="stylesheet" />
+  <link href="{% static 'assets/css/nucleo-svg.css'%}" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <link href="{% static 'assets/css/nucleo-svg.css'%}" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link id="pagestyle" href="{% static 'assets/css/argon-dashboard.css'%}" rel="stylesheet" />
+</head>
+
+<body class="">
+  <style>
+  .alert-container {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+.alert .close {
+  font-size: 1.5rem;
+  line-height: 1.5;   
+  padding: 0.5rem;  
+}
+
+.alert .close span {
+  display: inline-block;
+  transform: scale(1.2); 
+}
+</style>
+  <div class="container position-sticky z-index-sticky top-0">
+    <div class="row">
+      <div class="col-12">
+       
+      </div>
+    </div>
+  </div>
+  <main class="main-content  mt-0">
+    <section>
+      <div class="page-header min-vh-100">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
+              <div class="card card-plain">
+                
+                <div class="card-header pb-0 text-start">
+                  <h4 class="font-weight-bolder">Track Our Product</h4>
+                  <p class="mb-0">Enter your egg or chicken unique ID</p>
+                </div>
+                <div class="card-body">
+                  {% if messages %}
+                  <div class="alert-container">
+                    <ul class="list-unstyled">
+                      {% for message in messages %}
+                      <div class="alert alert-{{message.tags}} alert-dismissible fade show text-light" role="alert">
+                        <strong>{{message}}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
+                <form role="form" method="POST" action="{% url 'tracking_view' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="text" class="form-control form-control-lg" placeholder="Unique ID" aria-label="Unique ID" value="{{unique_id}}" name="unique_id">
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-lg btn-success btn-lg w-100 mt-4 mb-0">Get Info</button>
+                    </div>
+                    <hr>
+                </form>
+                </div>
+                
+              </div>
+            </div>
+            <div class="col-6 d-lg-flex d-none my-auto pe-0 text-center justify-content-center flex-column">
+                {% if items %}
+                    {% for item in items %}
+                        {% if type == 'customer.Eggs' %}
+                            {% include 'pages/poultry/tracking/eggs_detail.html' with items=items %}
+                        {% elif type == 'chicks.Chicks' %}
+                            {% include 'pages/poultry/tracking/chicks_detail.html' with items=items %}
+                        {% else %}
+                            {{ type }}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+<!--   Core JS Files   -->
+<script src="{% static 'assets/js/core/popper.min.js'%}"></script>
+<script src="{% static 'assets/js/core/bootstrap.min.js'%}"></script>
+<script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js'%}"></script>
+<script src="{% static 'assets/js/plugins/smooth-scrollbar.min.js'%}"></script>
+<!-- Kanban scripts -->
+<script src="{% static 'assets/js/plugins/dragula/dragula.min.js'%}"></script>
+<script src="{% static 'assets/js/plugins/jkanban/jkanban.js'%}"></script>
+<script>
+
+  const handleLoadApproval = ()=> document.querySelectorAll('.load-approval').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const itemRequestId = this.getAttribute('data-item-request-id');
+          const eggSettingId = this.getAttribute('data-egg-setting-id');
+          
+          fetch(`/api/item-request/${itemRequestId}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('approval-detail-'+eggSettingId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+          });
+      });
+  });
+  document.querySelectorAll('.load-eggsetting').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const eggId = this.getAttribute('data-egg-id');
+          fetch(`/api/eggsetting/${eggId}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('eggsetting-detail-'+eggId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+              handleLoadApproval()
+          });
+      });
+  });
+
+  var win = navigator.platform.indexOf('Win') > -1;
+  if (win && document.querySelector('#sidenav-scrollbar')) {
+    var options = {
+      damping: '0.5'
+    }
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+  }
+</script>
+<script>
+  // Automatically close the alerts after 5 seconds
+  setTimeout(function() {
+    var alertElements = document.querySelectorAll('.alert');
+    alertElements.forEach(function(alert) {
+      alert.classList.remove('show');  // Hide the alert
+    });
+  }, 5000);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get all the close buttons within alerts
+    var closeButtons = document.querySelectorAll('.alert .close');
+  
+    // Add click event to each close button
+    closeButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        // Find the parent alert (li) and remove it
+        var alert = this.closest('.alert');
+        alert.classList.remove('show'); // Optionally add fade-out animation
+        setTimeout(function() {
+          alert.remove(); // Remove the alert after fading out
+        }, 300);  // Adjust time for fade out duration
+      });
+    });
+  });
+  
+</script>
+
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="{% static 'assets/js/argon-dashboard.min.js'%}"></script>
+</body>
+
+</html>

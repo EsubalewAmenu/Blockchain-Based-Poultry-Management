@@ -386,6 +386,12 @@ def item_request_approve(request, code):
     return redirect('item_request_list')
 
 
+def item_request_approve_detail_api(request, item_request_id):
+    request_detail = ItemRequest.objects.filter(pk=item_request_id).first()
+    if request_detail:
+        return render(request, 'pages/poultry/tracking/item_request_detail.html', {'request_detail': request_detail})
+    return HttpResponse('<p>No Detail found.</p>')
+
 def register_item_request_approval_history(item_request):
         try:
 

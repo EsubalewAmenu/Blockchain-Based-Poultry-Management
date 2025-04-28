@@ -26,7 +26,8 @@ urlpatterns = [
     path('egg-settings/<str:settingcode>/', egg_setting_detail, name='egg_setting_detail'),
     path('egg-settings/<str:settingcode>/update/', egg_setting_update, name='egg_setting_update'),
     path('egg-settings/<str:settingcode>/delete/', egg_setting_delete, name='egg_setting_delete'),
-    
+    path('api/eggsetting/<int:egg_id>/', eggsetting_detail_api, name='eggsetting-detail'),
+
     path('incubations/', incubation_list, name='incubation_list'),
     path('incubation/create/', incubation_create, name='incubation_create'),
     path('incubation/<slug:incubationcode>/', incubation_detail, name='incubation_detail'),

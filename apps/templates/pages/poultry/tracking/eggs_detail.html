@@ -1,0 +1,35 @@
+{% for item in items %}
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="font-weight-bold">Egg Item</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Item code:</strong> {{ item.item.code }}</p>
+            <p><strong>Batch Number:</strong> {{ item.batchnumber }}</p>
+            <p><strong>Source:</strong> {{ item.source }}</p>
+            <p><strong>Customer:</strong> {{ item.customer.first_name }} {{ item.customer.last_name }}</p>
+            <p><strong>Breed:</strong> {{ item.breed.breed }} ({{ item.breed.poultry_type }})</p>
+            <p><strong>Brought:</strong> {{ item.brought }}</p>
+            <p><strong>Returned:</strong> {{ item.returned }}</p>
+            <p><strong>Received:</strong> {{ item.received }}</p>
+            <p><strong>Recorded at:</strong> {{ item.created }}</p>
+            <p><strong>Verified on blockchain:</strong> {{ item.created }}</p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}">{{ item.item.txHash }}</a></p>
+            <p><strong>Blockchain policy Id:</strong><a target="_blank" href="https://preprod.cardanoscan.io/tokenPolicy/{{ item.item.policyId }}">{{ item.item.policyId }}</a></p>
+
+            {% if item.photo %}
+                <div class="my-3">
+                    <img src="{{ item.photo.url }}" alt="Egg photo" class="img-fluid" style="max-width: 100%; max-height: 300px; object-fit: cover;">
+                </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between mt-3">
+                {% if item.id %}
+                    <button data-egg-id="{{ item.id }}" class="btn btn-info load-eggsetting">Egg Setting Detail</button>
+                    <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}?tab=metadata', '_blank')">See on Blockchain</button>
+                {% endif %}
+            </div>
+            <div id="eggsetting-detail-{{ item.id }}"></div>
+        </div>
+    </div>
+{% endfor %}

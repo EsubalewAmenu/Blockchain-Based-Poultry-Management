@@ -24,6 +24,9 @@ from django.urls import reverse_lazy
 from .forms import UserSettingsForm
 from .models import UserSettings, UserWalletAddress
 from .validators import validate_email
+from apps.inventory.models import Item
+from apps.chicks.models import Chicks
+from apps.customer.models import Eggs
 from .backend import EmailBackend
 import random
 import string
@@ -74,6 +77,37 @@ def login_view(request):
             messages.error(request, 'Invalid email or password. Please try again.', extra_tags='danger')
     
     return render(request, 'pages/authentication/signin/illustration.html')
+
+@csrf_exempt
+def tracking_view(request):
+    logout(request)
+    
+    if request.method == 'POST':
+        unique_id = request.POST.get('unique_id')
+
+        if not unique_id:
+            messages.error(request, 'Batch unique ID is required.', extra_tags='danger')
+            return render(request, 'pages/poultry/tracking/home.html')
+
+        models_to_check = [
+            (Chicks, 'batchnumber'),
+            (Item, 'code'),
+            (Eggs, 'batchnumber'),
+        ]
+
+        item = None
+
+        for model, field in models_to_check:
+            item = model.objects.filter(**{field: unique_id}).first()
+            if item:
+                break
+
+        if item is not None:
+            return render(request, 'pages/poultry/tracking/home.html', {'unique_id': unique_id, 'items': [item], 'type': item._meta.label})
+        else:
+            messages.error(request, 'Invalid unique batch code. Please try again.', extra_tags='danger')
+    
+    return render(request, 'pages/poultry/tracking/home.html')
 
 @csrf_exempt
 @axes_dispatch

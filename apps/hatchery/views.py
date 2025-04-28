@@ -868,6 +868,13 @@ def egg_setting_detail(request, settingcode):
         'breeders': breeders
     })
 
+def eggsetting_detail_api(request, egg_id):
+    # egg_settings = EggSetting.objects.filter(egg=egg_id).first()
+    egg_settings = EggSetting.objects.filter(egg=egg_id)
+    if egg_settings:
+        return render(request, 'pages/poultry/tracking/eggsetting_detail.html', {'egg_settings': egg_settings})
+    return HttpResponse('<p>No Egg Setting found.</p>')
+
 @login_required
 def feed_setting_detail(request, settingcode):
     feed_setting = get_object_or_404(FeedSetting, settingcode=settingcode)

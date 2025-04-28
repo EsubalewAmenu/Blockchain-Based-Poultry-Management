@@ -1,0 +1,16 @@
+<div class="card p-3 mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="font-weight-bold">Item Request Approval Detail</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>Request Code:</strong> {{ request_detail.code }}</p>
+        <p><strong>Requested Quantity:</strong> {{ request_detail.quantity }}</p>
+        <p><strong>Is Request Approved:</strong> {{ request_detail.is_approved }}</p>
+        <p><strong>Requested by:</strong> {{ request_detail.requested_by.first_name }}</p>
+        <p><strong>Blockchain txHash:</strong> {{ request_detail.txHash }}</p>
+        <p><strong>Recorded at:</strong> {{ request_detail.created_at }}</p>
+        <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ request_detail.txHash }}?tab=metadata', '_blank')">See on Blockchain</button>
+        </div>
+    </div>
+</div>
