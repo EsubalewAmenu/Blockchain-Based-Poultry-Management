@@ -1,0 +1,31 @@
+<div class="card p-3 mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="font-weight-bold">Hatching Detail</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>Candling egg Setting:</strong> {{ hatching.candling.incubation.eggsetting.settingcode }}</p>
+        <p><strong>Candling Code:</strong> {{ hatching.candling.candlingcode }}</p>
+        <p><strong>Number of candling eggs:</strong> {{ hatching.candling.eggs|default:"0" }}</p>
+        <p><strong>Fertile eggs:</strong> {{ hatching.candling.fertile_eggs|default:"0" }}</p>
+        <p><strong>Candling Date:</strong> {{ hatching.candling.created|date:"Y-m-d H:i" }}</p>
+        <p><strong>Candling blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ hatching.candling.txHash }}">{{ hatching.candling.txHash }}</a></p>
+
+        <br/>
+
+        <p><strong>Hatching Code:</strong> {{ hatching.hatchingcode }}</p>
+        <p><strong>Hatched number of eggs:</strong> {{ hatching.hatched }}</p>
+        <p><strong>Non spoiled hatched chicks:</strong> {{ hatching.chicks_hatched }}</p>
+        <p><strong>Incubation Code:</strong> {{ hatching.candling.incubation.incubationcode }}</p>
+        <p><strong>Hatched Date:</strong> {{ hatching.created|date:"Y-m-d H:i" }}</p>
+        <p><strong>Hatching blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ hatching.txHash }}">{{ hatching.txHash }}</a></p>
+        <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ hatching.candling.txHash }}?tab=metadata', '_blank')">Proof Candling on Blockchain</button>
+            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ hatching.txHash }}?tab=metadata', '_blank')">Proof Hatching on Blockchain</button>
+        </div>
+
+        <div class="d-flex justify-content-between mt-3">
+                <button data-egg-id="{{ hatching.candling.incubation.eggsetting.egg.id }}" class="btn btn-info load-eggsetting">Egg Setting Detail</button>
+        </div>
+        <div id="eggsetting-detail-{{ hatching.candling.incubation.eggsetting.egg.id }}"></div>
+    </div>
+</div>

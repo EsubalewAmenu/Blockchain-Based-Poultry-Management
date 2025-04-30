@@ -51,8 +51,8 @@
     <section>
       <div class="page-header min-vh-100">
         <div class="container">
-          <div class="row">
-            <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
+          <div class="row justify-content-center">
+            <div class="col-xl-4 col-lg-5 col-md-7">
               <div class="card card-plain">
                 
                 <div class="card-header pb-0 text-start">
@@ -74,7 +74,7 @@
                     </ul>
                   </div>
                 {% endif %}
-                <form role="form" method="POST" action="{% url 'tracking_view' %}">
+                <form role="form" method="GET" action="{% url 'tracking_view' %}">
                     {% csrf_token %}
                     <div class="mb-3">
                         <input type="text" class="form-control form-control-lg" placeholder="Unique ID" aria-label="Unique ID" value="{{unique_id}}" name="unique_id">
@@ -88,7 +88,8 @@
                 
               </div>
             </div>
-            <div class="col-6 d-lg-flex d-none my-auto pe-0 text-center justify-content-center flex-column">
+            <div class="row justify-content-center mt-4">
+              <div class="col-xl-8">
                 {% if items %}
                     {% for item in items %}
                         {% if type == 'customer.Eggs' %}
@@ -100,6 +101,7 @@
                         {% endif %}
                     {% endfor %}
                 {% endif %}
+              </div>
             </div>
           </div>
         </div>
@@ -130,7 +132,86 @@
           });
       });
   });
-  document.querySelectorAll('.load-eggsetting').forEach(function(element) {
+  const handleLoadChickFeedings = ()=> document.querySelectorAll('.load-chick-feedings').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const chickId = this.getAttribute('data-chick-id');
+          
+          
+          fetch(`/api/feeding/${chickId}/`)
+          .then(response => response.text())
+          .then(html => {
+              document.getElementById('chick-medications-detail-'+chickId).innerHTML = "";
+
+              const detailDiv = document.getElementById('chick-feedings-detail-'+chickId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+              handleLoadFeedSetting()
+          });
+      });
+  });
+  const handleLoadFeedSetting = ()=> document.querySelectorAll('.load-feedsetting').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const feedSettingId = this.getAttribute('data-feedsetting-id');
+          fetch(`/api/feedsetting/${feedSettingId}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('feedsetting-detail-'+feedSettingId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+          });
+      });
+  });
+
+  const handleLoadChickMedications = ()=> document.querySelectorAll('.load-chick-medications').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const chickId = this.getAttribute('data-chick-id');
+          
+          
+          fetch(`/api/medications/${chickId}/`)
+          .then(response => response.text())
+          .then(html => {
+              document.getElementById('chick-feedings-detail-'+chickId).innerHTML = "";
+
+              const detailDiv = document.getElementById('chick-medications-detail-'+chickId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+              handleLoadMedicineSetting()
+          });
+      });
+  });
+
+const handleLoadChickHatching = ()=> document.querySelectorAll('.load-chick-hatching').forEach(function(element) {
+    element.addEventListener('click', function() {
+        const hatchingId = this.getAttribute('data-hatching-id');
+        const chickId = this.getAttribute('data-chick-id');
+        
+        
+        fetch(`/api/hatching/${hatchingId}/`)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('chick-feedings-detail-'+chickId).innerHTML = "";
+            document.getElementById('chick-medications-detail-'+chickId).innerHTML = "";
+
+            const detailDiv = document.getElementById('chick-hatching-detail-'+hatchingId);
+            detailDiv.innerHTML = html;
+            detailDiv.scrollIntoView({ behavior: 'smooth' });
+            handleLoadEggSetting()
+        });
+    });
+});
+  const handleLoadMedicineSetting = ()=> document.querySelectorAll('.load-medicinesetting').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const medicineSettingId = this.getAttribute('data-medicinesetting-id');
+          fetch(`/api/medicinesetting/${medicineSettingId}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('medicinesetting-detail-'+medicineSettingId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+          });
+      });
+  });
+  const handleLoadEggSetting = ()=>   document.querySelectorAll('.load-eggsetting').forEach(function(element) {
       element.addEventListener('click', function() {
           const eggId = this.getAttribute('data-egg-id');
           fetch(`/api/eggsetting/${eggId}/`)
@@ -143,6 +224,27 @@
           });
       });
   });
+  document.querySelectorAll('.load-chick-detail').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const chickBatch = this.getAttribute('data-chick-batch');
+          fetch(`/api/chick/${chickBatch}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('chick-detail-'+chickBatch);
+              detailDiv.innerHTML = html;
+
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+              handleLoadChickFeedings()
+              handleLoadChickMedications()
+          });
+      });
+  });
+
+  handleLoadEggSetting()
+  handleLoadChickFeedings()
+  handleLoadChickMedications()
+  handleLoadChickHatching()
+
 
   var win = navigator.platform.indexOf('Win') > -1;
   if (win && document.querySelector('#sidenav-scrollbar')) {

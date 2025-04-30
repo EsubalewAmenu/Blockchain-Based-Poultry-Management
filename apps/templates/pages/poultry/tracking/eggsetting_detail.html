@@ -25,7 +25,7 @@
                 <button data-egg-setting-id="{{ egg_setting.id }}" data-item-request-id="{{ egg_setting.item_request.id }}" class="btn btn-info load-approval">Egg Setting Approval Detail</button>
             {% endif %}
 
-            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ egg_setting.txHash }}?tab=metadata', '_blank')">See on Blockchain</button>
+            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ egg_setting.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
         </div>
         <div id="approval-detail-{{ egg_setting.id }}"></div>
     </div>

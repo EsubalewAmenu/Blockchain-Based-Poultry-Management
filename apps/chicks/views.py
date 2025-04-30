@@ -63,6 +63,13 @@ def chicks_detail(request, batchnumber):
 
     return render(request, 'pages/poultry/chicks/details.html', {'chick': chick, 'breeds': breeds})
 
+
+def chick_detail_api(request, chick_batch):
+    items = Chicks.objects.filter(batchnumber=chick_batch)
+    if items:
+        return render(request, 'pages/poultry/tracking/chicks_detail.html', {'items': items})
+    return HttpResponse('<p>No chick Setting found.</p>')
+
 @login_required
 def chicks_create(request):
     breeds = Breed.objects.all()

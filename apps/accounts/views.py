@@ -82,10 +82,12 @@ def login_view(request):
 def tracking_view(request):
     logout(request)
     
-    if request.method == 'POST':
-        unique_id = request.POST.get('unique_id')
+    if request.method == 'GET':
+        unique_id = request.GET.get('unique_id')
 
-        if not unique_id:
+        if unique_id is None: # not passed at all
+            return render(request, 'pages/poultry/tracking/home.html')
+        elif unique_id == '': # passed but empty
             messages.error(request, 'Batch unique ID is required.', extra_tags='danger')
             return render(request, 'pages/poultry/tracking/home.html')
 

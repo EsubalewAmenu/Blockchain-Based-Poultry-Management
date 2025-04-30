@@ -45,6 +45,8 @@ urlpatterns = [
     path('hatching/<str:hatchingcode>/', hatching_detail, name='hatching_detail'),
     path('hatching/<str:hatchingcode>/update/', hatching_detail, name='hatching_update'),
     path('hatching/<str:hatchingcode>/delete/', hatching_delete, name='hatching_delete'),
+    path('api/hatching/<int:hatching_id>/', chick_hatching_detail_api, name='chick-hatching-detail'),
+
     path('tracker/list/', tracker_list_view, name='tracker_list'),
     path('tracker/<str:tracker_code>/', tracker_details_view, name='tracker_detail'),
     path('tracker/public/<str:tracker_code>/', tracker_public_view, name='tracker_public'),
@@ -56,24 +58,28 @@ urlpatterns = [
     path('feed-settings/<str:settingcode>/', feed_setting_detail, name='feed_setting_detail'),
     path('feed-settings/<str:settingcode>/update/', feed_setting_update, name='feed_setting_update'),
     path('feed-settings/<str:settingcode>/delete/', feed_setting_delete, name='feed_setting_delete'),
+    path('api/feedsetting/<int:feedsetting_id>/', feedsetting_detail_api, name='feedsetting-detail-api'),
 
     path('medicine-settings/create/', medicine_setting_create, name='medicine_setting_create'),    
     path('medicine-settings/', medicine_setting_list, name='medicine_setting_list'),
     path('medicine-settings/<str:settingcode>/', medicine_setting_detail, name='medicine_setting_detail'),
     path('medicine-settings/<str:settingcode>/update/', medicine_setting_update, name='medicine_setting_update'),
     path('medicine-settings/<str:settingcode>/delete/', medicine_setting_delete, name='medicine_setting_delete'),
+    path('api/medicinesetting/<int:medicinesetting_id>/', medicinesetting_detail_api, name='medicinesetting-detail-api'),
 
     path('feeding/', feeding_list, name='feeding_list'),
     path('feeding/create/', feeding_create, name='feeding_create'),
     path('feeding/<str:code>/', feeding_detail, name='feeding_detail'),
     path('feedings/<str:code>/update/', feeding_update, name='feeding_update'),
     path('feeding/<str:code>/delete', feeding_delete, name='feeding_delete'),
+    path('api/feeding/<int:chick_id>/', chick_feeding_detail_api, name='chick-feeding-detail'),
 
     path('medication/', medication_list, name='medication_list'),
     path('medication/create/', medication_create, name='medication_create'),
     path('medication/<str:code>/', medication_detail, name='medication_detail'),
     path('medications/<str:code>/update/', medication_update, name='medication_update'),
     path('medication/<str:code>/delete', medication_delete, name='medication_delete'),
+    path('api/medications/<int:chick_id>/', chick_medications_detail_api, name='chick-medications-detail'),
 
 ]
 

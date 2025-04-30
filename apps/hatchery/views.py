@@ -346,6 +346,38 @@ def feeding_list(request):
     feedings = paginator.get_page(page_number)
     return render(request, 'pages/poultry/feeding/list.html', {'feedings': feedings})
     
+
+def feedsetting_detail_api(request, feedsetting_id):
+    feed_setting = FeedSetting.objects.filter(pk=feedsetting_id).first()
+    if feed_setting:
+        return render(request, 'pages/poultry/tracking/feedsetting_detail.html', {'feed_setting': feed_setting})
+    return HttpResponse('<p>No Detail found.</p>')
+
+
+def chick_feeding_detail_api(request, chick_id):
+    items = Feedings.objects.filter(chicks=chick_id)
+    if items:
+        return render(request, 'pages/poultry/tracking/feedings_detail.html', {'items': items})
+    return HttpResponse('<p>No Detail found.</p>')
+
+def chick_medications_detail_api(request, chick_id):
+    items = Medications.objects.filter(chicks=chick_id)
+    if items:
+        return render(request, 'pages/poultry/tracking/medications_detail.html', {'items': items})
+    return HttpResponse('<p>No Detail found.</p>')
+
+def medicinesetting_detail_api(request, medicinesetting_id):
+    medicine_setting = MedicineSetting.objects.filter(pk=medicinesetting_id).first()
+    if medicine_setting:
+        return render(request, 'pages/poultry/tracking/medicinesetting_detail.html', {'medicine_setting': medicine_setting})
+    return HttpResponse('<p>No Detail found.</p>')
+
+def chick_hatching_detail_api(request, hatching_id):
+    hatching = Hatching.objects.filter(pk=hatching_id).first()
+    if hatching:
+        return render(request, 'pages/poultry/tracking/hatching_detail.html', {'hatching': hatching})
+    return HttpResponse('<p>No Hatching detail found.</p>')
+
 @login_required  
 def medication_list(request):
     medications = Medications.objects.all().order_by('-created')

@@ -28,6 +28,7 @@ from apps.vendor import urls as VendorUrls
 from apps.chicks import urls as ChicksUrls
 from apps.inventory import urls as InventoryUrls
 from apps.core.views import health_check
+from apps.accounts.views import tracking_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -59,6 +60,7 @@ urlpatterns = [
     # path('login', TemplateView.as_view(template_name='accounts/login.html'), name='login'),
     # path('signup', TemplateView.as_view(template_name='base.html'), name='signup'),
     path('password_reset', TemplateView.as_view(template_name='base.html'), name='password_reset'),
+    path('tracking/', tracking_view, name='tracking_view'),
 
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

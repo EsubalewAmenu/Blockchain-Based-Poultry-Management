@@ -7,10 +7,15 @@
         <p><strong>Item code:</strong> {{ item.item.code }}</p>
         <p><strong>Chicks Batch Number:</strong> {{ item.batchnumber }}</p>
         <p><strong>Source:</strong> {{ item.source }}</p>
-        <p><strong>Breed:</strong> {{ item.breed.breed }}</p>
-        <p><strong>Customer:</strong> {{ item.customer.first_name }} {{ item.customer.last_name }}</p>
-        <p><strong>Breed:</strong> {{ item.breed.breed }} ({{ item.breed.poultry_type }})</p>
         <p><strong>Number of Chicks:</strong> {{ item.number }}</p>
+        <p><strong>Breed:</strong> {{ item.breed.breed }} ({{ item.breed.poultry_type }})</p>
+
+        {% if item.source == 'hatching' %}
+            <p><strong>Hatching code:</strong> {{ item.hatching.hatchingcode }}</p>
+        {% else %}
+            <p><strong>Customer:</strong> {{ item.customer.first_name }} {{ item.customer.last_name }}</p>
+        {% endif %}
+
         <p><strong>Note:</strong> {{ item.description }}</p>
         <p><strong>Recorded at:</strong> {{ item.created }}</p>
         <p><strong>Verified on blockchain:</strong> {{ item.created }}</p>
@@ -21,12 +26,16 @@
         {% endif %}
 
         <div class="d-flex justify-content-between mt-3">
-            {% if item.id %}
-                <button data-egg-id="{{ item.id }}" class="btn btn-info load-chick-delete">Chick Detail</button>
-                <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}?tab=metadata', '_blank')">See on Blockchain</button>
+            {% if item.source == 'hatching' %}
+                <button data-hatching-id="{{ item.hatching.id }}" data-chick-id="{{ item.id }}" class="btn btn-info load-chick-hatching">Hatching Detail</button>
             {% endif %}
+            <button data-chick-id="{{ item.id }}" class="btn btn-info load-chick-medications">Medications</button>
+            <button data-chick-id="{{ item.id }}" class="btn btn-info load-chick-feedings">Feedings</button>
+            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
         </div>
-        <div id="chick-detail-{{ item.id }}"></div>
+        <div id="chick-hatching-detail-{{ item.hatching.id }}"></div>
+        <div id="chick-feedings-detail-{{ item.id }}"></div>
+        <div id="chick-medications-detail-{{ item.id }}"></div>
     </div>
 </div>
 {% endfor %}

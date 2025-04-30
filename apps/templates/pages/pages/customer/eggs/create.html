@@ -91,13 +91,14 @@
                   </div>
                   <div class="row mt-3">
                       <div class="col-12 col-sm-6">
-                          <label>Brought</label>
+                          <label id="broughtFieldLable">Brought</label>
+                          <label id="farmedFieldLable" style="display: none;">Farmed Number of Eggs</label>
                           <input class="multisteps-form__input form-control" type="number" name="brought" placeholder="eg. 100" />
                           {% if errors.brought %}
                           <small class="text-danger">{{ errors.brought }}</small>
                           {% endif %}
                       </div>
-                      <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                      <div class="col-12 col-sm-6 mt-3 mt-sm-0" id="returnedField">
                           <label>Returned</label>
                           <input class="multisteps-form__input form-control" type="number" name="returned" placeholder="eg. 10" value="0"/>
                           {% if errors.returned %}
@@ -146,16 +147,28 @@
       var selectedSource = this.value;
       var customerField = document.getElementById('customerField');
       var chickField = document.getElementById('chickField');
-
+      var broughtFieldLable = document.getElementById('broughtFieldLable');
+      var farmedFieldLable = document.getElementById('farmedFieldLable');
+      var returnedField = document.getElementById('returnedField');
+      
       // Reset fields
       customerField.style.display = 'none';
       chickField.style.display = 'none';
-
+      
       // Show the relevant field based on the selected source
       if (selectedSource === 'customer') {
-          customerField.style.display = 'block';
+        customerField.style.display = 'block';
+
+        broughtFieldLable.style.display = 'block';
+        farmedFieldLable.style.display = 'none';
+        returnedField.style.display = 'block';
+
       } else if (selectedSource === 'farm') {
           chickField.style.display = 'block';
+
+          broughtFieldLable.style.display = 'none';
+          farmedFieldLable.style.display = 'block';
+          returnedField.style.display = 'none';
       }
   });
 </script>

@@ -1,0 +1,20 @@
+{% for item in items %}
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="font-weight-bold">Chick Feedings</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Feeding code:</strong> {{ item.feedingcode }}</p>
+            <p><strong>Feed Setting:</strong> {{ item.feedsetting.settingcode }}</p>
+            <p><strong>Quantity:</strong> {{ item.quantity }} kg</p>
+            <p><strong>Recorded at:</strong> {{ item.created|date:"Y-m-d H:i" }}</p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}">{{ item.item.txHash }}</a></p>
+
+            <div class="d-flex justify-content-between mt-3">
+                    <button data-feedsetting-id="{{ item.feedsetting.id }}" class="btn btn-info load-feedsetting">Feed Detail</button>
+                    <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
+            </div>
+            <div id="feedsetting-detail-{{ item.feedsetting.id }}"></div>
+        </div>
+    </div>
+{% endfor %}
