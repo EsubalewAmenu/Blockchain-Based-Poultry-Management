@@ -27,6 +27,7 @@ from .validators import validate_email
 from apps.inventory.models import Item
 from apps.chicks.models import Chicks
 from apps.customer.models import Eggs
+from apps.vendor.models import MedicineInventory, Feeds
 from .backend import EmailBackend
 import random
 import string
@@ -83,7 +84,8 @@ def tracking_view(request):
     logout(request)
     
     if request.method == 'GET':
-        unique_id = request.GET.get('unique_id')
+        # unique_id = request.GET.get('unique_id')
+        unique_id = request.GET.get('unique_id', '').strip()
 
         if unique_id is None: # not passed at all
             return render(request, 'pages/poultry/tracking/home.html')
@@ -95,6 +97,8 @@ def tracking_view(request):
             (Chicks, 'batchnumber'),
             (Item, 'code'),
             (Eggs, 'batchnumber'),
+            (MedicineInventory, 'batchnumber'),
+            (Feeds, 'batchnumber'),
         ]
 
         item = None

@@ -96,6 +96,10 @@
                             {% include 'pages/poultry/tracking/eggs_detail.html' with items=items %}
                         {% elif type == 'chicks.Chicks' %}
                             {% include 'pages/poultry/tracking/chicks_detail.html' with items=items %}
+                        {% elif type == 'vendor.MedicineInventory' %}
+                            {% include 'pages/poultry/tracking/medicine_detail.html' with items=items %}
+                        {% elif type == 'vendor.Feeds' %}
+                            {% include 'pages/poultry/tracking/feed_detail.html' with items=items %}
                         {% else %}
                             {{ type }}
                         {% endif %}
@@ -135,11 +139,13 @@
   const handleLoadChickFeedings = ()=> document.querySelectorAll('.load-chick-feedings').forEach(function(element) {
       element.addEventListener('click', function() {
           const chickId = this.getAttribute('data-chick-id');
+          const hatchingId = this.getAttribute('data-hatching-id');
           
           
           fetch(`/api/feeding/${chickId}/`)
           .then(response => response.text())
           .then(html => {
+              document.getElementById('chick-hatching-detail-'+hatchingId).innerHTML = "";
               document.getElementById('chick-medications-detail-'+chickId).innerHTML = "";
 
               const detailDiv = document.getElementById('chick-feedings-detail-'+chickId);
@@ -165,14 +171,33 @@
   const handleLoadChickMedications = ()=> document.querySelectorAll('.load-chick-medications').forEach(function(element) {
       element.addEventListener('click', function() {
           const chickId = this.getAttribute('data-chick-id');
+          const hatchingId = this.getAttribute('data-hatching-id');
           
           
           fetch(`/api/medications/${chickId}/`)
           .then(response => response.text())
           .then(html => {
+              document.getElementById('chick-hatching-detail-'+hatchingId).innerHTML = "";
               document.getElementById('chick-feedings-detail-'+chickId).innerHTML = "";
 
               const detailDiv = document.getElementById('chick-medications-detail-'+chickId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+              handleLoadMedicineSetting()
+          });
+      });
+  });
+
+  const handleLoadMedicationUses = ()=> document.querySelectorAll('.load-medicationsuses').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const medicineSettingId = this.getAttribute('data-medicine-setting-id');
+          console.log(medicineSettingId);
+          
+          
+          fetch(`/api/medicationuses/${medicineSettingId}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('medicine-setting-uses-'+medicineSettingId);
               detailDiv.innerHTML = html;
               detailDiv.scrollIntoView({ behavior: 'smooth' });
               handleLoadMedicineSetting()
@@ -211,6 +236,48 @@ const handleLoadChickHatching = ()=> document.querySelectorAll('.load-chick-hatc
           });
       });
   });
+  const handleLoadMedicineSettings = ()=> document.querySelectorAll('.load-medicinesettings').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const medicineId = this.getAttribute('data-medicine-id');
+          
+          fetch(`/api/medicinesettings/${medicineId}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('medicinesettings-detail-'+medicineId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+              handleLoadMedicationUses()
+          });
+      });
+  });
+
+  const handleLoadFeedUses = ()=> document.querySelectorAll('.load-feeduses').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const feedSettingId = this.getAttribute('data-feed-setting-id');
+          
+          fetch(`/api/feeduses/${feedSettingId}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('feedings-detail-'+feedSettingId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+          });
+      });
+  });
+  const handleLoadFeedSettings = ()=> document.querySelectorAll('.load-feedsettings').forEach(function(element) {
+      element.addEventListener('click', function() {
+          const feedId = this.getAttribute('data-feed-id');
+          
+          fetch(`/api/feedsettings/${feedId}/`)
+          .then(response => response.text())
+          .then(html => {
+              const detailDiv = document.getElementById('feedsettings-detail-'+feedId);
+              detailDiv.innerHTML = html;
+              detailDiv.scrollIntoView({ behavior: 'smooth' });
+              handleLoadFeedUses()
+          });
+      });
+  });
   const handleLoadEggSetting = ()=>   document.querySelectorAll('.load-eggsetting').forEach(function(element) {
       element.addEventListener('click', function() {
           const eggId = this.getAttribute('data-egg-id');
@@ -243,6 +310,8 @@ const handleLoadChickHatching = ()=> document.querySelectorAll('.load-chick-hatc
   handleLoadEggSetting()
   handleLoadChickFeedings()
   handleLoadChickMedications()
+  handleLoadMedicineSettings()
+  handleLoadFeedSettings()
   handleLoadChickHatching()
 
 

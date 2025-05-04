@@ -29,8 +29,8 @@
             {% if item.source == 'hatching' %}
                 <button data-hatching-id="{{ item.hatching.id }}" data-chick-id="{{ item.id }}" class="btn btn-info load-chick-hatching">Hatching Detail</button>
             {% endif %}
-            <button data-chick-id="{{ item.id }}" class="btn btn-info load-chick-medications">Medications</button>
-            <button data-chick-id="{{ item.id }}" class="btn btn-info load-chick-feedings">Feedings</button>
+            <button data-hatching-id="{{ item.hatching.id }}"  data-chick-id="{{ item.id }}" class="btn btn-info load-chick-medications">Medications</button>
+            <button data-hatching-id="{{ item.hatching.id }}"  data-chick-id="{{ item.id }}" class="btn btn-info load-chick-feedings">Feedings</button>
             <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
         </div>
         <div id="chick-hatching-detail-{{ item.hatching.id }}"></div>

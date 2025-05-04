@@ -1,0 +1,27 @@
+{% for item in items %}
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="font-weight-bold">Purchased Feed</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Batch number:</strong> {{ item.batchnumber }}</p>
+            <p><strong>Vendor:</strong> {{ item.vendor.full_name }}</p>
+            <p><strong>Feed Type:</strong> {{ item.feedtype }}</p>
+            <p><strong>Brought:</strong> {{ item.brought }} kg</p>
+            <p><strong>Returned:</strong> {{ item.returned }} kg</p>
+            <p><strong>Received:</strong> {{ item.received }} kg</p>
+
+            <p><strong>Recorded at:</strong> {{ item.created|date:"d M, Y" }}</p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ item.txHash }}">{{ item.txHash }}</a></p>
+            <p><strong>Blockchain policy Id:</strong><a target="_blank" href="https://preprod.cardanoscan.io/tokenPolicy/{{ item.policyId }}">{{ item.policyId }}</a></p>
+
+            <div class="d-flex justify-content-between mt-3">
+                {% if item.id %}
+                    <button data-feed-id="{{ item.id }}" class="btn btn-info load-feedsettings">Feed Settings</button>
+                    <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
+                {% endif %}
+            </div>
+            <div id="feedsettings-detail-{{ item.id }}"></div>
+        </div>
+    </div>
+{% endfor %}

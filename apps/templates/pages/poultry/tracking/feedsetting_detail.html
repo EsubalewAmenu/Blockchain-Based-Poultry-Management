@@ -1,30 +1,33 @@
-<div class="card p-3 mb-4 shadow-sm">
-    <div class="card-header bg-primary text-white">
-        <h5 class="font-weight-bold">Feed Setting</h5>
-    </div>
-    <div class="card-body">
-        <p><strong>Setting Code:</strong> {{ feed_setting.settingcode }}</p>
-        <p><strong>Item Request (Item):</strong> 
-            {% if feed_setting.item_request%}
-                {{ feed_setting.item_request.code }} ({{ feed_setting.item_request.item.code }})
-            {% endif %}
-        </p>
-        <p><strong>feed Batch:</strong> {{ feed_setting.feed.batchnumber }}</p>
-        <p><strong>Amount of requested feeds:</strong> {{ feed_setting.feeds }} kg</p>
-        <p><strong>Available feeds:</strong> {{ feed_setting.available_quantity }} kg</p>
-        <p><strong>Is feed request approved:</strong> {{ feed_setting.is_approved }}</p>
-        <p><strong>Request at:</strong> {{ feed_setting.created|date:"Y-m-d H:i" }}</p>
-        <p><strong>Vendor/Supplier:</strong> {{ feed_setting.feed.vendor }}</p>
-        <p><strong>Supplied Quantity:</strong> {{ feed_setting.feed.received }} kg</p>
-        <p><strong>Feed type:</strong> {{ feed_setting.feed.feedtype }}</p>
-        <p><strong>Purchase Date:</strong> {{ feed_setting.feed.created|date:"d M, Y" }}</p>
-        <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ feed_setting.feed_setting.txHash }}">{{ feed_setting.feed_setting.txHash }}</a></p>
-
-        <div class="d-flex justify-content-between mt-3">
-
-            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ feed_setting.txHash }}?tab=metadata', '_blank')">Proof feed Setting on Blockchain</button>
-            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ feed_setting.feed.txHash }}?tab=metadata', '_blank')">Proof Purchase on Blockchain</button>
+{% for feed_setting in feed_settings %}
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="font-weight-bold">Feed Setting</h5>
         </div>
-        <div id="approval-detail-{{ feed_setting.id }}"></div>
+        <div class="card-body">
+            <p><strong>Setting Code:</strong> {{ feed_setting.settingcode }}</p>
+            <p><strong>Item Request (Item):</strong> 
+                {% if feed_setting.item_request%}
+                    {{ feed_setting.item_request.code }} ({{ feed_setting.item_request.item.code }})
+                {% endif %}
+            </p>
+            <p><strong>feed Batch:</strong> {{ feed_setting.feed.batchnumber }}</p>
+            <p><strong>Amount of requested feeds:</strong> {{ feed_setting.feeds }} kg</p>
+            <p><strong>Available feeds:</strong> {{ feed_setting.available_quantity }} kg</p>
+            <p><strong>Is feed request approved:</strong> {{ feed_setting.is_approved }}</p>
+            <p><strong>Request at:</strong> {{ feed_setting.created|date:"Y-m-d H:i" }}</p>
+            <p><strong>Vendor/Supplier:</strong> {{ feed_setting.feed.vendor }}</p>
+            <p><strong>Supplied Quantity:</strong> {{ feed_setting.feed.received }} kg</p>
+            <p><strong>Feed type:</strong> {{ feed_setting.feed.feedtype }}</p>
+            <p><strong>Purchase Date:</strong> {{ feed_setting.feed.created|date:"d M, Y" }}</p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ feed_setting.feed_setting.txHash }}">{{ feed_setting.feed_setting.txHash }}</a></p>
+
+            <div class="d-flex justify-content-between mt-3">
+                <button data-feed-setting-id="{{ feed_setting.id }}" class="btn btn-info load-feeduses">Feed usage</button>
+
+                <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ feed_setting.txHash }}?tab=metadata', '_blank')">Proof feed Setting on Blockchain</button>
+                <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ feed_setting.feed.txHash }}?tab=metadata', '_blank')">Proof Purchase on Blockchain</button>
+            </div>
+            <div id="feedings-detail-{{ feed_setting.id }}"></div>
+        </div>
     </div>
-</div>
+{% endfor %}

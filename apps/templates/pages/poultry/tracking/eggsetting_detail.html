@@ -17,8 +17,7 @@
         <p><strong>Number of Eggs:</strong> {{ egg_setting.eggs }}</p>
         <p><strong>Available Eggs:</strong> {{ egg_setting.available_quantity }}</p>
         <p><strong>Recorded at:</strong> {{ egg_setting.created|date:"Y-m-d H:i" }}</p>
-        <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ egg_setting.egg_setting.txHash }}">{{ egg_setting.egg_setting.txHash }}</a></p>
-        <p><strong>Blockchain policy Id:</strong><a target="_blank" href="https://preprod.cardanoscan.io/tokenPolicy/{{ egg_setting.egg_setting.policyId }}">{{ egg_setting.egg_setting.policyId }}</a></p>
+        <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ egg_setting.txHash }}">{{ egg_setting.txHash }}</a></p>
 
         <div class="d-flex justify-content-between mt-3">
             {% if egg_setting.is_approved %}

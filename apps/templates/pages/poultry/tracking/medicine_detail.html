@@ -1,0 +1,29 @@
+{% for item in items %}
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="font-weight-bold">Purchased Medicine</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Batch number:</strong> {{ item.batchnumber }}</p>
+            <p><strong>Vendor:</strong> {{ item.vendor.full_name }}</p>
+            <p><strong>Meidcine Name:</strong> {{ item.medicine.name }}</p>
+            <p><strong>Meidcine Category:</strong> {{ item.medicine.category }}</p>
+            <p><strong>Stock quantity:</strong> {{ item.stock_quantity }} {{ item.unit }}</p>
+            <p><strong>Price per unit:</strong> {{ item.price_per_unit }}</p>
+            <p><strong>Expiry Date:</strong> {{ item.expiry_date }}</p>
+            <p><strong>Purchase Date:</strong> {{ item.purchase_date }}</p>
+
+            <p><strong>Recorded at:</strong> {{ item.created|date:"d M, Y" }}</p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ item.txHash }}">{{ item.txHash }}</a></p>
+            <p><strong>Blockchain policy Id:</strong><a target="_blank" href="https://preprod.cardanoscan.io/tokenPolicy/{{ item.policyId }}">{{ item.policyId }}</a></p>
+
+            <div class="d-flex justify-content-between mt-3">
+                {% if item.id %}
+                    <button data-medicine-id="{{ item.id }}" class="btn btn-info load-medicinesettings">Medicine Settings</button>
+                    <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
+                {% endif %}
+            </div>
+            <div id="medicinesettings-detail-{{ item.id }}"></div>
+        </div>
+    </div>
+{% endfor %}

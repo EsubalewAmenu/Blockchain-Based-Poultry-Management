@@ -59,6 +59,7 @@ urlpatterns = [
     path('feed-settings/<str:settingcode>/update/', feed_setting_update, name='feed_setting_update'),
     path('feed-settings/<str:settingcode>/delete/', feed_setting_delete, name='feed_setting_delete'),
     path('api/feedsetting/<int:feedsetting_id>/', feedsetting_detail_api, name='feedsetting-detail-api'),
+    path('api/feedsettings/<int:feed_id>/', feed_detail_api, name='feed-detail-api'),
 
     path('medicine-settings/create/', medicine_setting_create, name='medicine_setting_create'),    
     path('medicine-settings/', medicine_setting_list, name='medicine_setting_list'),
@@ -66,6 +67,7 @@ urlpatterns = [
     path('medicine-settings/<str:settingcode>/update/', medicine_setting_update, name='medicine_setting_update'),
     path('medicine-settings/<str:settingcode>/delete/', medicine_setting_delete, name='medicine_setting_delete'),
     path('api/medicinesetting/<int:medicinesetting_id>/', medicinesetting_detail_api, name='medicinesetting-detail-api'),
+    path('api/medicinesettings/<int:medicine_id>/', medicinesettings_detail_api, name='medicine-detail-api'),
 
     path('feeding/', feeding_list, name='feeding_list'),
     path('feeding/create/', feeding_create, name='feeding_create'),
@@ -73,6 +75,7 @@ urlpatterns = [
     path('feedings/<str:code>/update/', feeding_update, name='feeding_update'),
     path('feeding/<str:code>/delete', feeding_delete, name='feeding_delete'),
     path('api/feeding/<int:chick_id>/', chick_feeding_detail_api, name='chick-feeding-detail'),
+    path('api/feeduses/<int:feed_setting_id>/', chick_feed_uses_detail_api, name='chick-feed_uses-detail'),
 
     path('medication/', medication_list, name='medication_list'),
     path('medication/create/', medication_create, name='medication_create'),
@@ -80,6 +83,7 @@ urlpatterns = [
     path('medications/<str:code>/update/', medication_update, name='medication_update'),
     path('medication/<str:code>/delete', medication_delete, name='medication_delete'),
     path('api/medications/<int:chick_id>/', chick_medications_detail_api, name='chick-medications-detail'),
+    path('api/medicationuses/<int:medicine_setting_id>/', chick_medication_uses_detail_api, name='chick-medication_uses-detail'),
 
 ]
 

@@ -1,31 +1,34 @@
-<div class="card p-3 mb-4 shadow-sm">
-    <div class="card-header bg-primary text-white">
-        <h5 class="font-weight-bold">Medicine Setting</h5>
-    </div>
-    <div class="card-body">
-        <p><strong>Setting Code:</strong> {{ medicine_setting.settingcode }}</p>
-        <p><strong>Item Request (Item):</strong> 
-            {% if medicine_setting.item_request%}
-                {{ medicine_setting.item_request.code }} ({{ medicine_setting.item_request.item.code }})
-            {% endif %}
-        </p>
-        <p><strong>Medicine Batch:</strong> {{ medicine_setting.medicine.batchnumber }}</p>
-        <p><strong>Number of medicines:</strong> {{ medicine_setting.medicines }}  {{ medicine_setting.medicine.unit }}</p>
-        <p><strong>Available medicines:</strong> {{ medicine_setting.available_quantity }}  {{ medicine_setting.medicine.unit }}</p>
-        <p><strong>Is medicine request approved:</strong> {{ medicine_setting.is_approved }}</p>
-        <p><strong>Request at:</strong> {{ medicine_setting.created|date:"Y-m-d H:i" }}</p>
-        <p><strong>Vendor/Supplier:</strong> {{ medicine_setting.medicine.vendor }}</p>
-        <p><strong>Supplied Quantity:</strong> {{ medicine_setting.medicine.stock_quantity }} {{ medicine_setting.medicine.unit }}</p>
-        <p><strong>Price per Unit:</strong> {{ medicine_setting.medicine.price_per_unit }}</p>
-        <p><strong>Purchase Date:</strong> {{ medicine_setting.medicine.purchase_date }}</p>
-        <p><strong>Expiry Date:</strong> {{ medicine_setting.medicine.expiry_date }}</p>
-        <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ medicine_setting.medicine_setting.txHash }}">{{ medicine_setting.medicine_setting.txHash }}</a></p>
-
-        <div class="d-flex justify-content-between mt-3">
-
-            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ medicine_setting.txHash }}?tab=metadata', '_blank')">Proof Medicine Setting on Blockchain</button>
-            <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ medicine_setting.medicine.txHash }}?tab=metadata', '_blank')">Proof Purchase on Blockchain</button>
+{% for medicine_setting in medicine_settings %}
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="font-weight-bold">Medicine Setting</h5>
         </div>
-        <div id="approval-detail-{{ medicine_setting.id }}"></div>
+        <div class="card-body">
+            <p><strong>Setting Code:</strong> {{ medicine_setting.settingcode }}</p>
+            <p><strong>Item Request (Item):</strong> 
+                {% if medicine_setting.item_request%}
+                    {{ medicine_setting.item_request.code }} ({{ medicine_setting.item_request.item.code }})
+                {% endif %}
+            </p>
+            <p><strong>Medicine Batch:</strong> {{ medicine_setting.medicine.batchnumber }}</p>
+            <p><strong>Number of medicines:</strong> {{ medicine_setting.medicines }}  {{ medicine_setting.medicine.unit }}</p>
+            <p><strong>Available medicines:</strong> {{ medicine_setting.available_quantity }}  {{ medicine_setting.medicine.unit }}</p>
+            <p><strong>Is medicine request approved:</strong> {{ medicine_setting.is_approved }}</p>
+            <p><strong>Request at:</strong> {{ medicine_setting.created|date:"Y-m-d H:i" }}</p>
+            <p><strong>Vendor/Supplier:</strong> {{ medicine_setting.medicine.vendor }}</p>
+            <p><strong>Supplied Quantity:</strong> {{ medicine_setting.medicine.stock_quantity }} {{ medicine_setting.medicine.unit }}</p>
+            <p><strong>Price per Unit:</strong> {{ medicine_setting.medicine.price_per_unit }}</p>
+            <p><strong>Purchase Date:</strong> {{ medicine_setting.medicine.purchase_date }}</p>
+            <p><strong>Expiry Date:</strong> {{ medicine_setting.medicine.expiry_date }}</p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ medicine_setting.medicine_setting.txHash }}">{{ medicine_setting.medicine_setting.txHash }}</a></p>
+
+            <div class="d-flex justify-content-between mt-3">
+                <button data-medicine-setting-id="{{ medicine_setting.id }}" class="btn btn-info load-medicationsuses">Medication uses</button>
+
+                <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ medicine_setting.txHash }}?tab=metadata', '_blank')">Proof Medicine Setting on Blockchain</button>
+                <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ medicine_setting.medicine.txHash }}?tab=metadata', '_blank')">Proof Purchase on Blockchain</button>
+            </div>
+            <div id="medicine-setting-uses-{{ medicine_setting.id }}"></div>
+        </div>
     </div>
-</div>
+{% endfor %}
