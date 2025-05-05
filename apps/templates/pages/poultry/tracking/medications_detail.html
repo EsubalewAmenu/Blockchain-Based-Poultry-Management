@@ -10,11 +10,11 @@
             <p><strong>Medication Setting:</strong> {{ item.medicinesetting.settingcode }}</p>
             <p><strong>Quantity:</strong> {{ item.quantity }} {{ item.medicinesetting.medicine.unit }}</p>
             <p><strong>Recorded at:</strong> {{ item.created|date:"Y-m-d H:i" }}</p>
-            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}">{{ item.item.txHash }}</a></p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ item.txHash }}">{{ item.txHash }}</a></p>
 
             <div class="d-flex justify-content-between mt-3">
                     <button data-medicinesetting-id="{{ item.medicinesetting.id }}" class="btn btn-info load-medicinesetting">Medicine Batch Detail</button>
-                    <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.item.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
+                    <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
             </div>
             <div id="medicinesetting-detail-{{ item.medicinesetting.id }}"></div>
         </div>

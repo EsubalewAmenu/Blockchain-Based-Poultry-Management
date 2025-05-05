@@ -19,7 +19,7 @@
             <p><strong>Supplied Quantity:</strong> {{ feed_setting.feed.received }} kg</p>
             <p><strong>Feed type:</strong> {{ feed_setting.feed.feedtype }}</p>
             <p><strong>Purchase Date:</strong> {{ feed_setting.feed.created|date:"d M, Y" }}</p>
-            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ feed_setting.feed_setting.txHash }}">{{ feed_setting.feed_setting.txHash }}</a></p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ feed_setting.txHash }}">{{ feed_setting.txHash }}</a></p>
 
             <div class="d-flex justify-content-between mt-3">
                 <button data-feed-setting-id="{{ feed_setting.id }}" class="btn btn-info load-feeduses">Feed usage</button>

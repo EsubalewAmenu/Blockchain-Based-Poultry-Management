@@ -23,7 +23,9 @@
             <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ medicine_setting.medicine_setting.txHash }}">{{ medicine_setting.medicine_setting.txHash }}</a></p>
 
             <div class="d-flex justify-content-between mt-3">
-                <button data-medicine-setting-id="{{ medicine_setting.id }}" class="btn btn-info load-medicationsuses">Medication uses</button>
+                {% if medicine_settings|length > 1 %}
+                    <button data-medicine-setting-id="{{ medicine_setting.id }}" class="btn btn-info load-medicationsuses">Medication uses</button>
+                {% endif %}
 
                 <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ medicine_setting.txHash }}?tab=metadata', '_blank')">Proof Medicine Setting on Blockchain</button>
                 <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ medicine_setting.medicine.txHash }}?tab=metadata', '_blank')">Proof Purchase on Blockchain</button>
