@@ -12,13 +12,13 @@
             <p><strong>Received:</strong> {{ item.received }} kg</p>
 
             <p><strong>Recorded at:</strong> {{ item.created|date:"d M, Y" }}</p>
-            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ item.txHash }}">{{ item.txHash }}</a></p>
-            <p><strong>Blockchain policy Id:</strong><a target="_blank" href="https://preprod.cardanoscan.io/tokenPolicy/{{ item.policyId }}">{{ item.policyId }}</a></p>
+            <p><strong>Blockchain txHash:</strong><a target="_blank" href="https://preprod.cardanoscan.io/transaction/{{ item.tem.txHash }}">{{ item.tem.txHash }}</a></p>
+            <p><strong>Blockchain policy Id:</strong><a target="_blank" href="https://preprod.cardanoscan.io/tokenPolicy/{{ item.tem.policyId }}">{{ item.tem.policyId }}</a></p>
 
             <div class="d-flex justify-content-between mt-3">
                 {% if item.id %}
                     <button data-feed-id="{{ item.id }}" class="btn btn-info load-feedsettings">Feed Settings</button>
-                    <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
+                    <button class="btn btn-outline-secondary" onclick="window.open('https://preprod.cardanoscan.io/transaction/{{ item.tem.txHash }}?tab=metadata', '_blank')">Proof on Blockchain</button>
                 {% endif %}
             </div>
             <div id="feedsettings-detail-{{ item.id }}"></div>
