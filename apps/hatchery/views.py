@@ -375,6 +375,9 @@ def chick_feed_uses_detail_api(request, feed_setting_id):
     items = Feedings.objects.filter(feedsetting=feed_setting)
 
     if items:
+        for item in items:
+            item.chick = Chicks.objects.filter(pk=item.chicks).first()
+            
         return render(request, 'pages/poultry/tracking/feedings_detail.html', {'items': items})
     return HttpResponse('<p>No Detail found.</p>')
 
